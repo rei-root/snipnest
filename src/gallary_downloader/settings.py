@@ -6,7 +6,11 @@
 
 from __future__ import annotations
 
+import json
+import os
 from pathlib import Path
+
+import keyring
 
 __all__ = [
     "Settings",
@@ -32,13 +36,16 @@ class KeyringStore:
         self._username = username
 
     def get(self) -> str | None:
-        raise NotImplementedError
+        return keyring.get_password(self._service, self._username)
 
     def set(self, secret: str) -> None:
-        raise NotImplementedError
+        keyring.set_password(self._service, self._username, secret)
 
     def delete(self) -> None:
-        raise NotImplementedError
+        try:
+            keyring.delete_password(self._service, self._username)
+        except keyring.errors.PasswordDeleteError:
+            return
 
 
 class FileSecretStore:
@@ -48,13 +55,25 @@ class FileSecretStore:
         self._path = path or (CONFIG_DIR / "secret")
 
     def get(self) -> str | None:
-        raise NotImplementedError
+        try:
+            return self._path.read_text(encoding="utf-8")
+        except FileNotFoundError:
+            return None
 
     def set(self, secret: str) -> None:
-        raise NotImplementedError
+        self._path.parent.mkdir(parents=True, exist_ok=True)
+        descriptor = os.open(self._path, os.O_WRONLY | os.O_CREAT | os.O_TRUNC, 0o600)
+        try:
+            os.write(descriptor, secret.encode("utf-8"))
+        finally:
+            os.close(descriptor)
+        os.chmod(self._path, 0o600)
 
     def delete(self) -> None:
-        raise NotImplementedError
+        try:
+            self._path.unlink()
+        except FileNotFoundError:
+            return
 
 
 class Settings:
@@ -73,21 +92,51 @@ class Settings:
 
     def load(self) -> None:
         """Прочитать настройки из конфига. Отсутствие конфига — не ошибка."""
-        raise NotImplementedError
+        try:
+            data = json.loads(self._config_path.read_text(encoding="utf-8"))
+        except (FileNotFoundError, json.JSONDecodeError, OSError):
+            return
+        if not isinstance(data, dict):
+            return
+        destination = data.get("destination")
+        if isinstance(destination, str) and destination:
+            self.destination = destination
+        gallery_dl_path = data.get("gallery_dl_path")
+        if isinstance(gallery_dl_path, str):
+            self.gallery_dl_path = gallery_dl_path
 
     def save(self) -> None:
         """Записать настройки в конфиг."""
-        raise NotImplementedError
+        self._config_path.parent.mkdir(parents=True, exist_ok=True)
+        data = {
+            "destination": self.destination,
+            "gallery_dl_path": self.gallery_dl_path,
+        }
+        self._config_path.write_text(
+            json.dumps(data, ensure_ascii=False, indent=2) + "\n",
+            encoding="utf-8",
+        )
 
     @property
     def token(self) -> str | None:
         """Токен Pinterest из системного хранилища."""
-        raise NotImplementedError
+        try:
+            return self._secret_store.get()
+        except Exception:
+            return None
 
     def set_token(self, token: str) -> None:
         """Сохранить токен Pinterest в системном хранилище."""
-        raise NotImplementedError
+        try:
+            self._secret_store.set(token)
+        except Exception:
+            fallback = FileSecretStore(self._config_path.parent / "secret")
+            fallback.set(token)
+            self._secret_store = fallback
 
     def clear_token(self) -> None:
         """Удалить токен Pinterest."""
-        raise NotImplementedError
+        try:
+            self._secret_store.delete()
+        except Exception:
+            return

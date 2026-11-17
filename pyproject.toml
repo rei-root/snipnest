@@ -44,6 +44,8 @@ ignore = ["B008"]
 
 [tool.ruff.lint.per-file-ignores]
 "tests/**" = ["N802"]
+# Qt mandates camelCase for overridden event handlers.
+"src/gallary_downloader/ui/**" = ["N802"]
 
 [tool.ruff.lint.mccabe]
 max-complexity = 12
