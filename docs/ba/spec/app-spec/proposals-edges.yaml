@@ -1,0 +1,50 @@
+terminal: [завершена]
+
+transitions:
+  - from: ""
+    event: ссылка_принята
+    to: в_очереди
+    initiator: [владелец]
+    action: отменить
+
+  - from: в_очереди
+    event: запуск
+    to: выполняется
+    initiator: [загрузка]
+    action: отменить
+
+  - from: выполняется
+    event: файлы_скачаны
+    to: завершена
+    initiator: [загрузка]
+    action: отменить
+
+  - from: выполняется
+    event: сбой
+    to: ошибка
+    initiator: [загрузка]
+    action: отменить
+
+  - from: выполняется
+    event: остановка_пользователем
+    to: отменена
+    initiator: [владелец]
+    action: отменить
+
+  - from: в_очереди
+    event: остановка_пользователем
+    to: отменена
+    initiator: [владелец]
+    action: отменить
+
+  - from: ошибка
+    event: повтор
+    to: в_очереди
+    initiator: [владелец]
+    action: повторить
+
+  - from: отменена
+    event: повтор
+    to: в_очереди
+    initiator: [владелец]
+    action: повторить

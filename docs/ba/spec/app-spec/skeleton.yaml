@@ -1,0 +1,45 @@
+fixed_enums:
+  critical_action: [отменить, повторить, выполнить, отчитаться]
+
+extract_enums:
+  role: "кто инициирует действия с загрузкой и что делает с её результатом"
+  state: "состояния загрузки от постановки в очередь до отчёта о итоге"
+  field: "поля загрузки, которые заполняются и потом показываются пользователю"
+
+slot_families:
+  rights:
+    over: [role, critical_action, state]
+    value:
+      enum: [allow, deny, "n/a"]
+
+  state_timeout:
+    over: [state]
+    value:
+      type: text
+
+  visibility:
+    over: [role, state]
+    value:
+      enum: [full, limited, none]
+
+  field_owner:
+    over: [field]
+    value:
+      type: text
+
+  field_after_send:
+    over: [field]
+    value:
+      enum: [frozen, editable]
+
+  reversible:
+    over: [critical_action]
+    value:
+      enum: ["yes", "no"]
+
+graph:
+  state: state
+  role: role
+  action: critical_action
+  rights: rights
+  visibility: visibility

@@ -1,0 +1,82 @@
+facts:
+  - slot: "rights[владелец,выполнить,в_очереди]"
+    value: deny
+    source: derived
+    rationale: "владелец не выполняет загрузку сам: выполнение инициирует исполнитель (TR-009)"
+    derives_from: [TR-009]
+  - slot: "rights[владелец,выполнить,выполняется]"
+    value: deny
+    source: derived
+    rationale: "идущую загрузку выполняет исполнитель, а не владелец"
+    derives_from: [TR-009]
+  - slot: "rights[владелец,выполнить,завершена]"
+    value: deny
+    source: derived
+    rationale: "выполнение завершилось вместе с загрузкой; повторно выполнять завершённое нельзя"
+    derives_from: [graph]
+  - slot: "rights[владелец,выполнить,отменена]"
+    value: deny
+    source: derived
+    rationale: "отменённая загрузка ждёт явного повтора, сама выполнение не начинается"
+    derives_from: [TR-008]
+  - slot: "rights[владелец,выполнить,ошибка]"
+    value: deny
+    source: derived
+    rationale: "ошибочная загрузка ждёт явного повтора, сама выполнение не начинается"
+    derives_from: [TR-007]
+  - slot: "rights[владелец,отчитаться,в_очереди]"
+    value: deny
+    source: derived
+    rationale: "отчёт есть только о завершившейся загрузке; в очереди отчитываться не о чем"
+    derives_from: [graph]
+  - slot: "rights[владелец,отчитаться,выполняется]"
+    value: deny
+    source: derived
+    rationale: "отчёт подводит исполнитель (TR-010, TR-011), у владельца такой дуги нет: он получает готовый итог, а не подводит его сам"
+    derives_from: [TR-010, TR-011]
+  - slot: "rights[загрузка,выполнить,в_очереди]"
+    value: allow
+    source: derived
+    rationale: "из в_очереди загрузку запускает исполнитель (TR-009)"
+    derives_from: [TR-009]
+  - slot: "rights[загрузка,выполнить,выполняется]"
+    value: "n/a"
+    source: derived
+    rationale: "выполнение уже идёт: повторно запускать из выполняется нельзя"
+    derives_from: [TR-010, TR-011]
+  - slot: "rights[загрузка,выполнить,завершена]"
+    value: "n/a"
+    source: derived
+    rationale: "завершена — терминальное состояние, выполнение в нём неприменимо"
+    derives_from: [graph]
+  - slot: "rights[загрузка,выполнить,отменена]"
+    value: "n/a"
+    source: derived
+    rationale: "из отменена выходит только повтор по решению владельца (TR-008)"
+    derives_from: [TR-008]
+  - slot: "rights[загрузка,выполнить,ошибка]"
+    value: "n/a"
+    source: derived
+    rationale: "из ошибки выходит только повтор по решению владельца (TR-007)"
+    derives_from: [TR-007]
+  - slot: "rights[загрузка,отчитаться,в_очереди]"
+    value: deny
+    source: derived
+    rationale: "в очереди отчитываться не о чем: загрузка ещё не началась"
+    derives_from: [TR-009]
+  - slot: "rights[загрузка,отчитаться,выполняется]"
+    value: allow
+    source: derived
+    rationale: "исполнитель, доведший загрузку до конца, отчитывается о результате (TR-010, TR-011)"
+    derives_from: [TR-010, TR-011]
+
+  - slot: "reversible[выполнить]"
+    value: "no"
+    source: derived
+    rationale: "запуск загрузки необратим: начав качать, отменить это нельзя — можно только остановить саму загрузку"
+    derives_from: [TR-009]
+  - slot: "reversible[отчитаться]"
+    value: "no"
+    source: derived
+    rationale: "отчёт — финальная запись по загрузке, отменить его нельзя"
+    derives_from: [TR-010]

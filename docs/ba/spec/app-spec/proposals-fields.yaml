@@ -1,0 +1,176 @@
+facts:
+  # --- Видимость: что владелец видит в каждом состоянии ---
+  - slot: "visibility[владелец,в_очереди]"
+    value: limited
+    source: derived
+    rationale: "в очереди загрузка ещё не идёт: видны ссылка и папка сохранения, но ни прогресса, ни скорости, ни файлов ещё нет"
+    derives_from: [TR-002]
+  - slot: "visibility[владелец,выполняется]"
+    value: full
+    source: user
+    transcript: T2
+    quote: "Оставляй умолчание, но добавь еще скорость загрузки и сколько сколько скачано «скачано X из Y»."
+    rationale: ""
+  - slot: "visibility[владелец,завершена]"
+    value: full
+    source: user
+    transcript: T2
+    quote: "Да, оставляй так с итогом."
+    rationale: ""
+  - slot: "visibility[владелец,ошибка]"
+    value: full
+    source: user
+    transcript: T2
+    quote: "Оставляй."
+    rationale: ""
+  - slot: "visibility[владелец,отменена]"
+    value: full
+    source: derived
+    rationale: "после отмены владельцу доступен итог по загрузке и лог: иначе он не поймёт, что именно прервалось"
+    derives_from: [TR-005, TR-006]
+
+  # --- Видимость: что видит исполнитель ---
+  - slot: "visibility[загрузка,в_очереди]"
+    value: limited
+    source: derived
+    rationale: "исполнитель в очереди не работает; ему доступны только параметры запуска, которые получит при старте"
+    derives_from: [TR-002]
+  - slot: "visibility[загрузка,выполняется]"
+    value: full
+    source: derived
+    rationale: "исполнитель в ходе загрузки видит всё, что касается его работы: файлы, счётчики, лог"
+    derives_from: [TR-003, TR-004]
+  - slot: "visibility[загрузка,завершена]"
+    value: full
+    source: derived
+    rationale: "исполнитель доводит загрузку до конца и отдаёт результат: он видит всё своё состояние"
+    derives_from: [TR-003]
+  - slot: "visibility[загрузка,ошибка]"
+    value: full
+    source: derived
+    rationale: "исполнитель знает, чем загрузка кончилась: без этого он не может отдать владельцу диагностику"
+    derives_from: [TR-004]
+  - slot: "visibility[загрузка,отменена]"
+    value: full
+    source: derived
+    rationale: "исполнитель останавливается по команде владельца и знает, что произошло"
+    derives_from: [TR-005, TR-006]
+
+  # --- Кто заполняет поля ---
+  - slot: "field_owner[ссылка]"
+    value: владелец
+    source: user
+    transcript: T2
+    quote: "Да, одно поле."
+    rationale: ""
+  - slot: "field_owner[папка_сохранения]"
+    value: владелец
+    source: user
+    transcript: T2
+    quote: "Оставляй умолчание, но у меня ru-локаль, так что у меня это будет `/home/sato/Изображения/Pinterest/`"
+    rationale: ""
+  - slot: "field_owner[прогресс]"
+    value: загрузка
+    source: derived
+    rationale: "прогресс идёт от исполнителя: он считает скачанное и сообщает состояние"
+    derives_from: [TR-003]
+  - slot: "field_owner[скорость]"
+    value: загрузка
+    source: derived
+    rationale: "скорость измеряет исполнитель по факту передачи файлов"
+    derives_from: [TR-003]
+  - slot: "field_owner[список_файлов]"
+    value: загрузка
+    source: derived
+    rationale: "имена файлов знает только тот, кто их качает"
+    derives_from: [TR-003]
+  - slot: "field_owner[токен_pinterest]"
+    value: владелец
+    source: user
+    transcript: T2
+    quote: "Желательно что бы было безопаснее, что бы нельзя было просто достать куки или еще что-то."
+    rationale: ""
+  - slot: "field_owner[путь_к_gallery_dl]"
+    value: владелец
+    source: derived
+    rationale: "путь к бинарнику указывает владелец, если gallery-dl не найден в PATH: выбор пути — его решение"
+  - slot: "field_owner[лог]"
+    value: загрузка
+    source: derived
+    rationale: "лог — это вывод внешнего бинарника, он попадает в поле от исполнителя"
+
+  # --- Что можно менять после постановки в очередь ---
+  - slot: "field_after_send[ссылка]"
+    value: frozen
+    source: derived
+    rationale: "ссылка определяет, что именно качать; после старта её смена означала бы другую загрузку"
+    derives_from: [TR-002]
+  - slot: "field_after_send[папка_сохранения]"
+    value: editable
+    source: derived
+    rationale: "папку сохранения меняют в любой момент: это каталог назначения, а не часть содержимого загрузки"
+  - slot: "field_after_send[прогресс]"
+    value: frozen
+    source: derived
+    rationale: "прогресс — отчёт о том, что уже произошло; его не редактируют, его выдаёт исполнитель"
+    derives_from: [TR-003]
+  - slot: "field_after_send[скорость]"
+    value: frozen
+    source: derived
+    rationale: "скорость — измерение, его не редактируют вручную"
+    derives_from: [TR-003]
+  - slot: "field_after_send[список_файлов]"
+    value: frozen
+    source: derived
+    rationale: "список файлов — отчёт о факте скачанного, а не ввод пользователя"
+    derives_from: [TR-003]
+  - slot: "field_after_send[токен_pinterest]"
+    value: editable
+    source: derived
+    rationale: "токен можно заменить в любой момент: он не часть постановки загрузки, а условие доступа к сайту"
+  - slot: "field_after_send[путь_к_gallery_dl]"
+    value: editable
+    source: derived
+    rationale: "путь к бинарнику — настройка окружения, её правят когда угодно"
+  - slot: "field_after_send[лог]"
+    value: frozen
+    source: derived
+    rationale: "лог — поток вывода исполнителя, его не редактируют"
+
+  # --- Обратимость действий ---
+  - slot: "reversible[отменить]"
+    value: "yes"
+    source: derived
+    rationale: "отменённую загрузку можно повторить (TR-008), то есть отмена обратима"
+    derives_from: [TR-008]
+  - slot: "reversible[повторить]"
+    value: "no"
+    source: derived
+    rationale: "повтор запускает новую попытку; отменить саму попытку нельзя, отмена относится к загрузке, а не к её повтору"
+    derives_from: [TR-007, TR-008]
+
+  # --- Сроки состояний ---
+  - slot: "state_timeout[в_очереди]"
+    value: "нет: загрузка ждёт в очереди, пока владелец не остановит её или не освободится место"
+    source: derived
+    rationale: "очередь не имеет срока: число параллельных загрузок ограничено только возможностями машины, а ожидание не истекает"
+    derives_from: [TR-001]
+  - slot: "state_timeout[выполняется]"
+    value: "нет: загрузка идёт, пока файлы не скачаны, не сорвётся и не будет остановлена владельцем"
+    source: derived
+    rationale: "из выполняется выходят три дуги (TR-003, TR-004, TR-005), ни одна из них не привязана к сроку"
+    derives_from: [TR-003, TR-004, TR-005]
+  - slot: "state_timeout[завершена]"
+    value: "нет: итог показывается, пока пользователь не уберёт загрузку из списка"
+    source: derived
+    rationale: "завершена — терминальное состояние, из него выходов в графе нет, значит срок не применим"
+  - slot: "state_timeout[ошибка]"
+    value: "нет: ошибка ждёт решения владельца — повторить или убрать"
+    source: derived
+    rationale: "из ошибки выходит только повтор (TR-007); срока, по которому ошибка рассыпается сама, нет"
+    derives_from: [TR-007]
+  - slot: "state_timeout[отменена]"
+    value: "нет: отменённая загрузка ждёт решения владельца — повторить или убрать"
+    source: derived
+    rationale: "из отменена выходит только повтор (TR-008); срока, по которому отмена рассыпается сама, нет"
+    derives_from: [TR-008]

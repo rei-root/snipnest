@@ -1,0 +1,12 @@
+[Desktop Entry]
+Type=Application
+Name=Gallary Downloader
+GenericName=Загрузчик изображений
+Comment=Скачивание изображений из Pinterest через gallery-dl
+Exec=gallary-downloader
+Icon=gallary-downloader
+Terminal=false
+Categories=Network;FileTransfer;Graphics;
+Keywords=pinterest;gallery-dl;download;изображения;
+StartupNotify=true
+StartupWMClass=gallary-downloader

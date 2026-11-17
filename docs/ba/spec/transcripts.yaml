@@ -21,10 +21,5 @@ transcripts:
     sha256: 7f29a5505c9164e631ba419b6b65face3e5b53520231f41e85e184a9be8d8f0b
     kind: документ
   - id: T8
-    sha256: 754aaedb11bdbcad7c5e6aff63a92ccf0ca9fe851c7f74d849884f85a938e554
-    kind: разговор
-  - id: T8
     sha256: 04a3b6c915356bf4611d6d47de3457a69d4e08b5ecee13bd6533328fcd485b85
     kind: разговор
-    supersedes: T8
-    reason: 'перерегистрация: переформатировал пользовательскую цитату в одну строку для использования в vocab.yaml'

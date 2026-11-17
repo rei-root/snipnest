@@ -1,0 +1,639 @@
+facts:
+  - id: FACT-001
+    slot: rights[владелец,отменить,в_очереди]
+    value: allow
+    source: user
+    transcript: T2
+    quote: Допускается несколько загрузок одновременно
+  - id: FACT-002
+    slot: rights[владелец,отменить,выполняется]
+    value: allow
+    source: derived
+    rationale: 'владелец останавливает идущую загрузку: из выполняется есть дуга TR-005 по событию остановка_пользователем с инициатором владелец'
+    derives_from:
+      - TR-005
+  - id: FACT-003
+    slot: rights[владелец,отменить,завершена]
+    value: deny
+    source: derived
+    rationale: 'из завершена в графе нет исходящих дуг: загрузка уже отчиталась, отменять нечего'
+    derives_from:
+      - graph
+  - id: FACT-004
+    slot: rights[владелец,отменить,ошибка]
+    value: deny
+    source: derived
+    rationale: из ошибки исходящая дуга только повтор (TR-007); отменять нечего — загрузка уже остановилась сама
+    derives_from:
+      - TR-007
+  - id: FACT-005
+    slot: rights[владелец,отменить,отменена]
+    value: deny
+    source: derived
+    rationale: из отменена исходящая дуга только повтор (TR-008); отменять уже отменённую загрузку бессмысленно
+    derives_from:
+      - TR-008
+  - id: FACT-006
+    slot: rights[владелец,повторить,в_очереди]
+    value: deny
+    source: derived
+    rationale: повтор есть только из ошибки (TR-007) и отменена (TR-008); из в_очереди повтор не выводится
+    derives_from:
+      - TR-007
+      - TR-008
+  - id: FACT-007
+    slot: rights[владелец,повторить,выполняется]
+    value: deny
+    source: derived
+    rationale: повтор есть только из ошибки (TR-007) и отменена (TR-008); идущую загрузку не повторяют, её ждут
+    derives_from:
+      - TR-007
+      - TR-008
+  - id: FACT-008
+    slot: rights[владелец,повторить,завершена]
+    value: deny
+    source: derived
+    rationale: завершена — терминальное состояние, повтор из него не выводится
+    derives_from:
+      - graph
+  - id: FACT-009
+    slot: rights[владелец,повторить,ошибка]
+    value: allow
+    source: user
+    transcript: T2
+    quote: Оставляй.
+  - id: FACT-010
+    slot: rights[владелец,повторить,отменена]
+    value: allow
+    source: derived
+    rationale: 'из отменена есть дуга повтор (TR-008) с инициатором владелец: отменённую загрузку можно запустить заново'
+    derives_from:
+      - TR-008
+  - id: FACT-011
+    slot: rights[загрузка,отменить,в_очереди]
+    value: n/a
+    source: derived
+    rationale: 'gallery-dl не отменяет загрузку, пока она в очереди: решение об отмене принимает владелец'
+    derives_from:
+      - graph
+  - id: FACT-012
+    slot: rights[загрузка,отменить,выполняется]
+    value: n/a
+    source: derived
+    rationale: отмену инициирует владелец (TR-005); исполнитель не инициирует отмену, а подчиняется ей
+    derives_from:
+      - TR-005
+  - id: FACT-013
+    slot: rights[загрузка,отменить,завершена]
+    value: n/a
+    source: derived
+    rationale: завершена — терминальное состояние, отмена в нём неприменима
+    derives_from:
+      - graph
+  - id: FACT-014
+    slot: rights[загрузка,отменить,ошибка]
+    value: n/a
+    source: derived
+    rationale: из ошибки выходит только повтор (TR-007) по решению владельца
+    derives_from:
+      - TR-007
+  - id: FACT-015
+    slot: rights[загрузка,отменить,отменена]
+    value: n/a
+    source: derived
+    rationale: из отменена выходит только повтор (TR-008) по решению владельца
+    derives_from:
+      - TR-008
+  - id: FACT-016
+    slot: rights[загрузка,повторить,в_очереди]
+    value: n/a
+    source: derived
+    rationale: повтор инициирует владелец (TR-007, TR-008), исполнитель сам не перезапускает загрузку
+    derives_from:
+      - TR-007
+      - TR-008
+  - id: FACT-017
+    slot: rights[загрузка,повторить,выполняется]
+    value: n/a
+    source: derived
+    rationale: повтор инициирует владелец (TR-007, TR-008), исполнитель сам не перезапускает загрузку
+    derives_from:
+      - TR-007
+      - TR-008
+  - id: FACT-018
+    slot: rights[загрузка,повторить,завершена]
+    value: n/a
+    source: derived
+    rationale: завершена — терминальное состояние, повтор в нём неприменим
+    derives_from:
+      - graph
+  - id: FACT-019
+    slot: rights[загрузка,повторить,ошибка]
+    value: n/a
+    source: derived
+    rationale: повтор инициирует владелец (TR-007), исполнитель не перезапускает загрузку сам
+    derives_from:
+      - TR-007
+  - id: FACT-020
+    slot: rights[загрузка,повторить,отменена]
+    value: n/a
+    source: derived
+    rationale: повтор инициирует владелец (TR-008), исполнитель не перезапускает загрузку сам
+    derives_from:
+      - TR-008
+  - id: FACT-021
+    slot: visibility[владелец,в_очереди]
+    value: limited
+    source: derived
+    rationale: 'в очереди загрузка ещё не идёт: видны ссылка и папка сохранения, но ни прогресса, ни скорости, ни файлов ещё нет'
+    derives_from:
+      - TR-002
+  - id: FACT-022
+    slot: visibility[владелец,выполняется]
+    value: full
+    source: user
+    transcript: T2
+    quote: Оставляй умолчание, но добавь еще скорость загрузки и сколько сколько скачано «скачано X из Y».
+  - id: FACT-023
+    slot: visibility[владелец,завершена]
+    value: full
+    source: user
+    transcript: T2
+    quote: Да, оставляй так с итогом.
+  - id: FACT-024
+    slot: visibility[владелец,ошибка]
+    value: full
+    source: user
+    transcript: T2
+    quote: Оставляй.
+  - id: FACT-025
+    slot: visibility[владелец,отменена]
+    value: full
+    source: derived
+    rationale: 'после отмены владельцу доступен итог по загрузке и лог: иначе он не поймёт, что именно прервалось'
+    derives_from:
+      - TR-005
+      - TR-006
+  - id: FACT-026
+    slot: visibility[загрузка,в_очереди]
+    value: limited
+    source: derived
+    rationale: исполнитель в очереди не работает; ему доступны только параметры запуска, которые получит при старте
+    derives_from:
+      - TR-002
+  - id: FACT-027
+    slot: visibility[загрузка,выполняется]
+    value: full
+    source: derived
+    rationale: 'исполнитель в ходе загрузки видит всё, что касается его работы: файлы, счётчики, лог'
+    derives_from:
+      - TR-003
+      - TR-004
+  - id: FACT-028
+    slot: visibility[загрузка,завершена]
+    value: full
+    source: derived
+    rationale: 'исполнитель доводит загрузку до конца и отдаёт результат: он видит всё своё состояние'
+    derives_from:
+      - TR-003
+  - id: FACT-029
+    slot: visibility[загрузка,ошибка]
+    value: full
+    source: derived
+    rationale: 'исполнитель знает, чем загрузка кончилась: без этого он не может отдать владельцу диагностику'
+    derives_from:
+      - TR-004
+  - id: FACT-030
+    slot: visibility[загрузка,отменена]
+    value: full
+    source: derived
+    rationale: исполнитель останавливается по команде владельца и знает, что произошло
+    derives_from:
+      - TR-005
+      - TR-006
+  - id: FACT-031
+    slot: field_owner[ссылка]
+    value: владелец
+    source: user
+    transcript: T2
+    quote: Да, одно поле.
+  - id: FACT-032
+    slot: field_owner[папка_сохранения]
+    value: владелец
+    source: user
+    transcript: T2
+    quote: Оставляй умолчание, но у меня ru-локаль, так что у меня это будет `/home/sato/Изображения/Pinterest/`
+  - id: FACT-033
+    slot: field_owner[прогресс]
+    value: загрузка
+    source: derived
+    rationale: 'прогресс идёт от исполнителя: он считает скачанное и сообщает состояние'
+    derives_from:
+      - TR-003
+  - id: FACT-034
+    slot: field_owner[скорость]
+    value: загрузка
+    source: derived
+    rationale: скорость измеряет исполнитель по факту передачи файлов
+    derives_from:
+      - TR-003
+  - id: FACT-035
+    slot: field_owner[список_файлов]
+    value: загрузка
+    source: derived
+    rationale: имена файлов знает только тот, кто их качает
+    derives_from:
+      - TR-003
+  - id: FACT-036
+    slot: field_owner[токен_pinterest]
+    value: владелец
+    source: user
+    transcript: T2
+    quote: Желательно что бы было безопаснее, что бы нельзя было просто достать куки или еще что-то.
+  - id: FACT-037
+    slot: field_owner[путь_к_gallery_dl]
+    value: владелец
+    source: derived
+    rationale: 'путь к бинарнику указывает владелец, если gallery-dl не найден в PATH: выбор пути — его решение'
+  - id: FACT-038
+    slot: field_owner[лог]
+    value: загрузка
+    source: derived
+    rationale: лог — это вывод внешнего бинарника, он попадает в поле от исполнителя
+  - id: FACT-039
+    slot: field_after_send[ссылка]
+    value: frozen
+    source: derived
+    rationale: ссылка определяет, что именно качать; после старта её смена означала бы другую загрузку
+    derives_from:
+      - TR-002
+  - id: FACT-040
+    slot: field_after_send[папка_сохранения]
+    value: editable
+    source: derived
+    rationale: 'папку сохранения меняют в любой момент: это каталог назначения, а не часть содержимого загрузки'
+  - id: FACT-041
+    slot: field_after_send[прогресс]
+    value: frozen
+    source: derived
+    rationale: прогресс — отчёт о том, что уже произошло; его не редактируют, его выдаёт исполнитель
+    derives_from:
+      - TR-003
+  - id: FACT-042
+    slot: field_after_send[скорость]
+    value: frozen
+    source: derived
+    rationale: скорость — измерение, его не редактируют вручную
+    derives_from:
+      - TR-003
+  - id: FACT-043
+    slot: field_after_send[список_файлов]
+    value: frozen
+    source: derived
+    rationale: список файлов — отчёт о факте скачанного, а не ввод пользователя
+    derives_from:
+      - TR-003
+  - id: FACT-044
+    slot: field_after_send[токен_pinterest]
+    value: editable
+    source: derived
+    rationale: 'токен можно заменить в любой момент: он не часть постановки загрузки, а условие доступа к сайту'
+  - id: FACT-045
+    slot: field_after_send[путь_к_gallery_dl]
+    value: editable
+    source: derived
+    rationale: путь к бинарнику — настройка окружения, её правят когда угодно
+  - id: FACT-046
+    slot: field_after_send[лог]
+    value: frozen
+    source: derived
+    rationale: лог — поток вывода исполнителя, его не редактируют
+  - id: FACT-047
+    slot: reversible[отменить]
+    value: "yes"
+    source: derived
+    rationale: отменённую загрузку можно повторить (TR-008), то есть отмена обратима
+    derives_from:
+      - TR-008
+  - id: FACT-048
+    slot: reversible[повторить]
+    value: "no"
+    source: derived
+    rationale: повтор запускает новую попытку; отменить саму попытку нельзя, отмена относится к загрузке, а не к её повтору
+    derives_from:
+      - TR-007
+      - TR-008
+  - id: FACT-049
+    slot: state_timeout[в_очереди]
+    value: 'нет: загрузка ждёт в очереди, пока владелец не остановит её или не освободится место'
+    source: derived
+    rationale: 'очередь не имеет срока: число параллельных загрузок ограничено только возможностями машины, а ожидание не истекает'
+    derives_from:
+      - TR-001
+  - id: FACT-050
+    slot: state_timeout[выполняется]
+    value: 'нет: загрузка идёт, пока файлы не скачаны, не сорвётся и не будет остановлена владельцем'
+    source: derived
+    rationale: из выполняется выходят три дуги (TR-003, TR-004, TR-005), ни одна из них не привязана к сроку
+    derives_from:
+      - TR-003
+      - TR-004
+      - TR-005
+  - id: FACT-051
+    slot: state_timeout[завершена]
+    value: 'нет: итог показывается, пока пользователь не уберёт загрузку из списка'
+    source: derived
+    rationale: завершена — терминальное состояние, из него выходов в графе нет, значит срок не применим
+  - id: FACT-052
+    slot: state_timeout[ошибка]
+    value: 'нет: ошибка ждёт решения владельца — повторить или убрать'
+    source: derived
+    rationale: из ошибки выходит только повтор (TR-007); срока, по которому ошибка рассыпается сама, нет
+    derives_from:
+      - TR-007
+  - id: FACT-053
+    slot: state_timeout[отменена]
+    value: 'нет: отменённая загрузка ждёт решения владельца — повторить или убрать'
+    source: derived
+    rationale: из отменена выходит только повтор (TR-008); срока, по которому отмена рассыпается сама, нет
+    derives_from:
+      - TR-008
+  - id: FACT-054
+    slot: visibility[владелец,в_очереди]
+    value: limited
+    source: derived
+    rationale: 'в очереди загрузка ещё не идёт: видны ссылка и папка сохранения, но ни прогресса, ни скорости, ни файлов ещё нет'
+    supersedes: FACT-021
+    reason: дуга пересоздана с действием по существу — ссылка обновлена
+    derives_from:
+      - TR-009
+  - id: FACT-055
+    slot: visibility[загрузка,в_очереди]
+    value: limited
+    source: derived
+    rationale: исполнитель в очереди не работает; ему доступны только параметры запуска, которые получит при старте
+    supersedes: FACT-026
+    reason: дуга пересоздана с действием по существу — ссылка обновлена
+    derives_from:
+      - TR-009
+  - id: FACT-056
+    slot: visibility[загрузка,выполняется]
+    value: full
+    source: derived
+    rationale: 'исполнитель в ходе загрузки видит всё, что касается его работы: файлы, счётчики, лог'
+    supersedes: FACT-027
+    reason: дуга пересоздана с действием по существу — ссылка обновлена
+    derives_from:
+      - TR-010
+      - TR-011
+  - id: FACT-057
+    slot: visibility[загрузка,завершена]
+    value: full
+    source: derived
+    rationale: 'исполнитель доводит загрузку до конца и отдаёт результат: он видит всё своё состояние'
+    supersedes: FACT-028
+    reason: дуга пересоздана с действием по существу — ссылка обновлена
+    derives_from:
+      - TR-010
+  - id: FACT-058
+    slot: visibility[загрузка,ошибка]
+    value: full
+    source: derived
+    rationale: 'исполнитель знает, чем загрузка кончилась: без этого он не может отдать владельцу диагностику'
+    supersedes: FACT-029
+    reason: дуга пересоздана с действием по существу — ссылка обновлена
+    derives_from:
+      - TR-011
+  - id: FACT-059
+    slot: field_owner[прогресс]
+    value: загрузка
+    source: derived
+    rationale: 'прогресс идёт от исполнителя: он считает скачанное и сообщает состояние'
+    supersedes: FACT-033
+    reason: дуга пересоздана с действием по существу — ссылка обновлена
+    derives_from:
+      - TR-010
+  - id: FACT-060
+    slot: field_owner[скорость]
+    value: загрузка
+    source: derived
+    rationale: скорость измеряет исполнитель по факту передачи файлов
+    supersedes: FACT-034
+    reason: дуга пересоздана с действием по существу — ссылка обновлена
+    derives_from:
+      - TR-010
+  - id: FACT-061
+    slot: field_owner[список_файлов]
+    value: загрузка
+    source: derived
+    rationale: имена файлов знает только тот, кто их качает
+    supersedes: FACT-035
+    reason: дуга пересоздана с действием по существу — ссылка обновлена
+    derives_from:
+      - TR-010
+  - id: FACT-062
+    slot: field_after_send[ссылка]
+    value: frozen
+    source: derived
+    rationale: ссылка определяет, что именно качать; после старта её смена означала бы другую загрузку
+    supersedes: FACT-039
+    reason: дуга пересоздана с действием по существу — ссылка обновлена
+    derives_from:
+      - TR-009
+  - id: FACT-063
+    slot: field_after_send[прогресс]
+    value: frozen
+    source: derived
+    rationale: прогресс — отчёт о том, что уже произошло; его не редактируют, его выдаёт исполнитель
+    supersedes: FACT-041
+    reason: дуга пересоздана с действием по существу — ссылка обновлена
+    derives_from:
+      - TR-010
+  - id: FACT-064
+    slot: field_after_send[скорость]
+    value: frozen
+    source: derived
+    rationale: скорость — измерение, его не редактируют вручную
+    supersedes: FACT-042
+    reason: дуга пересоздана с действием по существу — ссылка обновлена
+    derives_from:
+      - TR-010
+  - id: FACT-065
+    slot: field_after_send[список_файлов]
+    value: frozen
+    source: derived
+    rationale: список файлов — отчёт о факте скачанного, а не ввод пользователя
+    supersedes: FACT-043
+    reason: дуга пересоздана с действием по существу — ссылка обновлена
+    derives_from:
+      - TR-010
+  - id: FACT-066
+    slot: state_timeout[выполняется]
+    value: 'нет: загрузка идёт, пока файлы не скачаны, не сорвётся и не будет остановлена владельцем'
+    source: derived
+    rationale: из выполняется выходят три дуги (TR-003, TR-004, TR-005), ни одна из них не привязана к сроку
+    supersedes: FACT-050
+    reason: дуга пересоздана с действием по существу — ссылка обновлена
+    derives_from:
+      - TR-010
+      - TR-011
+      - TR-005
+  - id: FACT-067
+    slot: rights[владелец,выполнить,в_очереди]
+    value: deny
+    source: derived
+    rationale: 'владелец не выполняет загрузку сам: выполнение инициирует исполнитель (TR-009)'
+    derives_from:
+      - TR-009
+  - id: FACT-068
+    slot: rights[владелец,выполнить,выполняется]
+    value: deny
+    source: derived
+    rationale: идущую загрузку выполняет исполнитель, а не владелец
+    derives_from:
+      - TR-009
+  - id: FACT-069
+    slot: rights[владелец,выполнить,завершена]
+    value: deny
+    source: derived
+    rationale: выполнение завершилось вместе с загрузкой; повторно выполнять завершённое нельзя
+    derives_from:
+      - graph
+  - id: FACT-070
+    slot: rights[владелец,выполнить,отменена]
+    value: deny
+    source: derived
+    rationale: отменённая загрузка ждёт явного повтора, сама выполнение не начинается
+    derives_from:
+      - TR-008
+  - id: FACT-071
+    slot: rights[владелец,выполнить,ошибка]
+    value: deny
+    source: derived
+    rationale: ошибочная загрузка ждёт явного повтора, сама выполнение не начинается
+    derives_from:
+      - TR-007
+  - id: FACT-072
+    slot: rights[владелец,отчитаться,в_очереди]
+    value: deny
+    source: derived
+    rationale: отчёт есть только о завершившейся загрузке; в очереди отчитываться не о чем
+    derives_from:
+      - graph
+  - id: FACT-073
+    slot: rights[владелец,отчитаться,выполняется]
+    value: deny
+    source: derived
+    rationale: 'отчёт подводит исполнитель (TR-010, TR-011), у владельца такой дуги нет: он получает готовый итог, а не подводит его сам'
+    derives_from:
+      - TR-010
+      - TR-011
+  - id: FACT-074
+    slot: rights[загрузка,выполнить,в_очереди]
+    value: allow
+    source: derived
+    rationale: из в_очереди загрузку запускает исполнитель (TR-009)
+    derives_from:
+      - TR-009
+  - id: FACT-075
+    slot: rights[загрузка,выполнить,выполняется]
+    value: n/a
+    source: derived
+    rationale: 'выполнение уже идёт: повторно запускать из выполняется нельзя'
+    derives_from:
+      - TR-010
+      - TR-011
+  - id: FACT-076
+    slot: rights[загрузка,выполнить,завершена]
+    value: n/a
+    source: derived
+    rationale: завершена — терминальное состояние, выполнение в нём неприменимо
+    derives_from:
+      - graph
+  - id: FACT-077
+    slot: rights[загрузка,выполнить,отменена]
+    value: n/a
+    source: derived
+    rationale: из отменена выходит только повтор по решению владельца (TR-008)
+    derives_from:
+      - TR-008
+  - id: FACT-078
+    slot: rights[загрузка,выполнить,ошибка]
+    value: n/a
+    source: derived
+    rationale: из ошибки выходит только повтор по решению владельца (TR-007)
+    derives_from:
+      - TR-007
+  - id: FACT-079
+    slot: rights[загрузка,отчитаться,в_очереди]
+    value: deny
+    source: derived
+    rationale: 'в очереди отчитываться не о чем: загрузка ещё не началась'
+    derives_from:
+      - TR-009
+  - id: FACT-080
+    slot: rights[загрузка,отчитаться,выполняется]
+    value: allow
+    source: derived
+    rationale: исполнитель, доведший загрузку до конца, отчитывается о результате (TR-010, TR-011)
+    derives_from:
+      - TR-010
+      - TR-011
+  - id: FACT-081
+    slot: reversible[выполнить]
+    value: "no"
+    source: derived
+    rationale: 'запуск загрузки необратим: начав качать, отменить это нельзя — можно только остановить саму загрузку'
+    derives_from:
+      - TR-009
+  - id: FACT-082
+    slot: reversible[отчитаться]
+    value: "no"
+    source: derived
+    rationale: отчёт — финальная запись по загрузке, отменить его нельзя
+    derives_from:
+      - TR-010
+  - id: FACT-083
+    slot: rights[владелец,отчитаться,завершена]
+    value: deny
+    source: derived
+    rationale: 'дуги с действием отчитаться из завершена в графе нет: подведение итога происходит из выполняется (TR-010), а в завершена владелец уже смотрит готовый результат'
+    derives_from:
+      - TR-010
+  - id: FACT-084
+    slot: rights[владелец,отчитаться,отменена]
+    value: deny
+    source: derived
+    rationale: 'дуги с действием отчитаться из отменена в графе нет: отмена — это остановка (TR-005, TR-006), итог по ней владелец видит из выполняется'
+    derives_from:
+      - TR-005
+      - TR-006
+  - id: FACT-085
+    slot: rights[владелец,отчитаться,ошибка]
+    value: deny
+    source: derived
+    rationale: 'дуги с действием отчитаться из ошибка в графе нет: сбой подводится из выполняется (TR-011)'
+    derives_from:
+      - TR-011
+  - id: FACT-086
+    slot: rights[загрузка,отчитаться,завершена]
+    value: deny
+    source: derived
+    rationale: 'дуги с действием отчитаться из завершена в графе нет: итог подводится переходом в завершена (TR-010), а не из неё'
+    derives_from:
+      - TR-010
+  - id: FACT-087
+    slot: rights[загрузка,отчитаться,отменена]
+    value: deny
+    source: derived
+    rationale: 'дуги с действием отчитаться из отменена в графе нет: остановка — это TR-005 и TR-006, а отчётность из выполняется'
+    derives_from:
+      - TR-005
+      - TR-006
+  - id: FACT-088
+    slot: rights[загрузка,отчитаться,ошибка]
+    value: deny
+    source: derived
+    rationale: 'дуги с действием отчитаться из ошибка в графе нет: сбой — это переход в ошибка (TR-011), а отчётность из выполняется'
+    derives_from:
+      - TR-011

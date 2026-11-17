@@ -1,0 +1,106 @@
+facts:
+  # --- Права: владелец ---
+  - slot: "rights[владелец,отменить,в_очереди]"
+    value: allow
+    source: user
+    transcript: T2
+    quote: "Допускается несколько загрузок одновременно"
+    rationale: ""
+  - slot: "rights[владелец,отменить,выполняется]"
+    value: allow
+    source: derived
+    rationale: "владелец останавливает идущую загрузку: из выполняется есть дуга TR-005 по событию остановка_пользователем с инициатором владелец"
+    derives_from: [TR-005]
+  - slot: "rights[владелец,отменить,завершена]"
+    value: deny
+    source: derived
+    rationale: "из завершена в графе нет исходящих дуг: загрузка уже отчиталась, отменять нечего"
+    derives_from: [graph]
+  - slot: "rights[владелец,отменить,ошибка]"
+    value: deny
+    source: derived
+    rationale: "из ошибки исходящая дуга только повтор (TR-007); отменять нечего — загрузка уже остановилась сама"
+    derives_from: [TR-007]
+  - slot: "rights[владелец,отменить,отменена]"
+    value: deny
+    source: derived
+    rationale: "из отменена исходящая дуга только повтор (TR-008); отменять уже отменённую загрузку бессмысленно"
+    derives_from: [TR-008]
+  - slot: "rights[владелец,повторить,в_очереди]"
+    value: deny
+    source: derived
+    rationale: "повтор есть только из ошибки (TR-007) и отменена (TR-008); из в_очереди повтор не выводится"
+    derives_from: [TR-007, TR-008]
+  - slot: "rights[владелец,повторить,выполняется]"
+    value: deny
+    source: derived
+    rationale: "повтор есть только из ошибки (TR-007) и отменена (TR-008); идущую загрузку не повторяют, её ждут"
+    derives_from: [TR-007, TR-008]
+  - slot: "rights[владелец,повторить,завершена]"
+    value: deny
+    source: derived
+    rationale: "завершена — терминальное состояние, повтор из него не выводится"
+    derives_from: [graph]
+  - slot: "rights[владелец,повторить,ошибка]"
+    value: allow
+    source: user
+    transcript: T2
+    quote: "Оставляй."
+    rationale: ""
+  - slot: "rights[владелец,повторить,отменена]"
+    value: allow
+    source: derived
+    rationale: "из отменена есть дуга повтор (TR-008) с инициатором владелец: отменённую загрузку можно запустить заново"
+    derives_from: [TR-008]
+
+  # --- Права: загрузка (исполнитель gallery-dl) ---
+  - slot: "rights[загрузка,отменить,в_очереди]"
+    value: "n/a"
+    source: derived
+    rationale: "gallery-dl не отменяет загрузку, пока она в очереди: решение об отмене принимает владелец"
+    derives_from: [graph]
+  - slot: "rights[загрузка,отменить,выполняется]"
+    value: "n/a"
+    source: derived
+    rationale: "отмену инициирует владелец (TR-005); исполнитель не инициирует отмену, а подчиняется ей"
+    derives_from: [TR-005]
+  - slot: "rights[загрузка,отменить,завершена]"
+    value: "n/a"
+    source: derived
+    rationale: "завершена — терминальное состояние, отмена в нём неприменима"
+    derives_from: [graph]
+  - slot: "rights[загрузка,отменить,ошибка]"
+    value: "n/a"
+    source: derived
+    rationale: "из ошибки выходит только повтор (TR-007) по решению владельца"
+    derives_from: [TR-007]
+  - slot: "rights[загрузка,отменить,отменена]"
+    value: "n/a"
+    source: derived
+    rationale: "из отменена выходит только повтор (TR-008) по решению владельца"
+    derives_from: [TR-008]
+  - slot: "rights[загрузка,повторить,в_очереди]"
+    value: "n/a"
+    source: derived
+    rationale: "повтор инициирует владелец (TR-007, TR-008), исполнитель сам не перезапускает загрузку"
+    derives_from: [TR-007, TR-008]
+  - slot: "rights[загрузка,повторить,выполняется]"
+    value: "n/a"
+    source: derived
+    rationale: "повтор инициирует владелец (TR-007, TR-008), исполнитель сам не перезапускает загрузку"
+    derives_from: [TR-007, TR-008]
+  - slot: "rights[загрузка,повторить,завершена]"
+    value: "n/a"
+    source: derived
+    rationale: "завершена — терминальное состояние, повтор в нём неприменим"
+    derives_from: [graph]
+  - slot: "rights[загрузка,повторить,ошибка]"
+    value: "n/a"
+    source: derived
+    rationale: "повтор инициирует владелец (TR-007), исполнитель не перезапускает загрузку сам"
+    derives_from: [TR-007]
+  - slot: "rights[загрузка,повторить,отменена]"
+    value: "n/a"
+    source: derived
+    rationale: "повтор инициирует владелец (TR-008), исполнитель не перезапускает загрузку сам"
+    derives_from: [TR-008]
