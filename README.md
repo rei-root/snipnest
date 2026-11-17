@@ -108,11 +108,26 @@ uv run python -m gallary_downloader
 Ярлык в меню приложений ставится так:
 
 ```bash
-mkdir -p ~/.local/share/applications
-cp packaging/gallary-downloader.desktop ~/.local/share/applications/
-mkdir -p ~/.local/share/icons/hicolor/256x256/apps
-cp logo/gallery-dl-gui-logo.png ~/.local/share/icons/hicolor/256x256/apps/gallary-downloader.png
+bash packaging/install-desktop-entry.sh
 ```
+
+Скрипт делает три вещи:
+
+- копирует `packaging/gallary-downloader.desktop` в `~/.local/share/applications`
+  (ярлык в меню приложений);
+- ставит иконку `logo/gallery-dl-gui-logo.png` в
+  `~/.local/share/icons/hicolor/*/apps/gallary-downloader.png` во всех
+  стандартных размерах и копирует `index.theme` темы hicolor — без него
+  локальный каталог перекрывает системный, и иконка не находится;
+- создаёт лаунчер `~/.local/bin/gallary-downloader`, потому что ярлык
+  вызывает команду по имени (`Exec=gallary-downloader`), а интерпретатор
+  приложения живёт в venv и в `PATH` меню не попадает.
+
+После этого приложение доступно из меню приложений как
+**Gallary Downloader**.
+
+Если каталог проекта переехал, лаунчер надо переустановить: он зашивает
+путь к проекту.
 
 ## Разработка
 
