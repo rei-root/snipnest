@@ -1,0 +1,1 @@
+{"actor": "человек", "event": "поступила_задача", "from_state": "", "note": null, "prev_sha256": "", "pytest_result": null, "result": "accepted", "sha256": "865c77488bc692054279674fdeaec69fec18f651f7da59960095acd8a807ce2e", "task_id": "001-pinterest-gui-wrapper", "to": "получена", "transition_id": "TR-001", "ts": "2026-11-17T08:11:28+00:00", "verdict": null, "verification": null}
