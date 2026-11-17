@@ -1,0 +1,172 @@
+# Манифест тестов задачи 001-pinterest-gui-wrapper.
+# Оракул задачи: тесты трёх слоёв + драйвер знаменателя.
+# Формат записи: id, layer, covers, file, fn.
+tests:
+- id: T-links
+  layer: unit
+  covers:
+  - R3
+  - AC1
+  file: tests/unit/test_links.py
+  fn: test_прямая_ссылка_на_картинку
+- id: T-links-board
+  layer: unit
+  covers:
+  - R3
+  - AC1
+  file: tests/unit/test_links.py
+  fn: test_прямая_ссылка_на_альбом
+- id: T-links-short
+  layer: unit
+  covers:
+  - R3
+  file: tests/unit/test_links.py
+  fn: test_короткая_ссылка_не_различается_по_виду
+- id: T-links-invalid
+  layer: unit
+  covers:
+  - R3
+  file: tests/unit/test_links.py
+  fn: test_проверка_валидности_ссылки
+- id: T-parse-downloaded
+  layer: unit
+  covers:
+  - R3
+  - AC1
+  file: tests/unit/test_downloader.py
+  fn: test_путь_скачанного_файла
+- id: T-parse-skipped
+  layer: unit
+  covers:
+  - R4
+  - AC1
+  file: tests/unit/test_downloader.py
+  fn: test_решётка_означает_пропущенный_файл
+- id: T-parse-stderr
+  layer: unit
+  covers:
+  - R3
+  file: tests/unit/test_downloader.py
+  fn: test_строка_из_stderr_не_считается_файлом
+- id: T-binary-missing
+  layer: unit
+  covers:
+  - R4
+  - AC1
+  file: tests/unit/test_downloader.py
+  fn: test_отсутствие_бинарника_даёт_понятную_ошибку
+- id: T-command
+  layer: unit
+  covers:
+  - R3
+  - R5
+  file: tests/unit/test_downloader.py
+  fn: test_команда_содержит_папку_и_ссылку
+- id: T-job-states
+  layer: unit
+  covers:
+  - R3
+  - AC1
+  file: tests/unit/test_jobs.py
+  fn: test_успешная_загрузка_завершается
+- id: T-job-error
+  layer: unit
+  covers:
+  - R4
+  - AC1
+  file: tests/unit/test_jobs.py
+  fn: test_ненулевой_код_возврата_даёт_ошибку
+- id: T-job-cancel
+  layer: unit
+  covers:
+  - R3
+  - AC1
+  file: tests/unit/test_jobs.py
+  fn: test_отмена_невозможна_после_завершения
+- id: T-job-retry
+  layer: unit
+  covers:
+  - R3
+  file: tests/unit/test_jobs.py
+  fn: test_повтор_возможен_после_ошибки
+- id: T-job-visibility
+  layer: unit
+  covers:
+  - R3
+  - AC1
+  file: tests/unit/test_jobs.py
+  fn: test_при_выполнении_видны_прогресс_скорость_файлы_и_лог
+- id: T-job-counter
+  layer: unit
+  covers:
+  - R3
+  - AC1
+  file: tests/unit/test_jobs.py
+  fn: test_подпись_счётчика_имеет_вид_скачано_x_из_y
+- id: T-settings-destination
+  layer: unit
+  covers:
+  - R4
+  - AC1
+  file: tests/unit/test_settings.py
+  fn: test_папка_сохранения_запоминается_между_запусками
+- id: T-settings-token-secret
+  layer: unit
+  covers:
+  - R3
+  - R4
+  file: tests/unit/test_settings.py
+  fn: test_токен_не_попадает_в_конфиг
+- id: T-settings-token-mode
+  layer: unit
+  covers:
+  - R4
+  file: tests/unit/test_settings.py
+  fn: test_файловый_секрет_хранится_с_правами_600
+- id: T-settings-default
+  layer: unit
+  covers:
+  - R4
+  file: tests/unit/test_settings.py
+  fn: test_путь_по_умолчанию_указывает_на_изображения_pinterest
+- id: T-integration-real-binary
+  layer: integration
+  covers:
+  - R1
+  - R3
+  file: tests/integration/test_gallery_dl.py
+  fn: test_настоящий_бинарник_печатает_версию
+- id: T-integration-bad-url
+  layer: integration
+  covers:
+  - R4
+  - AC1
+  file: tests/integration/test_gallery_dl.py
+  fn: test_настоящий_бинарник_на_несуществующем_бинарнике_даёт_ошибку
+- id: T-integration-empty-url
+  layer: integration
+  covers:
+  - R4
+  file: tests/integration/test_gallery_dl.py
+  fn: test_настоящий_бинарник_на_пустой_ссылке_не_скачивает
+- id: T-e2e-scenario
+  layer: e2e
+  covers:
+  - R3
+  - AC1
+  file: tests/e2e/test_user_scenario.py
+  fn: test_сценарий_пользователя_доходит_до_завершения
+- id: T-e2e-queue
+  layer: e2e
+  covers:
+  - R3
+  file: tests/e2e/test_user_scenario.py
+  fn: test_сценарий_пользователя_ставит_загрузку_в_очередь
+- id: T-denominator
+  layer: e2e
+  covers:
+  - R3
+  - R4
+  - AC1
+  file: tests/spec_mini/run_denominator.py
+  fn: run
