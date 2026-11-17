@@ -146,4 +146,4 @@ make ci          # всё вместе
 
 ## Лицензия
 
-MIT
+GNU GPL v2 — см. [LICENSE](LICENSE).
