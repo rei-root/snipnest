@@ -1,0 +1,251 @@
+terminal: [отклонена_ba]
+
+transitions:
+  - id: TR-001
+    event: поступила_задача
+    to: получена
+    automatic: true
+  - id: TR-002
+    from: получена
+    event: ba_взялся
+    to: интервью
+    initiator:
+      - ba
+    action: править
+  - id: TR-003
+    from: интервью
+    event: ba_закончил
+    to: спецификация
+    initiator:
+      - ba
+    otherwise: true
+  - id: TR-004
+    from: интервью
+    event: ba_закончил
+    to: отклонена_ba
+    initiator:
+      - ba
+    guard: BA решил, что задачи не связные (BR-5, FR-2, UC-1 A1)
+  - id: TR-005
+    from: спецификация
+    event: спека_готова
+    to: тесты
+    initiator:
+      - оркестратор
+  - id: TR-006
+    from: тесты
+    event: тесты_готовы
+    to: код
+    initiator:
+      - тестописатель
+  - id: TR-007
+    from: код
+    event: код_готов
+    to: финальная_проверка
+    initiator:
+      - кодер
+    otherwise: true
+  - id: TR-008
+    from: код
+    event: код_готов
+    to: код
+    initiator:
+      - кодер
+    guard: есть непрошедший тест, который кодер не оспорил
+  - id: TR-009
+    from: код
+    event: тест_оспорен
+    to: арбитраж
+    initiator:
+      - кодер
+    action: править
+  - id: TR-010
+    from: арбитраж
+    event: арбитраж_решил
+    to: код
+    initiator:
+      - оркестратор
+    guard: 'решение: отклонить аргумент кодера (UC-2 основной поток)'
+  - id: TR-011
+    from: арбитраж
+    event: арбитраж_решил
+    to: тесты
+    initiator:
+      - оркестратор
+    otherwise: true
+  - id: TR-012
+    from: финальная_проверка
+    event: проверка_завершена
+    to: готово
+    initiator:
+      - оркестратор
+    otherwise: true
+  - id: TR-013
+    from: финальная_проверка
+    event: проверка_завершена
+    to: код
+    initiator:
+      - оркестратор
+    guard: минимум один из трёх слоёв не прошёл (FR-8)
+  - id: TR-014
+    from: готово
+    event: человек_дал_правки
+    to: правки
+    initiator:
+      - человек
+    action: править
+  - id: TR-015
+    from: правки
+    event: правки_приняты
+    to: спецификация
+    initiator:
+      - человек
+    otherwise: true
+  - id: TR-016
+    from: правки
+    event: правки_приняты
+    to: интервью
+    initiator:
+      - оркестратор
+    guard: правка затрагивает архитектуру или весь связный набор (UC-3 A3)
+  - id: TR-017
+    from: интервью
+    event: ba_уточнил_требования
+    to: интервью
+    initiator:
+      - ba
+    action: править
+  - id: TR-018
+    from: интервью
+    event: человек_дал_уточнение
+    to: интервью
+    initiator:
+      - человек
+    action: править
+  - id: TR-019
+    from: получена
+    event: человек_уточнил_задачу
+    to: получена
+    initiator:
+      - человек
+    action: править
+  - id: TR-020
+    from: спецификация
+    event: оркестратор_уточнил_спеку
+    to: спецификация
+    initiator:
+      - оркестратор
+    action: править
+  - id: TR-021
+    from: арбитраж
+    event: оркестратор_уточнил_решение
+    to: арбитраж
+    initiator:
+      - оркестратор
+    action: править
+  - id: TR-022
+    from: финальная_проверка
+    event: оркестратор_перепроверил
+    to: финальная_проверка
+    initiator:
+      - оркестратор
+    action: править
+  - id: TR-023
+    from: правки
+    event: оркестратор_уточнил_правки
+    to: правки
+    initiator:
+      - оркестратор
+    action: править
+  - id: TR-024
+    from: тесты
+    event: тестописатель_дописал_тесты
+    to: тесты
+    initiator:
+      - тестописатель
+    action: править
+  - id: TR-025
+    from: правки
+    event: тестописатель_обновил_тесты
+    to: правки
+    initiator:
+      - тестописатель
+    action: править
+  - id: TR-026
+    from: правки
+    event: кодер_обновил_код
+    to: правки
+    initiator:
+      - кодер
+    action: править
+  - id: TR-027
+    from: правки
+    event: человек_уточнил_правки
+    to: правки
+    initiator:
+      - человек
+    action: править
+  - id: TR-028
+    from: получена
+    event: человек_отменил
+    to: отменена_пользователем
+    initiator:
+      - человек
+    action: отменить
+  - id: TR-029
+    from: интервью
+    event: человек_отменил
+    to: отменена_пользователем
+    initiator:
+      - человек
+    action: отменить
+  - id: TR-030
+    from: спецификация
+    event: человек_отменил
+    to: отменена_пользователем
+    initiator:
+      - человек
+    action: отменить
+  - id: TR-031
+    from: тесты
+    event: человек_отменил
+    to: отменена_пользователем
+    initiator:
+      - человек
+    action: отменить
+  - id: TR-032
+    from: код
+    event: человек_отменил
+    to: отменена_пользователем
+    initiator:
+      - человек
+    action: отменить
+  - id: TR-033
+    from: арбитраж
+    event: человек_отменил
+    to: отменена_пользователем
+    initiator:
+      - человек
+    action: отменить
+  - id: TR-034
+    from: финальная_проверка
+    event: человек_отменил
+    to: отменена_пользователем
+    initiator:
+      - человек
+    action: отменить
+  - id: TR-035
+    from: правки
+    event: человек_отменил
+    to: отменена_пользователем
+    initiator:
+      - человек
+    action: отменить
+  - id: TR-036
+    from: отменена_пользователем
+    event: человек_восстановил
+    to: получена
+    initiator:
+      - человек
+    action: восстановить
+    otherwise: true

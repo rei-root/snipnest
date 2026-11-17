@@ -1,0 +1,312 @@
+# Visibility: роль × состояние (50 слотов).
+# full — роль активна в состоянии (initiator исходящих дуг в графе; либо
+#        источник прямо называет её «участником» этой фазы).
+# limited — роль получает артефакт состояния как вход для своей фазы.
+# none  — роль структурно вне этого состояния (derived из графа: нет исходящих
+#          дуг роли из этого состояния с любым действием).
+
+facts:
+  # === человек ===
+  - slot: "visibility[человек,получена]"
+    value: full
+    source: user
+    transcript: T3
+    quote: "Человек описывает желаемый продукт"
+
+  - slot: "visibility[человек,интервью]"
+    value: full
+    source: user
+    transcript: T3
+    quote: "BA проводит серию вопросов по подтемам:"
+
+  - slot: "visibility[человек,отклонена_ba]"
+    value: full
+    source: derived
+    rationale: "T3 §A1: человек видит обоснование отказа BA."
+    derives_from: [graph]
+
+  - slot: "visibility[человек,спецификация]"
+    value: limited
+    source: derived
+    rationale: "BR-1: человек не участвует между интервью и правками, но видит прогресс через статус."
+    derives_from: [graph]
+
+  - slot: "visibility[человек,тесты]"
+    value: limited
+    source: derived
+    rationale: "BR-1: человек между интервью и правками не действует, но видит прогресс через статус."
+    derives_from: [graph]
+
+  - slot: "visibility[человек,код]"
+    value: limited
+    source: derived
+    rationale: "BR-1: человек между интервью и правками не действует, но видит прогресс через статус."
+    derives_from: [graph]
+
+  - slot: "visibility[человек,арбитраж]"
+    value: limited
+    source: derived
+    rationale: "BR-1 и T4: человек в арбитраже не участвует, но видит статус."
+    derives_from: [graph]
+
+  - slot: "visibility[человек,финальная_проверка]"
+    value: limited
+    source: derived
+    rationale: "BR-1: человек между интервью и правками не действует, но видит прогресс."
+    derives_from: [graph]
+
+  - slot: "visibility[человек,правки]"
+    value: full
+    source: derived
+    rationale: "T5 §1: человек формулирует правки; TR-014/TR-015/TR-027 — инициатор."
+    derives_from: [TR-014, TR-015, TR-027]
+
+  - slot: "visibility[человек,готово]"
+    value: full
+    source: derived
+    rationale: "BR-6: «готово» = продукт работоспособен ∧ покрыт требованиями. Человек — потребитель результата; TR-014 — инициатор правок отсюда."
+    derives_from: [TR-014]
+
+  # === ba ===
+  - slot: "visibility[ba,получена]"
+    value: limited
+    source: derived
+    rationale: "TR-002 — ba берёт задачу из получена. До этого момента задача видна как входящая."
+    derives_from: [graph]
+
+  - slot: "visibility[ba,интервью]"
+    value: full
+    source: derived
+    rationale: "T3 §2: BA ведёт интервью; TR-003/TR-004/TR-017 — инициатор."
+    derives_from: [TR-003, TR-004, TR-017]
+
+  - slot: "visibility[ba,отклонена_ba]"
+    value: full
+    source: derived
+    rationale: "BA выносит решение о связности (TR-004), видит состояние своего решения."
+    derives_from: [TR-004]
+
+  - slot: "visibility[ba,спецификация]"
+    value: "none"
+    source: derived
+    rationale: "после передачи (TR-003/TR-004) BA не действует в фазе спецификации."
+    derives_from: [graph]
+
+  - slot: "visibility[ba,тесты]"
+    value: "none"
+    source: derived
+    rationale: "BA не действует в фазе тестов."
+    derives_from: [graph]
+
+  - slot: "visibility[ba,код]"
+    value: "none"
+    source: derived
+    rationale: "BA не действует в фазе кода."
+    derives_from: [graph]
+
+  - slot: "visibility[ba,арбитраж]"
+    value: "none"
+    source: derived
+    rationale: "BA не действует в арбитраже (UC-2)."
+    derives_from: [graph]
+
+  - slot: "visibility[ba,финальная_проверка]"
+    value: "none"
+    source: derived
+    rationale: "BA не действует в финальной проверке."
+    derives_from: [graph]
+
+  - slot: "visibility[ba,правки]"
+    value: limited
+    source: derived
+    rationale: "UC-3 A3: при правке, затрагивающей архитектуру или весь набор, BA возвращается (TR-016). BA видит состояние в режиме ожидания."
+    derives_from: [TR-016]
+
+  - slot: "visibility[ba,готово]"
+    value: "none"
+    source: derived
+    rationale: "BA не действует после «готово»."
+    derives_from: [graph]
+
+  # === оркестратор (полный) ===
+  - slot: "visibility[оркестратор,получена]"
+    value: full
+    source: derived
+    rationale: "оркестратор — центральный агент: видит поступление задачи (TR-001 automatic)."
+    derives_from: [graph]
+
+  - slot: "visibility[оркестратор,интервью]"
+    value: full
+    source: derived
+    rationale: "оркестратор видит все фазы как диспетчер."
+    derives_from: [graph]
+
+  - slot: "visibility[оркестратор,отклонена_ba]"
+    value: full
+    source: derived
+    rationale: "оркестратор видит отказы BA, чтобы не планировать фазы."
+    derives_from: [graph]
+
+  - slot: "visibility[оркестратор,спецификация]"
+    value: full
+    source: derived
+    rationale: "оркестратор — владелец спеки (TR-005/TR-020 инициирует)."
+    derives_from: [TR-005, TR-020]
+
+  - slot: "visibility[оркестратор,тесты]"
+    value: full
+    source: derived
+    rationale: "оркестратор координирует: передаёт тестописателю (TR-006)."
+    derives_from: [graph]
+
+  - slot: "visibility[оркестратор,код]"
+    value: full
+    source: derived
+    rationale: "оркестратор координирует: TR-008/TR-013 передают арбитражные/проверочные результаты в код."
+    derives_from: [graph]
+
+  - slot: "visibility[оркестратор,арбитраж]"
+    value: full
+    source: derived
+    rationale: "оркестратор — арбитр (TR-010/TR-011/TR-021)."
+    derives_from: [TR-010, TR-011, TR-021]
+
+  - slot: "visibility[оркестратор,финальная_проверка]"
+    value: full
+    source: derived
+    rationale: "оркестратор объявляет готово (TR-012/TR-013/TR-022)."
+    derives_from: [TR-012, TR-013, TR-022]
+
+  - slot: "visibility[оркестратор,правки]"
+    value: full
+    source: derived
+    rationale: "TR-016 (эскалация к BA) и TR-023 (уточнение правок) — оркестратор активен в фазе правок."
+    derives_from: [TR-016, TR-023]
+
+  - slot: "visibility[оркестратор,готово]"
+    value: full
+    source: derived
+    rationale: "после «готово» оркестратор ждёт правок; ведёт журнал действий (NFR-4)."
+    derives_from: [graph]
+
+  # === тестописатель ===
+  - slot: "visibility[тестописатель,получена]"
+    value: "none"
+    source: derived
+    rationale: "тестописатель ещё не приступил."
+    derives_from: [graph]
+
+  - slot: "visibility[тестописатель,интервью]"
+    value: "none"
+    source: derived
+    rationale: "тестописатель не действует в интервью."
+    derives_from: [graph]
+
+  - slot: "visibility[тестописатель,отклонена_ba]"
+    value: "none"
+    source: derived
+    rationale: "терминальное состояние; задача не дожила до тестов."
+    derives_from: [graph]
+
+  - slot: "visibility[тестописатель,спецификация]"
+    value: limited
+    source: derived
+    rationale: "T2 FR-3: «Спека — источник истины для арбитража». Тестописатель читает спеку как вход (а не редактирует — это право оркестратора)."
+    derives_from: [graph]
+
+  - slot: "visibility[тестописатель,тесты]"
+    value: full
+    source: derived
+    rationale: "тестописатель пишет тесты (TR-006/TR-024)."
+    derives_from: [TR-006, TR-024]
+
+  - slot: "visibility[тестописатель,код]"
+    value: "none"
+    source: derived
+    rationale: "после сдачи тестов тестописатель не действует в фазе кода."
+    derives_from: [graph]
+
+  - slot: "visibility[тестописатель,арбитраж]"
+    value: limited
+    source: derived
+    rationale: "UC-2 A3: «принять» решение арбитража ведёт к переписыванию теста тестописателем (TR-011 → TR-006). Тестописатель читает результат арбитража."
+    derives_from: [graph]
+
+  - slot: "visibility[тестописатель,финальная_проверка]"
+    value: limited
+    source: derived
+    rationale: "тестописатель видит статус финальной проверки, но не действует."
+    derives_from: [graph]
+
+  - slot: "visibility[тестописатель,правки]"
+    value: full
+    source: derived
+    rationale: "UC-3 §5: тестописатель обновляет тесты под новые требования; TR-025 инициатор."
+    derives_from: [TR-025]
+
+  - slot: "visibility[тестописатель,готово]"
+    value: "none"
+    source: derived
+    rationale: "тестописатель не действует после «готово»."
+    derives_from: [graph]
+
+  # === кодер ===
+  - slot: "visibility[кодер,получена]"
+    value: "none"
+    source: derived
+    rationale: "кодер ещё не приступил."
+    derives_from: [graph]
+
+  - slot: "visibility[кодер,интервью]"
+    value: "none"
+    source: derived
+    rationale: "кодер не действует в интервью."
+    derives_from: [graph]
+
+  - slot: "visibility[кодер,отклонена_ba]"
+    value: "none"
+    source: derived
+    rationale: "терминальное состояние; задача не дожила до кода."
+    derives_from: [graph]
+
+  - slot: "visibility[кодер,спецификация]"
+    value: limited
+    source: derived
+    rationale: "T2 FR-3: спека — источник истины. Кодер читает спеку как вход; править её — право оркестратора."
+    derives_from: [graph]
+
+  - slot: "visibility[кодер,тесты]"
+    value: limited
+    source: derived
+    rationale: "T2 FR-4/FR-5: кодер получает тесты как вход для написания кода."
+    derives_from: [graph]
+
+  - slot: "visibility[кодер,код]"
+    value: full
+    source: derived
+    rationale: "кодер пишет код (TR-007/TR-008/TR-009)."
+    derives_from: [TR-007, TR-008, TR-009]
+
+  - slot: "visibility[кодер,арбитраж]"
+    value: full
+    source: derived
+    rationale: "T4 §Триггер: кодер инициирует оспаривание (TR-009 → арбитраж); TR-010/TR-011 касаются его решения."
+    derives_from: [TR-009]
+
+  - slot: "visibility[кодер,финальная_проверка]"
+    value: limited
+    source: derived
+    rationale: "кодер видит статус проверки, не действует."
+    derives_from: [graph]
+
+  - slot: "visibility[кодер,правки]"
+    value: full
+    source: derived
+    rationale: "UC-3 §6: кодер обновляет код; TR-026 инициатор."
+    derives_from: [TR-026]
+
+  - slot: "visibility[кодер,готово]"
+    value: "none"
+    source: derived
+    rationale: "кодер не действует в «готово»."
+    derives_from: [graph]

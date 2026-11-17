@@ -1,0 +1,38 @@
+# Скелет. Сущность — задача в жизненном цикле оркестратора автономной разработки.
+# Доменная часть словаря вынесена в vocab.yaml: роли и состояния задачи.
+# Семейства «поля» опущены: у задачи нет единых полей, которые она «отправляет»
+# и для которых нужно описывать, кто их заполняет и можно ли править после
+# отправки. Содержимое задачи живёт в переходах графа и артефактах (спека,
+# тесты, код, журнал), иначе заведём два независимых описания одной реальности.
+
+fixed_enums:
+  critical_action: [отменить, править, восстановить]
+
+extract_enums:
+  role: "все участники работы оркестратора, включая человека-заказчика"
+  state: "состояния задачи в её жизненном цикле под управлением оркестратора"
+
+slot_families:
+  rights:
+    over: [role, critical_action, state]
+    value:
+      enum: [allow, deny, "n/a"]
+  state_timeout:
+    over: [state]
+    value:
+      type: text
+  visibility:
+    over: [role, state]
+    value:
+      enum: [full, limited, none]
+  reversible:
+    over: [critical_action]
+    value:
+      enum: ["yes", "no"]
+
+graph:
+  state: state
+  role: role
+  action: critical_action
+  rights: rights
+  visibility: visibility
