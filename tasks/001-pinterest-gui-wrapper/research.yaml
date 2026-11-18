@@ -92,3 +92,55 @@ entries:
   - package: keyring
     version: '24.0'
   recorded_at: '2026-11-18T14:47:04+00:00'
+- id: SRC-4
+  phase: код
+  kind: api
+  title: gallery-dl 1.32.15 — базовый каталог и опция directory (список шаблонов)
+  findings: '--destination задаёт базовый каталог, а путь внутри него gallery-dl строит
+    по списку шаблонов опции directory (path.py: `for dirfmt in directory_fmt`). Опция
+    directory ожидает именно СПИСОК: строка разбирается посимвольно и падает с «Single
+    ''{'' encountered in format string». Список задаётся как JSON, потому что значение
+    опции -o проходит через json_loads (option.py: _parse_option): -o ''directory=["{board[name]:?//}"]''.
+    Пустой шаблон ("") кладёт файл прямо в базовый каталог, непустой — в подкаталог
+    с именем, полученным из шаблона; имя санируется gallery-dl (path-replace/path-restrict).
+    Проверено на живой версии: картинка → <папка>/файл.jpg, альбом → <папка>/Персонажи
+    аниме/файл.jpg.'
+  url: https://gdl-org.github.io/docs/options.html
+  version: 1.32.15
+  currency_evidence: 'Приложение запускает gallery-dl 1.32.15 (gallery-dl --version;
+    копия ~/.local/gallery-dl/gallery-dl-master, gallery_dl/version.py: __version__
+    = 1.32.15). Опции сверены с документацией тега v1.32.15 (docs/options.md) и с
+    исходником установленной копии (gallery_dl/option.py, gallery_dl/path.py).'
+  topics:
+  - --destination
+  - -o KEY=VALUE
+  - опция directory
+  deprecated_apis: []
+  applies_to:
+  - package: gallery-dl
+    version: 1.32.15
+  recorded_at: '2026-11-18T15:23:52+00:00'
+- id: SRC-5
+  phase: код
+  kind: api
+  title: gallery-dl 1.32.15 — форматы полей и спецификатор ?//
+  findings: 'Формат поля: {<имя>!<преобразование>:<спецификаторы>} (docs/formatting.md,
+    «Format Specifiers»). Имя поля умеет обращаться к элементу: {board[name]} — название
+    доски, {board[owner][username]} — владелец. Спецификатор ?// (полная форма {f:?<before>/<after>/})
+    оставляет поле пустым, если его нет: {board[name]:?//} даёт название доски, когда
+    доска есть, и пустую строку, когда её нет. Без спецификатора отсутствующее поле
+    даёт строку «None», поэтому пустой вариант обязателен. Проверено на живой версии:
+    картинка по короткой ссылке pin.it разрешается в доску «Ваши пины», то есть имя
+    доски у картинки есть — раскладку различает не поле, а число файлов.'
+  url: https://gdl-org.github.io/docs/formatting.html
+  version: 1.32.15
+  currency_evidence: Документация gallery-dl по форматированию для установленной версии
+    1.32.15; синтаксис сверен с gallery_dl/formatter.py установленной копии.
+  topics:
+  - '{board[name]} — доступ к элементу'
+  - спецификатор ?// — поле пустое, если его нет
+  deprecated_apis: []
+  applies_to:
+  - package: gallery-dl
+    version: 1.32.15
+  recorded_at: '2026-11-18T15:23:52+00:00'

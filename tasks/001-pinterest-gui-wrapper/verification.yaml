@@ -1,5 +1,5 @@
 task_id: 001-pinterest-gui-wrapper
-ts: '2026-11-18T14:53:34+00:00'
+ts: '2026-11-18T15:24:34+00:00'
 layer1:
   status: pass
   items:
@@ -52,7 +52,12 @@ pytest_result:
   - tests/spec_mini/run_denominator.py::run
   - tests/unit/test_scope.py::test_приложение_локальное_и_однопользовательское
   - tests/unit/test_scope.py::test_поддерживается_только_pinterest
-  stdout_tail: "...............................                                  \
+  - tests/unit/test_layout.py::test_картинка_кладётся_прямо_в_выбранную_папку
+  - tests/unit/test_layout.py::test_альбом_кладётся_в_одну_папку_с_названием
+  - tests/unit/test_layout.py::test_по_умолчанию_файлы_идут_прямо_в_выбранную_папку
+  - tests/unit/test_layout.py::test_источник_различает_картинку_и_альбом
+  - tests/unit/test_layout.py::test_исполнитель_помнит_число_файлов_из_предварительного_прохода
+  stdout_tail: "....................................                             \
     \        [100%]\n=============================== warnings summary ===============================\n\
     tests/spec_mini/run_denominator.py::run\n  /home/sato/Документы/gallery-dl-gui/.delta/worktrees/ec6sa407ct8q/gallery-dl-gui/.venv/lib/python3.12/site-packages/_pytest/python.py:191:\
     \ PytestReturnNotNoneWarning: Test functions should return None, but tests/spec_mini/run_denominator.py::run\

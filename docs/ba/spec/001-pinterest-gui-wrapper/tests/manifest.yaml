@@ -182,3 +182,33 @@ tests:
   - R6
   file: tests/unit/test_scope.py
   fn: test_поддерживается_только_pinterest
+- id: T-layout-image
+  layer: unit
+  covers:
+  - R4
+  file: tests/unit/test_layout.py
+  fn: test_картинка_кладётся_прямо_в_выбранную_папку
+- id: T-layout-album
+  layer: unit
+  covers:
+  - R4
+  file: tests/unit/test_layout.py
+  fn: test_альбом_кладётся_в_одну_папку_с_названием
+- id: T-layout-default
+  layer: unit
+  covers:
+  - R4
+  file: tests/unit/test_layout.py
+  fn: test_по_умолчанию_файлы_идут_прямо_в_выбранную_папку
+- id: T-layout-policy
+  layer: unit
+  covers:
+  - R4
+  file: tests/unit/test_layout.py
+  fn: test_источник_различает_картинку_и_альбом
+- id: T-layout-wiring
+  layer: unit
+  covers:
+  - R4
+  file: tests/unit/test_layout.py
+  fn: test_исполнитель_помнит_число_файлов_из_предварительного_прохода

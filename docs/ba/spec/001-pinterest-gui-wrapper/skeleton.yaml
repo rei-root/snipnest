@@ -6,33 +6,61 @@
 # тесты, код, журнал), иначе заведём два независимых описания одной реальности.
 
 fixed_enums:
-  critical_action: [отменить, править, восстановить]
-
+  critical_action:
+  - отменить
+  - править
+  - восстановить
 extract_enums:
-  role: "все участники работы оркестратора, включая человека-заказчика"
-  state: "состояния задачи в её жизненном цикле под управлением оркестратора"
-
+  role: все участники работы оркестратора, включая человека-заказчика
+  state: состояния задачи в её жизненном цикле под управлением оркестратора
 slot_families:
   rights:
-    over: [role, critical_action, state]
+    over:
+    - role
+    - critical_action
+    - state
     value:
-      enum: [allow, deny, "n/a"]
+      enum:
+      - allow
+      - deny
+      - n/a
   state_timeout:
-    over: [state]
+    over:
+    - state
     value:
       type: text
   visibility:
-    over: [role, state]
+    over:
+    - role
+    - state
     value:
-      enum: [full, limited, none]
+      enum:
+      - full
+      - limited
+      - none
   reversible:
-    over: [critical_action]
+    over:
+    - critical_action
     value:
-      enum: ["yes", "no"]
-
+      enum:
+      - 'yes'
+      - 'no'
 graph:
   state: state
   role: role
   action: critical_action
   rights: rights
   visibility: visibility
+accepted_decisions:
+- id: AD1
+  decision: 'Раскладку внутри выбранной папки задаёт приложение: шаблон каталога gallery-dl
+    пустой для картинки (файл прямо в выбранной папке) и «{board[name]:?//}» для альбома
+    (одна папка с названием доски, которое берёт gallery-dl из данных Pinterest).
+    Картинка отличается от альбома по числу файлов предварительного прохода: один
+    файл — картинка, несколько — альбом.'
+  rationale: 'Пользователь привёл два конкретных случая: лишняя папка «pinterest»
+    в выбранной папке и дерево «pinterest/formaruslan59/Персонажи аниме» вместо одной
+    папки с названием альбома. gallery-dl 1.32.15 умеет это через глобальную опцию
+    directory (список шаблонов; path.py) и формат с модификатором «?//» (formatter.py).
+    Имена файлов не меняем — их определяет gallery-dl.'
+  refines: 1
