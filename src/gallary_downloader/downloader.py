@@ -8,24 +8,43 @@ from __future__ import annotations
 
 import dataclasses
 import enum
+import json
 import os
 import shutil
 import subprocess
 import sys
 import threading
-from collections.abc import Callable
+from collections.abc import Callable, Sequence
 from pathlib import Path
 
 __all__ = [
+    "DirectoryFormats",
     "DownloadEvent",
     "DownloadEventKind",
     "DownloadResult",
     "GalleryDlRunner",
     "GalleryDlNotFoundError",
     "build_child_env",
+    "flat_directory_formats",
     "parse_output_line",
     "find_gallery_dl",
 ]
+
+DirectoryFormats = Callable[[int], Sequence[str]]
+"""Правило раскладки: число файлов → шаблоны каталогов внутри выбранной папки.
+
+Шаблоны — форматы опции ``directory`` gallery-dl: пустой шаблон кладёт файл
+прямо в выбранную папку, непустой — в подкаталог с указанным именем.
+"""
+
+
+def flat_directory_formats(file_count: int) -> list[str]:
+    """Раскладка по умолчанию: файлы прямо в выбранной папке.
+
+    Выбранная папка — конечная точка: приложение не заводит своих
+    подкаталогов, даже если gallery-dl умеет строить дерево.
+    """
+    return [""]
 
 
 class GalleryDlNotFoundError(RuntimeError):
@@ -187,11 +206,14 @@ class GalleryDlRunner:
         destination: Path | None = None,
         cookies: str | None = None,
         on_event: Callable[[DownloadEvent], None] | None = None,
+        directory_formats: DirectoryFormats = flat_directory_formats,
     ) -> None:
         self._binary = binary
         self._destination = destination
         self._cookies = cookies
         self._on_event = on_event
+        self._directory_formats = directory_formats
+        self._file_count = 0
         self._process: subprocess.Popen[str] | None = None
         self._lock = threading.Lock()
 
@@ -207,21 +229,31 @@ class GalleryDlRunner:
             raise GalleryDlNotFoundError(f"gallery-dl не найден{requested}")
         return binary
 
-    def build_command(self, url: str, *, simulate: bool = False) -> list[str]:
-        """Команда запуска gallery-dl для указанной ссылки."""
+    def build_command(
+        self, url: str, *, simulate: bool = False, file_count: int | None = None
+    ) -> list[str]:
+        """Команда запуска gallery-dl для указанной ссылки.
+
+        Число файлов для раскладки берётся из предварительного прохода
+        (``count_files``); ``file_count`` задаёт его явно.
+        """
+        count = self._file_count if file_count is None else file_count
         command = [self.resolve_binary()]
         if self._destination is not None:
             command.extend(["--destination", str(self._destination)])
         if self._cookies:
             command.extend(["--cookies", self._cookies])
+        formats = list(self._directory_formats(count))
+        command.extend(["-o", "directory=" + json.dumps(formats, ensure_ascii=False)])
         if simulate:
             command.append("--simulate")
         command.append(url)
         return command
 
     def run(self, url: str, *, simulate: bool = False) -> DownloadResult:
-        """Запустить загрузку и дождаться конца. Возвращает итог."""
+        """Запустить загрузку и дождаться итога. Возвращает итог."""
         command = self.build_command(url, simulate=simulate)
+
         try:
             process = subprocess.Popen(
                 command,
@@ -310,11 +342,17 @@ class GalleryDlRunner:
             self._on_event(event)
 
     def count_files(self, url: str) -> int:
-        """Сколько файлов gallery-dl соберётся скачать по ссылке."""
+        """Сколько файлов gallery-dl соберётся скачать по ссылке.
+
+        Число запоминается: по нему выбирается раскладка внутри выбранной
+        папки (картинка или альбом).
+        """
         result = self.run(url, simulate=True)
         if result.returncode != 0:
             raise RuntimeError(f"не удалось подсчитать файлы для {url!r}")
-        return result.downloaded + result.skipped
+        total = result.downloaded + result.skipped
+        self._file_count = total
+        return total
 
     def cancel(self) -> bool:
         """Остановить текущий процесс. True, если он был и остановлен."""

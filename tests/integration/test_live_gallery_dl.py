@@ -13,6 +13,7 @@ from pathlib import Path
 import pytest
 
 from gallary_downloader.downloader import GalleryDlRunner, find_gallery_dl
+from gallary_downloader.sources import PinterestSource
 
 pytestmark = [
     pytest.mark.live,
@@ -73,3 +74,31 @@ def test_битая_ссылка_даёт_ошибку_а_не_исключен�
     result = runner.run("https://pin.it/THIS_LINK_DOES_NOT_EXIST_12345")
     assert result.returncode != 0
     assert result.errors >= 1
+
+
+def test_картинка_попадает_прямо_в_выбранную_папку(tmp_path: Path) -> None:
+    """Выбранная папка — конечная точка: своих подкаталогов не появляется."""
+    links = _links()
+    url = links[0]
+    source = PinterestSource()
+    runner = GalleryDlRunner(destination=tmp_path, directory_formats=source.directory_formats)
+    result = runner.run(url)
+    assert result.returncode == 0
+    entries = list(tmp_path.iterdir())
+    assert entries, "файл не скачался"
+    assert all(entry.is_file() for entry in entries), "появился лишний каталог"
+
+
+def test_альбом_кладётся_в_одну_папку_с_названием(tmp_path: Path) -> None:
+    """У альбома одна папка с названием, файлы лежат в ней."""
+    links = _links()
+    url = links[-1]
+    source = PinterestSource()
+    runner = GalleryDlRunner(destination=tmp_path, directory_formats=source.directory_formats)
+    total = runner.count_files(url)
+    assert total > 1
+    result = runner.run(url)
+    assert result.returncode == 0
+    directories = [entry for entry in tmp_path.iterdir() if entry.is_dir()]
+    assert len(directories) == 1, f"ожидалась одна папка альбома, а их {len(directories)}"
+    assert list(directories[0].iterdir())

@@ -60,7 +60,7 @@ class DownloadSource:
 
     Подкласс отвечает за две вещи: узнать свою ссылку и собрать из неё
     готовую загрузку с нужным исполнителем. Общий код (UI, настройки,
-    очерёдность) о таком не знает.
+    очерёдность) о нём не знает.
     """
 
     kind: SourceKind
@@ -73,6 +73,14 @@ class DownloadSource:
     def describe(self, url: str) -> SourceInfo:
         """Разобрать ссылку и вернуть сведения о ней."""
         raise NotImplementedError
+
+    def directory_formats(self, file_count: int) -> list[str]:
+        """Шаблоны каталогов внутри выбранной папки — по числу файлов.
+
+        По умолчанию файлы кладутся прямо в выбранную папку: никаких своих
+        подкаталогов приложение не заводит.
+        """
+        return [""]
 
     def build_job(
         self,
@@ -93,8 +101,23 @@ class PinterestSource(DownloadSource):
     kind = SourceKind.PINTEREST
     title = "Pinterest"
 
+    #: Папка альбома: название доски из данных Pinterest. Модификатор ``?//``
+    #: оставляет поле пустым, если доски нет, — тогда файлы лягут прямо в
+    #: выбранную папку.
+    ALBUM_DIRECTORY = "{board[name]:?//}"
+
     def matches(self, url: str) -> bool:
         return is_valid_link(url)
+
+    def directory_formats(self, file_count: int) -> list[str]:
+        """Картинка — прямо в выбранную папку, альбом — в папку с названием.
+
+        Различаем по числу файлов: его приложение уже знает из
+        предварительного прохода, который нужен для счётчика «скачано X из Y».
+        """
+        if file_count > 1:
+            return [self.ALBUM_DIRECTORY]
+        return [""]
 
     def describe(self, url: str) -> SourceInfo:
         info: LinkInfo = classify_link(url)
@@ -120,6 +143,7 @@ class PinterestSource(DownloadSource):
             binary=binary,
             destination=Path(destination),
             cookies=cookies,
+            directory_formats=self.directory_formats,
         )
         job = DownloadJob(job_id, url, destination, runner, None)
         job.set_runner(runner)
