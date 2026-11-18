@@ -7,6 +7,7 @@ from pathlib import Path
 import pytest
 from PySide6.QtCore import QMimeData, QPointF, Qt, QUrl
 from PySide6.QtGui import QDropEvent
+from PySide6.QtWidgets import QLineEdit
 
 from gallary_downloader.downloader import DownloadResult
 from gallary_downloader.jobs import DownloadJob, JobEvent, JobEventKind, JobState
@@ -77,6 +78,13 @@ def test_папка_сохранения_показывается(window: MainWi
 def test_в_окне_есть_кнопки_pinterest(window: MainWindow) -> None:
     assert window._controls.token_button.text() == "Токен Pinterest"
     assert window._controls.open_pinterest_button.text() == "Открыть Pinterest"
+
+
+def test_в_окне_только_поле_ссылки(window: MainWindow) -> None:
+    """R6: поиск, логин и пароль в задачу не входят — редактируемое поле одно."""
+    editable = [edit for edit in window.findChildren(QLineEdit) if not edit.isReadOnly()]
+    assert len(editable) == 1
+    assert "Ссылка" in editable[0].placeholderText()
 
 
 def test_перетаскивание_ссылки_кладёт_её_в_поле(window: MainWindow) -> None:

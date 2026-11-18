@@ -170,3 +170,15 @@ tests:
   - AC1
   file: tests/spec_mini/run_denominator.py
   fn: run
+- id: T-scope-local
+  layer: unit
+  covers:
+  - R2
+  file: tests/unit/test_scope.py
+  fn: test_приложение_локальное_и_однопользовательское
+- id: T-scope-boundaries
+  layer: unit
+  covers:
+  - R6
+  file: tests/unit/test_scope.py
+  fn: test_поддерживается_только_pinterest
