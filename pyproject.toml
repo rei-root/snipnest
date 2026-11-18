@@ -31,6 +31,11 @@ packages = ["src/gallary_downloader"]
 [tool.pytest.ini_options]
 testpaths = ["tests"]
 addopts = "-q"
+# Драйвер знаменателя (tests/spec_mini/run_denominator.py) — не тест-файл по
+# имени, но адресуется орком как `file::run`, поэтому pytest должен собирать
+# функцию с этим именем. Других функций `run` в наборе нет: в тестах `run` —
+# только методы вспомогательных классов, а классы эти не `Test*`.
+python_functions = ["test_*", "run"]
 markers = [
     "live: тесты, ходящие в сеть; требуют gallery-dl и доступа к Pinterest",
 ]
