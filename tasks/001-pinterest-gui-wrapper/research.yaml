@@ -1,0 +1,94 @@
+entries:
+- id: SRC-1
+  phase: код
+  kind: api
+  title: gallery-dl 1.32.15 — опции командной строки, формат вывода и коды возврата
+  findings: 'Опции, которые вызывает приложение, называются именно так: -d, --destination
+    PATH; -C, --cookies FILE (точное имя опции, а не только --cookies-from-browser);
+    -s, --simulate. Команда в build_command() соответствует этим именам, поэтому argparse
+    не трактует --cookies как неоднозначное сокращение. Формат вывода: stdout — пути
+    скачанных файлов, уже существующий файл печатается с префиксом CHAR_SKIP = "#
+    " (gallery_dl/output.py установленной копии) — этот префикс разбирает parse_output_line();
+    stderr — сообщения журнала (info/debug/warning/error), файлами они не являются,
+    поэтому код читает потоки раздельно и никогда не объединяет их в один. Код возврата
+    побитовый и собирается в gallery_dl/job.py: status |= 1 — ошибка, status |= 4
+    — файл не удалось скачать (и ошибка экстрактора), 128 — исключение; процесс завершается
+    через raise SystemExit(gallery_dl.main()). Любой ненулевой код означает сбой,
+    а не «пустой успех», — так и трактует GalleryDlRunner.run().'
+  url: https://gdl-org.github.io/docs/options.html
+  version: 1.32.15
+  currency_evidence: 'Приложение запускает gallery-dl 1.32.15 (gallery-dl --version;
+    копия ~/.local/gallery-dl/gallery-dl-master, gallery_dl/version.py: __version__
+    = 1.32.15). Опции сверены с документацией тега v1.32.15 (docs/options.md в репозитории
+    mikf/gallery-dl) и с исходником установленной копии.'
+  topics:
+  - --cookies
+  - --destination
+  - --simulate
+  - формат stdout и stderr
+  - коды возврата
+  deprecated_apis: []
+  applies_to:
+  - package: gallery-dl
+    version: 1.32.15
+  recorded_at: '2026-11-18T14:47:04+00:00'
+- id: SRC-2
+  phase: код
+  kind: api
+  title: PySide6 6.12.0 — используемый API QtWidgets/QtCore/QtGui и устаревшие вызовы
+  findings: 'Приложение использует 31 символ Qt: QApplication, QMainWindow, QThread,
+    Signal, QObject, QMimeData, QDragEnterEvent, QDropEvent, QDesktopServices, QUrl,
+    QWidget, QDialog, QDialogButtonBox, QFileDialog, QHeaderView, QAbstractItemView,
+    QTableWidget, QTableWidgetItem, QListWidget, QSplitter, QProgressBar, QTextEdit,
+    QToolButton, QPushButton, QLabel, QLineEdit, QMessageBox, QHBoxLayout, QVBoxLayout,
+    Qt, QCloseEvent. Все 31 доступны в установленном pyside6 6.12.0 — проверено импортом
+    пакета. Устаревшие вызовы, которых в коде нет: QHeaderView.setResizeMode() удалён
+    в Qt 6 (код зовёт setSectionResizeMode()), QApplication.exec_() помечен устаревшим
+    (код зовёт exec()), QRegExp и QDesktopWidget не используются. Ссылка открывается
+    актуальным способом QDesktopServices.openUrl(QUrl(...)). Фоновые загрузки сделаны
+    правильно для Qt: события переносятся в GUI-поток через Signal, а не через прямые
+    вызовы виджетов из рабочего потока.'
+  url: https://doc.qt.io/qtforpython-6/
+  version: 6.12.0
+  currency_evidence: Установлен pyside6 6.12.0 (uv.lock, uv pip list). Наличие всех
+    используемых символов и методов проверено на установленном пакете 6.12.0; документация
+    Qt for Python по адресу doc.qt.io/qtforpython-6 — актуальная ветка 6.x.
+  topics:
+  - QThread и Signal/Slot
+  - QDesktopServices.openUrl
+  - QHeaderView.setSectionResizeMode
+  - 'drag and drop: QDragEnterEvent, QDropEvent, QMimeData'
+  deprecated_apis:
+  - QHeaderView.setResizeMode
+  - QApplication.exec_
+  - QRegExp
+  - QDesktopWidget
+  applies_to:
+  - package: pyside6
+    version: '6.6'
+  recorded_at: '2026-11-18T14:47:04+00:00'
+- id: SRC-3
+  phase: код
+  kind: api
+  title: keyring 25.7.0 — API хранилища секретов и исключения
+  findings: get_password(service, username) возвращает None, если записи нет, — код
+    трактует это как «токен не задан», а не как ошибку. set_password() при недоступном
+    бэкенде поднимает keyring.errors.PasswordSetError — Settings переключается на
+    файловый запасной вариант с правами 600. delete_password() поднимает keyring.errors.PasswordDeleteError,
+    если записи нет, — именно это исключение ловит KeyringStore.delete(). Используемое
+    API не менялось между 24.x и 25.x, поэтому запись применима к объявленному в проекте
+    минимуму keyring>=24.0.
+  url: https://keyring.readthedocs.io/en/stable/
+  version: 25.7.0
+  currency_evidence: Установлен keyring 25.7.0 (uv pip list); открытая документация
+    по адресу keyring.readthedocs.io/en/stable отдаёт «keyring 25.7.0 documentation»
+    — версия документации совпадает с установленной.
+  topics:
+  - get_password / set_password / delete_password
+  - keyring.errors.PasswordSetError
+  - keyring.errors.PasswordDeleteError
+  deprecated_apis: []
+  applies_to:
+  - package: keyring
+    version: '24.0'
+  recorded_at: '2026-11-18T14:47:04+00:00'

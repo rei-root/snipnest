@@ -1,0 +1,10 @@
+- id: D1
+  test_id: T-denominator
+  rationale: 'слой 2 финальной проверки требует, чтобы каждое требование было покрыто
+    проверкой; R2 (контекст пользователя: приложение личное и локальное) и R6 (границы:
+    кроме Pinterest другие соцсети не поддерживаются) не покрыты ни одной проверкой
+    — набор проверок задачи неполон'
+  spec_ref:
+  - tasks/001-pinterest-gui-wrapper/requirements.yaml#R2
+  - tasks/001-pinterest-gui-wrapper/requirements.yaml#R6
+  ts: '2026-11-18T14:52:39+00:00'
