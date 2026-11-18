@@ -1,8 +1,0 @@
-facts:
-  - slot: "rights[человек,править,правки]"
-    value: allow
-    source: derived
-    rationale: "TR-027 (event человек_уточнил_правки initiator: человек action: править) — человек уточняет правки в фазе правок перед их подачей."
-    derives_from: [TR-027]
-    supersedes: FACT-053
-    reason: "FACT-053 был пробным с derives_from TR-015, у TR-015 нет action=править. Добавил TR-027 и привязал к нему."
