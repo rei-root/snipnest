@@ -7,8 +7,8 @@
       "SRC-3"
     ]
   },
-  "current_actor": "оркестратор",
+  "current_actor": "кодер",
   "pending_actions": [],
   "schema_version": 1,
-  "state": "финальная_проверка"
+  "state": "код"
 }
