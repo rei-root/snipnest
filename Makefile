@@ -1,4 +1,5 @@
-.PHONY: help lint typecheck test test-unit test-live oracle ci install-deps
+.PHONY: help lint typecheck test test-unit test-live oracle ci install-deps \
+        dist-onefile dist-appimage dist-deb dist check-dist
 
 PY ?= uv run
 
@@ -9,6 +10,11 @@ help:
 	@echo "test-live   тесты с реальной загрузкой из Pinterest"
 	@echo "oracle      оракул задачи: тесты + драйвер знаменателя + desktop-проверка"
 	@echo "ci          lint + typecheck + test + oracle"
+	@echo "dist        собрать бинарник, AppImage и .deb"
+	@echo "dist-onefile  один исполняемый файл (dist/snipnest)"
+	@echo "dist-appimage образ AppImage (dist/snipnest-<версия>-x86_64.AppImage)"
+	@echo "dist-deb      пакет .deb (dist/snipnest_<версия>_amd64.deb)"
+	@echo "check-dist    проверить собранные артефакты"
 
 lint:
 	$(PY) ruff check src tests
@@ -34,3 +40,17 @@ ci: lint typecheck test oracle
 
 install-deps:
 	uv sync
+
+dist-onefile:
+	bash packaging/build-onefile.sh
+
+dist-appimage:
+	bash packaging/build-appimage.sh
+
+dist-deb:
+	bash packaging/build-deb.sh
+
+dist: dist-onefile dist-appimage dist-deb
+
+check-dist:
+	bash bin/check-dist.sh

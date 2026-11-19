@@ -13,8 +13,11 @@ import subprocess
 import sys
 from pathlib import Path
 
+from .components.paths import component_bin_dirs
+
 __all__ = [
     "build_child_env",
+    "find_component_binary",
     "find_executable",
     "find_gallery_dl",
     "find_yt_dlp",
@@ -36,8 +39,14 @@ def _is_working_binary(candidate: str | os.PathLike[str]) -> bool:
 
 
 def _executable_candidates(name: str) -> list[str]:
-    """Кандидаты в порядке предпочтения: PATH, потом известные места."""
+    """Кандидаты в порядке предпочтения.
+
+    Сначала компоненты, поставленные мастером установки: человек выбрал их
+    сам, и версия известна. Потом PATH, потом известные места.
+    """
     candidates: list[str] = []
+    for directory in component_bin_dirs():
+        candidates.append(str(directory / name))
     found = shutil.which(name)
     if found:
         candidates.append(found)
@@ -85,6 +94,19 @@ def find_executable(name: str, explicit: str | None = None) -> str | None:
 def find_gallery_dl(explicit: str | None = None) -> str | None:
     """Найти рабочий бинарник gallery-dl: явный путь, затем известные места."""
     return find_executable("gallery-dl", explicit)
+
+
+def find_component_binary(name: str) -> str | None:
+    """Исполняемый файл из каталогов установленных компонентов.
+
+    Без проверки запуска: так находятся и те программы, у которых нет
+    ключа ``--version`` (ffmpeg, например).
+    """
+    for directory in component_bin_dirs():
+        candidate = directory / name
+        if candidate.is_file() and os.access(candidate, os.X_OK):
+            return str(candidate)
+    return None
 
 
 def find_yt_dlp(explicit: str | None = None) -> str | None:

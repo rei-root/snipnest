@@ -35,5 +35,6 @@ def make_application(settings: Settings | None = None) -> tuple[QApplication, Ma
 def run(settings: Settings | None = None) -> int:
     """Запустить приложение. Возвращает код завершения."""
     app, window = make_application(settings)
+    window.show_component_wizard_if_needed()
     window.show()
     return app.exec()

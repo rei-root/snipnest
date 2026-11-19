@@ -73,6 +73,9 @@ class TopControls(QWidget):
         self.open_pinterest_button = QPushButton("Открыть Pinterest", box)
         layout.addWidget(self.open_pinterest_button)
 
+        self.components_button = QPushButton("Компоненты…", box)
+        layout.addWidget(self.components_button)
+
         self.gallery_dl_button = QPushButton("Путь к gallery-dl", box)
         layout.addWidget(self.gallery_dl_button)
 

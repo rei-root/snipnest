@@ -1,4 +1,11 @@
-"""Snipnest — GUI-обёртка над gallery-dl.
+"""Snipnest — GUI-обёртка над gallery-dl и yt-dlp.
 
-Модули реализации появятся в ходе задачи; здесь только точка входа пакета.
+Здесь только версия пакета: остальное разложено по модулям — ``links``,
+``sources``, ``components``, ``ui``.
 """
+
+from __future__ import annotations
+
+__all__ = ["__version__"]
+
+__version__ = "0.2.0"

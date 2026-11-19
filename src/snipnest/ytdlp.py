@@ -18,7 +18,7 @@ import threading
 from collections.abc import Callable
 from pathlib import Path
 
-from .binaries import build_child_env, find_yt_dlp
+from .binaries import build_child_env, find_component_binary, find_yt_dlp
 from .downloader import DownloadEvent, DownloadEventKind, DownloadResult
 
 __all__ = [
@@ -26,6 +26,7 @@ __all__ = [
     "VIDEO_FORMAT",
     "YtDlpNotFoundError",
     "YtDlpRunner",
+    "find_ffmpeg",
     "find_js_runtime",
     "find_yt_dlp",
     "overall_percent",
@@ -73,15 +74,31 @@ class YtDlpNotFoundError(RuntimeError):
 
 
 def find_js_runtime() -> str | None:
-    """Первый установленный JS-рантайм или None.
+    """JS-рантайм для yt-dlp: имя или «имя:путь».
 
     Без рантайма yt-dlp не решает челленджеры YouTube: часть форматов
-    пропадает, а извлечение помечается как устаревшее.
+    пропадает, а извлечение помечается как устаревшее. Рантайм, поставленный
+    мастером установки, лежит не в PATH, поэтому путь передаётся явно.
     """
     for name in JS_RUNTIMES:
         if shutil.which(name) is not None:
             return name
+        component = find_component_binary(name)
+        if component is not None:
+            return f"{name}:{component}"
     return None
+
+
+def find_ffmpeg() -> str | None:
+    """Путь к ffmpeg или None.
+
+    ffmpeg нужен yt-dlp для склейки видео со звуком. Поставленный мастером
+    лежит не в PATH, поэтому путь передаётся явно.
+    """
+    component = find_component_binary("ffmpeg")
+    if component is not None:
+        return component
+    return shutil.which("ffmpeg")
 
 
 def _parse_speed(text: str) -> float | None:
@@ -198,6 +215,9 @@ class YtDlpRunner:
         runtime = find_js_runtime()
         if runtime is not None:
             command.extend(["--js-runtimes", runtime])
+        ffmpeg = find_ffmpeg()
+        if ffmpeg is not None:
+            command.extend(["--ffmpeg-location", ffmpeg])
         if self._destination is not None:
             command.extend(["--paths", str(self._destination)])
         if self._cookies_browser:

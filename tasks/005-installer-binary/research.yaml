@@ -1,0 +1,366 @@
+entries:
+- id: SRC-I1
+  phase: интервью
+  kind: capabilities
+  title: PyInstaller — сборка приложения в один исполняемый файл
+  findings: 'onefile даёт один переносимый файл, но при каждом запуске распаковывает
+    содержимое в каталог _MEIxxxxxx во временной папке; onedir (COLLECT) распаковывать
+    нечего — он и нужен для AppDir и для .deb. Файлы данных (иконка, desktop-файл,
+    переносимый Python) в onefile попадают в архив и восстанавливаются в sys._MEIPASS.
+    PyInstaller не тянет библиотеки из /lib и /usr/lib: их нужно добавлять вручную
+    через binaries=, иначе приложение не запустится на системе без Qt. PyInstaller
+    знает про Qt и PySide6 сам, но платформенные плагины Qt нужно проверять в готовом
+    бандле.'
+  url: https://pyinstaller.org/en/stable/operating-mode.html
+  version: 6.22.3
+  currency_evidence: '6.22.3 — последняя стабильная версия на PyPI (выкачана 19.11.2026:
+    pip download pyinstaller → pyinstaller-6.22.3-py3-none-manylinux2014_x86_64.whl);
+    документация на pyinstaller.org/en/stable соответствует ветке stable'
+  topics:
+  - 'operating mode: onefile и onedir'
+  - 'spec-файл: Analysis, PYZ, EXE, COLLECT'
+  - 'datas и binaries: файлы данных и разделяемые библиотеки'
+  - 'Run-time Information: sys._MEIPASS'
+  deprecated_apis: []
+  applies_to:
+  - package: pyside6
+    version: 6.12.0
+  capabilities:
+  - id: C-1
+    name: Сборка в один исполняемый файл (onefile)
+    decision: нужно
+    rationale: пользователь просит «установщик в бинарном формате» — один файл, который
+      запускается двойным щелчком
+  - id: C-2
+    name: Spec-файл с datas и binaries
+    decision: нужно
+    rationale: в бандл надо положить иконку, desktop-файл и переносимый Python для
+      Python-компонентов
+  - id: C-3
+    name: Сборка в каталог (onedir, COLLECT)
+    decision: нужно
+    rationale: 'AppDir и содержимое .deb собираются каталогом: так старт быстрее и
+      не нужно распаковывать при каждом запуске'
+  - id: C-4
+    name: Определение frozen-режима (sys.frozen, sys._MEIPASS)
+    decision: нужно
+    rationale: приложение должно понимать, откуда брать переносимый Python и свои
+      данные в зависимости от способа установки
+  recorded_at: '2026-11-19T14:14:25+00:00'
+- id: SRC-I2
+  phase: интервью
+  kind: capabilities
+  title: AppImage — формат переносимых приложений Linux
+  findings: 'AppImage собирается из AppDir: каталог с AppRun, desktop-файлом и иконкой;
+    appimagetool упаковывает его в type-2 образ. Без FUSE образ не запускается обычным
+    способом — нужен запуск через --appimage-extract-and-run, это надо учесть в инструкции.
+    AppRun отвечает за запуск приложения, desktop-файл и иконка дают интеграцию с
+    меню приложений.'
+  url: https://docs.appimage.org/
+  version: AppImage docs, ревизия b29179c
+  currency_evidence: актуальная документация проекта AppImage, раздел Creating an
+    AppImage; сам appimagetool публикуется в релизовом канале continuous на GitHub
+    (AppImage/AppImageKit)
+  topics:
+  - 'AppDir: структура каталога, AppRun, .desktop, иконка'
+  - 'appimagetool: сборка AppImage type 2'
+  - 'запуск без FUSE: --appimage-extract-and-run'
+  deprecated_apis: []
+  applies_to: []
+  capabilities:
+  - id: C-5
+    name: AppImage type 2 через appimagetool
+    decision: нужно
+    rationale: владелец просит отдельный формат .appimage рядом с бинарником
+  - id: C-6
+    name: AppDir с AppRun, desktop-файлом и иконкой
+    decision: нужно
+    rationale: без AppRun и desktop-файла образ не запускается и не появляется в меню
+  - id: C-7
+    name: Подпись AppImage (appimagetool --sign)
+    decision: не_нужно
+    rationale: ключа для подписи нет, а проверка подписи на машине пользователя всё
+      равно потребует доверия к ключу
+  recorded_at: '2026-11-19T14:14:25+00:00'
+- id: SRC-I3
+  phase: интервью
+  kind: capabilities
+  title: Debian — сборка и раскладка пакета .deb
+  findings: Пакет собирается dpkg-deb из каталога с DEBIAN/control и деревом файлов.
+    Depends перечисляет то, что apt доставит из репозитория; всё, что не должно зависеть
+    от репозитория, кладётся в payload. Установка файлов в /usr/lib/<имя>, /usr/bin/<имя>
+    и /usr/share/applications — обычная раскладка для приложений, а не для библиотек.
+  url: https://www.debian.org/doc/debian-policy/ch-controlfields.html
+  version: Debian Policy 2024 (ch-controlfields)
+  currency_evidence: актуальная редакция Debian Policy; dpkg-deb присутствует в системе
+    (dpkg-deb --version)
+  topics:
+  - 'DEBIAN/control: Package, Version, Architecture, Depends, Maintainer'
+  - 'раскладка payload: /usr/lib, /usr/bin, /usr/share/applications, /usr/share/icons'
+  - dpkg-deb --build
+  deprecated_apis: []
+  applies_to: []
+  capabilities:
+  - id: C-8
+    name: Сборка .deb через dpkg-deb (DEBIAN/control + payload)
+    decision: нужно
+    rationale: dpkg-deb есть в системе, fpm не нужен
+  - id: C-9
+    name: Depends только на libc6, всё остальное внутри пакета
+    decision: нужно
+    rationale: владелец прямо требует, чтобы .deb ставился на большинство debian-based
+      систем
+  - id: C-10
+    name: 'Раскладка файлов пакета: /usr/lib/snipnest, /usr/bin/snipnest, /usr/share/applications,
+      /usr/share/icons'
+    decision: нужно
+    rationale: файлы пакета не должны лежать в корне и не должны перетирать чужие
+  recorded_at: '2026-11-19T14:14:25+00:00'
+- id: SRC-I4
+  phase: интервью
+  kind: capabilities
+  title: yt-dlp — скрипты JS-задачи (yt-dlp-ejs) и встроенный солвер
+  findings: 'yt-dlp импортирует пакет yt_dlp_ejs как обычный Python-модуль (yt_dlp.dependencies),
+    то есть внешний набор JS-скриптов работает только там, где yt-dlp запущен обычным
+    интерпретатором Python; в собранном бинарнике (PyInstaller) внешний пакет не виден.
+    В yt-dlp вендорен полный core-скрипт yt.solver.core.js, поэтому базовая задача
+    n решается без внешнего пакета; не хватает только lib-скрипта (yt.solver.lib.js).
+    Альтернатива — разрешить удалённую загрузку (--remote-components ejs:github),
+    но владелец запретил скачивать скрипты во время загрузки. Вывод: yt-dlp ставится
+    как Python-пакет (zipapp) и запускается переносимым интерпретатором, а yt-dlp-ejs
+    ставится рядом тем же способом — тогда версии совпадают и скрипты находятся локально.'
+  url: https://github.com/yt-dlp/yt-dlp
+  version: 2026.10.26
+  currency_evidence: последний релиз yt-dlp на GitHub — тег 2026.10.26 от 26.10.2026;
+    yt-dlp/ejs — релиз 0.8.0 от 17.03.2026
+  topics:
+  - 'README: --js-runtimes и --remote-components'
+  - 'yt_dlp/extractor/youtube/jsc/_builtin/ejs.py: источники скриптов'
+  - 'yt_dlp/extractor/youtube/jsc/_builtin/vendor: вендоренные скрипты'
+  - 'yt_dlp/dependencies: необязательный пакет yt_dlp_ejs'
+  deprecated_apis: []
+  applies_to: []
+  capabilities:
+  - id: C-12
+    name: Установка Python-пакетов через pip --target в отдельный каталог компонента
+    decision: нужно
+    rationale: компоненты-Python должны ставиться рядом с собой, без прав root и без污染
+      системного окружения
+  - id: C-13
+    name: gallery-dl и yt-dlp как Python-пакеты, запуск через переносимый Python
+    decision: нужно
+    rationale: оба компонента — Python-пакеты; собранный бинарник не видит внешний
+      yt_dlp_ejs
+  - id: C-14
+    name: yt-dlp-ejs отдельным компонентом, версия совпадает с версией yt-dlp
+    decision: нужно
+    rationale: владелец утвердил пять компонентов, и скрипты задачи нужны для полного
+      набора форматов YouTube
+  - id: C-15
+    name: yt-dlp читает скрипты только через импорт yt_dlp_ejs
+    decision: нужно
+    rationale: отсюда требование запускать yt-dlp обычным интерпретатором, а не собранным
+      бинарником
+  - id: C-16
+    name: Вендоренный в yt-dlp core-солвер (yt.solver.core.js)
+    decision: нужно
+    rationale: базовая работа YouTube не должна ломаться, если yt-dlp-ejs не установлен
+  - id: C-19
+    name: Разрешение удалённой загрузки скриптов (--remote-components ejs:github)
+    decision: не_нужно
+    rationale: 'решение владельца: скрипты задачи из сети во время загрузки не качаются'
+  recorded_at: '2026-11-19T14:14:25+00:00'
+- id: SRC-I5
+  phase: интервью
+  kind: capabilities
+  title: Источники переносимого Python и готовых бинарников компонентов
+  findings: Переносимый CPython из python-build-standalone — единственный способ запускать
+    Python-компоненты на машине, где нет ни venv, ни pip, и не требовать прав root.
+    gallery-dl (1.32.20), yt-dlp (2026.10.26) и yt-dlp-ejs (0.8.0) ставятся с PyPI
+    одинаковым способом, поэтому версии yt-dlp и yt-dlp-ejs совпадают. deno (v2.9.8)
+    — JS-рантайм, который yt-dlp включает по умолчанию. ffmpeg нужен для склейки видео
+    и звука и берётся готовой статической сборкой.
+  url: https://github.com/astral-sh/python-build-standalone
+  version: python-build-standalone, сборки cpython-3.12 (install_only, x86_64-unknown-linux-gnu)
+  currency_evidence: релизы python-build-standalone публикуются на GitHub; deno —
+    релиз v2.9.8 от 21.10.2026; yt-dlp/ejs — 0.8.0; ffmpeg — статические сборки BtbN
+    в канале latest
+  topics:
+  - 'python-build-standalone: переносимый CPython без зависимостей'
+  - 'PyPI: gallery-dl, yt-dlp, yt-dlp-ejs'
+  - 'deno: официальные сборки как JS-рантайм'
+  - 'ffmpeg: статические сборки'
+  deprecated_apis: []
+  applies_to: []
+  capabilities:
+  - id: C-11
+    name: Переносимый CPython (python-build-standalone) как рантайм артефакта
+    decision: нужно
+    rationale: Python-компоненты должны работать на машине без системного Python и
+      без прав root
+  - id: C-17
+    name: deno как JS-рантайм для скриптов задачи
+    decision: нужно
+    rationale: yt-dlp по умолчанию использует deno; без него часть форматов YouTube
+      пропадает
+  - id: C-18
+    name: ffmpeg готовой статической сборкой
+    decision: нужно
+    rationale: yt-dlp склеивает видео и звук средствами ffmpeg; apt-зависимость противоречит
+      самодостаточности
+  - id: C-20
+    name: Сборка артефактов в GitHub Actions по тегу
+    decision: нужно
+    rationale: сборка .deb с Qt и компонентами тяжёлая, делать её вручную каждый раз
+      неудобно
+  - id: C-21
+    name: Упаковка в flatpak и snap
+    decision: не_нужно
+    rationale: 'владелец просил три формата: бинарный, .appimage и .deb'
+  - id: C-22
+    name: Подпись .deb и сборка под arm64
+    decision: не_нужно
+    rationale: архитектура — только amd64, а ключа для подписи нет
+  recorded_at: '2026-11-19T14:14:25+00:00'
+- id: SRC-I6
+  phase: интервью
+  kind: capabilities
+  title: 'Уточнение SRC-I4: формулировка про установку Python-пакетов'
+  findings: 'Уточнение к SRC-I4: pip install --target <каталог> ставит пакет вместе
+    с зависимостями в указанный каталог и ничего не меняет в системном окружении —
+    права root не нужны, а каталог компонента остаётся самодостаточным. Для yt-dlp
+    и yt-dlp-ejs ставится один общий каталог: так yt-dlp видит yt_dlp_ejs при запуске,
+    а версии совпадают, потому что пакеты берутся свежими из PyPI одновременно.'
+  url: https://pip.pypa.io/en/stable/cli/pip_install/
+  version: pip 25.x
+  currency_evidence: 'актуальная документация pip; установка проверялась локально:
+    pip download pyinstaller → pyinstaller-6.22.3-py3-none-manylinux2014_x86_64.whl'
+  topics:
+  - 'pip install --target: установка в отдельный каталог'
+  - pip install --no-deps и дерево зависимостей
+  deprecated_apis: []
+  applies_to: []
+  capabilities:
+  - id: C-12
+    name: Установка Python-пакетов через pip --target в отдельный каталог компонента
+    decision: нужно
+    rationale: компоненты-Python должны ставиться рядом с собой, без прав root и без
+      правки системного окружения
+  recorded_at: '2026-11-19T14:14:54+00:00'
+- id: SRC-C1
+  phase: код
+  kind: api
+  title: PyInstaller — spec-файл для onefile и onedir
+  findings: 'Spec-файл — исполняемый Python: Analysis с pathex/datas/binaries/excludes,
+    затем PYZ, EXE и (для onedir) COLLECT. В onefile-режиме COLLECT нет, EXE получает
+    a.binaries и a.datas сам. Файлы данных (иконка, desktop-файл, переносимый Python)
+    попадают в архив и разворачиваются в sys._MEIPASS. Системные библиотеки из /usr/lib
+    по умолчанию не копируются — Qt и зависимости приходят из PySide6, а libGL и прочее
+    добавляются вручную через binaries=.'
+  url: https://pyinstaller.org/en/stable/spec-files.html
+  version: 6.22.3
+  currency_evidence: 6.22.3 — последняя стабильная версия на PyPI, выкачана 19.11.2026;
+    документация stable соответствует этой ветке
+  topics:
+  - Analysis, PYZ, EXE, COLLECT
+  - datas и binaries
+  - exclude_system_libraries
+  deprecated_apis: []
+  applies_to:
+  - package: pyside6
+    version: 6.12.0
+  recorded_at: '2026-11-19T14:28:49+00:00'
+- id: SRC-C2
+  phase: код
+  kind: api
+  title: PySide6 — дерево с чекбоксами и диалог
+  findings: 'QTreeWidgetItem.setCheckState меняет состояние пункта; состояние родителя
+    Qt пересчитывает сам, а вот из состояния детей в состояние родителя — нет: главный
+    пункт приходится пересчитывать самому. Снятие галочки родителя дети снимает автоматически.
+    Проверено на PySide6 6.12 в offscreen-режиме.'
+  url: https://doc.qt.io/qtforpython-6/overviews/qtcore.html
+  version: 6.12.0
+  currency_evidence: PySide6 6.12.0 зафиксирован в uv.lock проекта; Qt for Python
+    6.12 — актуальная ветка
+  topics:
+  - QTreeWidget и QTreeWidgetItem
+  - 'Qt.CheckState: Checked, Unchecked, PartiallyChecked'
+  - QDialog, QDialogButtonBox
+  deprecated_apis: []
+  applies_to:
+  - package: pyside6
+    version: 6.12.0
+  recorded_at: '2026-11-19T14:28:49+00:00'
+- id: SRC-C3
+  phase: код
+  kind: api
+  title: pip — установка пакетов в отдельный каталог
+  findings: 'pip install --target DIR пакет ставит вместе с зависимостями в DIR и
+    ничего не меняет в системном окружении. Флаги --no-cache-dir и --disable-pip-version-check
+    убирают лишний шум и требование записи в кэш. Модули запускаются как python -m
+    gallery_dl и python -m yt_dlp: у обоих пакетов есть __main__.py (проверено на
+    колесе gallery_dl 1.32.20).'
+  url: https://pip.pypa.io/en/stable/cli/pip_install/
+  version: 26.2.1
+  currency_evidence: pip 26.2.1 в локальном окружении; переносимый CPython 20261110
+    несёт свой pip
+  topics:
+  - pip install --target
+  - --no-cache-dir и --disable-pip-version-check
+  deprecated_apis: []
+  applies_to: []
+  recorded_at: '2026-11-19T14:28:49+00:00'
+- id: SRC-C4
+  phase: код
+  kind: api
+  title: curl — скачивание файла без сети в приложении
+  findings: 'Приложение не открывает сетевых сокетов сам (это правило проекта, проверяется
+    тестом): загрузку делает внешняя программа. curl -fsSL -o FILE URL качает файл
+    и возвращает ненулевой код при сбое; запасной вариант — wget -q -O FILE URL.'
+  url: https://curl.se/docs/manpage.html
+  version: 8.24.0
+  currency_evidence: curl 8.24.0 в системе; debian-based дистрибутивы ставят curl
+    по умолчанию, в .deb зависимостей не добавляем — есть запасной путь через wget
+  topics:
+  - curl -fsSL -o FILE URL
+  - код возврата при ошибке сети
+  deprecated_apis: []
+  applies_to: []
+  recorded_at: '2026-11-19T14:28:49+00:00'
+- id: SRC-C5
+  phase: код
+  kind: api
+  title: dpkg-deb — сборка и проверка пакета .deb
+  findings: 'Пакет собирается из каталога с DEBIAN/control и деревом файлов: dpkg-deb
+    --build. Проверка пакета — dpkg-deb --info (метаданные) и dpkg-deb --contents
+    (список файлов); распаковка в отдельный корень без установки — dpkg-deb -x, этим
+    проверяется, что раскладка правильная и ничего не нужно root.'
+  url: https://manpages.debian.org/bookworm/dpkg-dev/dpkg-deb.1.en.html
+  version: 1.23.12
+  currency_evidence: dpkg-deb 1.23.12 в системе (bookworm); формат пакета стабилен
+    много релизов
+  topics:
+  - dpkg-deb --build
+  - dpkg-deb --info и --contents
+  - dpkg-deb -x в отдельный корень
+  deprecated_apis: []
+  applies_to: []
+  recorded_at: '2026-11-19T14:28:49+00:00'
+- id: SRC-C6
+  phase: код
+  kind: api
+  title: appimagetool — сборка образа AppImage
+  findings: 'Образ собирается из AppDir: каталог с AppRun, desktop-файлом и иконкой.
+    Состав образа проверяется распаковкой --appimage-extract. На машинах без FUSE
+    образ запускают через --appimage-extract-and-run — это отмечено в инструкции.'
+  url: https://docs.appimage.org/
+  version: continuous
+  currency_evidence: appimagetool публикуется в канале continuous на GitHub (AppImage/AppImageKit);
+    собирается локально при сборке артефакта
+  topics:
+  - 'AppDir: AppRun, .desktop, иконка'
+  - appimagetool AppDir out.AppImage
+  - --appimage-extract для проверки состава
+  deprecated_apis: []
+  applies_to: []
+  recorded_at: '2026-11-19T14:28:49+00:00'

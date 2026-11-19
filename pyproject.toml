@@ -1,7 +1,7 @@
 [project]
 name = "snipnest"
-version = "0.1.0"
-description = "GUI-обёртка над gallery-dl для скачивания изображений из Pinterest"
+dynamic = ["version"]
+description = "GUI-обёртка над gallery-dl и yt-dlp: скачивание из Pinterest и видео с YouTube"
 readme = "README.md"
 requires-python = ">=3.11"
 license = { file = "LICENSE" }
@@ -19,11 +19,15 @@ dev = [
     "pytest-qt>=4.4",
     "ruff>=0.5",
     "mypy>=1.10",
+    "pyinstaller>=6.10",
 ]
 
 [build-system]
 requires = ["hatchling"]
 build-backend = "hatchling.build"
+
+[tool.hatch.version]
+path = "src/snipnest/__init__.py"
 
 [tool.hatch.build.targets.wheel]
 packages = ["src/snipnest"]

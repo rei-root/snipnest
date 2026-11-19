@@ -1,0 +1,56 @@
+name: Сборка артефактов
+
+# Артефакты собираются по тегу: v0.2.0 -> v0.2.0.
+# В Releases попадают бинарник, AppImage и пакет .deb.
+
+on:
+  push:
+    tags:
+      - "v*"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  build:
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Поставить uv
+        uses: astral-sh/setup-uv@v5
+        with:
+          enable-cache: true
+
+      - name: Поставить зависимости
+        run: uv sync --frozen
+
+      - name: Проверки
+        run: make ci
+
+      - name: Поставить инструменты для сборки
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y --no-install-recommends libfuse2 imagemagick
+
+      - name: Собрать бинарник
+        run: make dist-onefile
+
+      - name: Собрать AppImage
+        run: make dist-appimage
+
+      - name: Собрать пакет .deb
+        run: make dist-deb
+
+      - name: Проверить артефакты
+        run: make check-dist
+
+      - name: Выложить в Releases
+        uses: softprops/action-gh-release@v2
+        with:
+          files: |
+            dist/snipnest
+            dist/*.AppImage
+            dist/*.deb
+          fail_on_unmatched_files: true

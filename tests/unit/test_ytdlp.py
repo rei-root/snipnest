@@ -10,6 +10,8 @@ from snipnest.downloader import DownloadEventKind
 from snipnest.ytdlp import (
     YtDlpNotFoundError,
     YtDlpRunner,
+    find_ffmpeg,
+    find_js_runtime,
     find_yt_dlp,
     overall_percent,
     parse_stream_count,
@@ -17,6 +19,47 @@ from snipnest.ytdlp import (
 )
 
 URL = "https://youtu.be/dQw4w9WgXcQ"
+
+
+def _make_executable(path: Path) -> Path:
+    path.parent.mkdir(parents=True, exist_ok=True)
+    path.write_text("#!/bin/sh\necho 1.0\n", encoding="utf-8")
+    path.chmod(0o755)
+    return path
+
+
+def test_поставленный_ffmpeg_передаётся_yt_dlp(monkeypatch, tmp_path: Path) -> None:
+    """ffmpeg лежит не в PATH, поэтому путь передаётся явно."""
+    binary = _make_executable(tmp_path / "ffmpeg" / "bin" / "ffmpeg")
+    monkeypatch.setattr("snipnest.ytdlp.find_component_binary", lambda name: str(binary))
+
+    command = YtDlpRunner(destination=tmp_path).build_command(URL)
+
+    assert "--ffmpeg-location" in command
+    assert str(binary) in command
+
+
+def test_ffmpeg_из_пути_тоже_находится(monkeypatch, tmp_path: Path) -> None:
+    monkeypatch.setattr("snipnest.ytdlp.find_component_binary", lambda name: None)
+    monkeypatch.setattr("snipnest.ytdlp.shutil.which", lambda name: "/usr/bin/ffmpeg")
+
+    assert find_ffmpeg() == "/usr/bin/ffmpeg"
+
+
+def test_рантайм_из_каталога_компонентов_передаётся_путём(monkeypatch, tmp_path: Path) -> None:
+    """Рантайм из мастера установки лежит не в PATH — путь передаётся явно."""
+    binary = _make_executable(tmp_path / "deno" / "bin" / "deno")
+    monkeypatch.setattr("snipnest.ytdlp.find_component_binary", lambda name: str(binary))
+    monkeypatch.setattr("snipnest.ytdlp.shutil.which", lambda name: None)
+
+    assert find_js_runtime() == f"deno:{binary}"
+
+
+def test_рантайм_из_пути_передаётся_именем(monkeypatch) -> None:
+    monkeypatch.setattr("snipnest.ytdlp.find_component_binary", lambda name: None)
+    monkeypatch.setattr("snipnest.ytdlp.shutil.which", lambda name: "/usr/bin/deno")
+
+    assert find_js_runtime() == "deno"
 
 
 def test_команда_кладёт_файл_в_выбранную_папку(tmp_path: Path) -> None:

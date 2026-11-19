@@ -19,10 +19,15 @@ from PySide6.QtWidgets import (
     QWidget,
 )
 
+from ..components.catalog import GALLERY_DL, YT_DLP, ComponentKind
+from ..components.finder import find_component
+from ..components.installer import ComponentInstaller
+from ..components.state import ComponentState
 from ..jobs import DownloadJob, JobEvent
 from ..settings import Settings
 from ..sources import SourceRegistry
 from .bridge import JobEventBridge
+from .components_dialog import ComponentsDialog
 from .controller import JobController
 from .controls import TopControls
 from .dnd import DropTargetMixin
@@ -111,6 +116,7 @@ class MainWindow(DropTargetMixin, QMainWindow):
         self._controls.gallery_dl_button.clicked.connect(self._actions.choose_gallery_dl)
         self._controls.yt_dlp_button.clicked.connect(self._actions.choose_yt_dlp)
         self._controls.cookies_button.clicked.connect(self._actions.choose_youtube_cookies)
+        self._controls.components_button.clicked.connect(self._on_components_clicked)
         self._log.toggle_button.toggled.connect(self._log.set_expanded)
         self._bridge.events_ready.connect(self._drain_events)
 
@@ -265,6 +271,58 @@ class MainWindow(DropTargetMixin, QMainWindow):
     def _on_destination_changed(self, destination: str) -> None:
         """Папка сохранения изменилась: показать её."""
         self._controls.destination_edit.setText(destination)
+
+    # -- компоненты ---------------------------------------------------------
+
+    def _on_components_clicked(self) -> None:
+        """Кнопка «Компоненты…»: открыть мастер установки."""
+        self.show_component_wizard()
+
+    def show_component_wizard(self) -> None:
+        """Показать мастер установки компонентов.
+
+        После мастера пути к установленным компонентам попадают в настройки,
+        а отметка «мастер уже показывали» сохраняется: при следующем запуске
+        он не появится сам.
+        """
+        dialog = ComponentsDialog(self, installer=ComponentInstaller())
+        dialog.exec()
+        self._apply_installed_components()
+        state = ComponentState()
+        state.mark_wizard_done()
+        state.save()
+
+    def show_component_wizard_if_needed(self) -> None:
+        """Показать мастер при первом запуске."""
+        if ComponentState().wizard_done:
+            return
+        self.show_component_wizard()
+
+    def _apply_installed_components(self) -> None:
+        """Прописать пути к установленным компонентам в настройки.
+
+        Путь, заданный человеком руками, не перетирается: мастер дописывает
+        только пустые.
+        """
+        changed = False
+        for spec, setting in (
+            (GALLERY_DL, "gallery_dl_path"),
+            (YT_DLP, "yt_dlp_path"),
+        ):
+            if getattr(self._settings, setting):
+                continue
+            location = find_component(spec)
+            if location is None:
+                continue
+            path = location.path
+            if spec.kind is ComponentKind.PIP:
+                path = path.parent / "bin" / spec.binary
+            if not path.is_file():
+                continue
+            setattr(self._settings, setting, str(path))
+            changed = True
+        if changed:
+            self._settings.save()
 
     # -- drag and drop ------------------------------------------------------
 
