@@ -1,13 +1,13 @@
 [Desktop Entry]
 Type=Application
 Name=Snipnest
-GenericName=Загрузчик изображений
-Comment=Скачивание изображений из Pinterest через gallery-dl
+GenericName=Загрузчик картинок и видео
+Comment=Скачивание из Pinterest и видео с YouTube
 Exec=snipnest
 Icon=snipnest
 Terminal=false
 Categories=Network;FileTransfer;Graphics;
-Keywords=pinterest;gallery-dl;download;изображения;
+Keywords=pinterest;youtube;gallery-dl;yt-dlp;download;изображения;видео;
 StartupNotify=true
 StartupWMClass=snipnest
 X-GNOME-UsesNotifications=true

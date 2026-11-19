@@ -59,6 +59,21 @@ if [[ "$ICON_FOUND" -eq 0 ]]; then
     fail "иконка $ICON_NAME установлена" "не найдена в ~/.local/share/icons, /usr/share/icons, /usr/share/pixmaps"
 fi
 
+# Лаунчер должен указывать на живой интерпретатор: иначе ярлык в меню есть,
+# а приложение не запускается (как было после переезда проекта).
+LAUNCHER="$BIN_DIR/snipnest"
+if [[ ! -f "$LAUNCHER" ]]; then
+    fail "лаунчер установлен" "нет файла $LAUNCHER"
+else
+    LAUNCHER_APP_DIR="$(sed -n 's/^APP_DIR="\(.*\)"$/\1/p' "$LAUNCHER" | head -1)"
+    if [[ -z "$LAUNCHER_APP_DIR" ]]; then
+        fail "лаунчер указывает на каталог проекта" "в $LAUNCHER нет строки APP_DIR"
+    elif [[ ! -x "$LAUNCHER_APP_DIR/.venv/bin/python" ]]; then
+        fail "лаунчер указывает на живой интерпретатор" \
+            "нет $LAUNCHER_APP_DIR/.venv/bin/python — переустановите лаунчер: bash packaging/install-desktop-entry.sh"
+    fi
+fi
+
 # Прежние следы в системе должны быть убраны: в меню приложений не должно
 # остаться двух записей, а старая иконка не должна показываться.
 if [[ -e "$APPLICATIONS_DIR/${LEGACY_NAME}.desktop" ]]; then

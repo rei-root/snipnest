@@ -31,12 +31,25 @@ echo "  ярлык: $APPLICATIONS_DIR/snipnest.desktop"
 if [[ ! -f "$LOGO_SRC" ]]; then
     echo "  ПРОПУЩЕНО: нет логотипа $LOGO_SRC" >&2
 else
-    for size in "${SIZES[@]}"; do
-        target="$ICONS_DIR/${size}x${size}/apps"
-        mkdir -p "$target"
-        convert "$LOGO_SRC" -resize "${size}x${size}" -strip "PNG32:$target/snipnest.png"
-    done
-    echo "  иконка: $ICONS_DIR/*/apps/snipnest.png"
+    # ImageMagick 7 — это magick, ImageMagick 6 — convert. Если нет ни того,
+    # ни другого, установка не падает: ранее поставленная иконка остаётся
+    # на месте, а лаунчер и ярлык всё равно ставятся.
+    RESIZER=""
+    if command -v magick >/dev/null 2>&1; then
+        RESIZER="magick"
+    elif command -v convert >/dev/null 2>&1; then
+        RESIZER="convert"
+    fi
+    if [[ -n "$RESIZER" ]]; then
+        for size in "${SIZES[@]}"; do
+            target="$ICONS_DIR/${size}x${size}/apps"
+            mkdir -p "$target"
+            "$RESIZER" "$LOGO_SRC" -resize "${size}x${size}" -strip "PNG32:$target/snipnest.png"
+        done
+        echo "  иконка: $ICONS_DIR/*/apps/snipnest.png"
+    else
+        echo "  ПРОПУЩЕНО: нет ImageMagick (magick/convert) — иконка не обновлена" >&2
+    fi
 
     # Тема hicolor в локальном каталоге перекрывает системную, поэтому у
     # неё должен быть свой index.theme — иначе иконка не находится.
