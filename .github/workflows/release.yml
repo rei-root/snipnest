@@ -34,9 +34,10 @@ jobs:
 
       - name: Тесты
         run: |
-          set -o pipefail
-          uv run pytest tests -m "not live" --tb=short -q 2>&1 | tee /tmp/pytest.log
+          set +e
+          uv run pytest tests -m "not live" --tb=short -q > /tmp/pytest.log 2>&1
           status=$?
+          cat /tmp/pytest.log
           {
             echo "### Тесты"
             echo '```'
@@ -47,9 +48,10 @@ jobs:
 
       - name: Оракул
         run: |
-          set -o pipefail
-          make oracle 2>&1 | tee /tmp/oracle.log
+          set +e
+          make oracle > /tmp/oracle.log 2>&1
           status=$?
+          cat /tmp/oracle.log
           {
             echo "### Оракул"
             echo '```'
