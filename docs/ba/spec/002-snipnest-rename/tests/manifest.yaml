@@ -1,0 +1,156 @@
+tests:
+- id: T-naming-tree
+  layer: unit
+  covers:
+  - R1
+  - R3
+  - R5
+  file: tests/unit/test_naming.py
+  fn: test_в_рабочем_дереве_нет_старого_имени
+- id: T-naming-package
+  layer: unit
+  covers:
+  - R3
+  file: tests/unit/test_naming.py
+  fn: test_пакет_импортируется_под_новым_именем
+- id: T-naming-old-package
+  layer: unit
+  covers:
+  - R3
+  file: tests/unit/test_naming.py
+  fn: test_старый_пакет_не_импортируется
+- id: T-naming-config
+  layer: unit
+  covers:
+  - R3
+  - R4
+  file: tests/unit/test_naming.py
+  fn: test_имя_конфига_новое
+- id: T-naming-keyring
+  layer: unit
+  covers:
+  - R3
+  - R4
+  file: tests/unit/test_naming.py
+  fn: test_имя_сервиса_хранилища_новое
+- id: T-window-title
+  layer: unit
+  covers:
+  - R2
+  - R3
+  - AC1
+  file: tests/ui/test_window.py
+  fn: test_заголовок_окна_совпадает_с_названием_приложения
+- id: T-app-name
+  layer: unit
+  covers:
+  - R2
+  - R3
+  - AC1
+  file: tests/ui/test_window.py
+  fn: test_имя_приложения_в_qapplication
+- id: T-migrate-settings
+  layer: unit
+  covers:
+  - R4
+  - AC1
+  file: tests/unit/test_settings.py
+  fn: test_старые_настройки_переносятся_в_новый_каталог
+- id: T-migrate-keep-settings
+  layer: unit
+  covers:
+  - R4
+  file: tests/unit/test_settings.py
+  fn: test_новые_настройки_не_перетираются_старыми
+- id: T-migrate-token
+  layer: unit
+  covers:
+  - R4
+  - AC1
+  file: tests/unit/test_settings.py
+  fn: test_токен_переносится_из_старого_хранилища
+- id: T-migrate-token-keep
+  layer: unit
+  covers:
+  - R4
+  file: tests/unit/test_settings.py
+  fn: test_при_своём_токене_старый_хранилище_не_трогается
+- id: T-scope-local
+  layer: unit
+  covers:
+  - R2
+  file: tests/unit/test_scope.py
+  fn: test_приложение_локальное_и_однопользовательское
+- id: T-scope-boundaries
+  layer: unit
+  covers:
+  - R6
+  file: tests/unit/test_scope.py
+  fn: test_поддерживается_только_pinterest
+- id: T-desktop-name
+  layer: integration
+  covers:
+  - R2
+  - R3
+  - AC1
+  file: tests/integration/test_desktop_entry.py
+  fn: test_ярлык_называет_приложение_с_большой_буквы
+- id: T-desktop-exec
+  layer: integration
+  covers:
+  - R3
+  file: tests/integration/test_desktop_entry.py
+  fn: test_ярлык_запускает_команду_из_метаданных_пакета
+- id: T-desktop-icon
+  layer: integration
+  covers:
+  - R3
+  - R4
+  file: tests/integration/test_desktop_entry.py
+  fn: test_имя_иконки_совпадает_с_именем_команды
+- id: T-installer
+  layer: integration
+  covers:
+  - R3
+  - R4
+  file: tests/integration/test_desktop_entry.py
+  fn: test_установщик_ставит_ярлык_и_иконку_под_новым_именем
+- id: T-logo
+  layer: integration
+  covers:
+  - R3
+  file: tests/integration/test_desktop_entry.py
+  fn: test_логотип_на_месте
+- id: T-remote
+  layer: integration
+  covers:
+  - R2
+  - AC1
+  file: tests/integration/test_desktop_entry.py
+  fn: test_удалённый_репозиторий_новый
+- id: T-integration-real-binary
+  layer: integration
+  covers:
+  - R5
+  file: tests/integration/test_gallery_dl.py
+  fn: test_настоящий_бинарник_печатает_версию
+- id: T-e2e-scenario
+  layer: e2e
+  covers:
+  - R5
+  - AC1
+  file: tests/e2e/test_user_scenario.py
+  fn: test_сценарий_пользователя_доходит_до_завершения
+- id: T-e2e-queue
+  layer: e2e
+  covers:
+  - R5
+  file: tests/e2e/test_user_scenario.py
+  fn: test_сценарий_пользователя_ставит_загрузку_в_очередь
+- id: T-denominator
+  layer: e2e
+  covers:
+  - R5
+  - AC1
+  file: tests/spec_mini/run_denominator.py
+  fn: run

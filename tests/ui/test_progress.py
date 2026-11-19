@@ -6,8 +6,8 @@ import threading
 import time
 from pathlib import Path
 
-from gallary_downloader.downloader import DownloadEvent, DownloadEventKind, DownloadResult
-from gallary_downloader.jobs import DownloadJob, JobState
+from snipnest.downloader import DownloadEvent, DownloadEventKind, DownloadResult
+from snipnest.jobs import DownloadJob, JobState
 
 
 class CountingRunner:

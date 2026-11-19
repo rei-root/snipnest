@@ -12,7 +12,7 @@ import os
 import sys
 from pathlib import Path
 
-from gallary_downloader.downloader import build_child_env
+from snipnest.downloader import build_child_env
 
 
 def test_каталог_venv_приложения_не_попадает_в_path() -> None:

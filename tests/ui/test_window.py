@@ -9,12 +9,12 @@ from PySide6.QtCore import QMimeData, QPointF, Qt, QUrl
 from PySide6.QtGui import QDropEvent
 from PySide6.QtWidgets import QLineEdit
 
-from gallary_downloader.downloader import DownloadResult
-from gallary_downloader.jobs import DownloadJob, JobEvent, JobEventKind, JobState
-from gallary_downloader.settings import FileSecretStore, Settings
-from gallary_downloader.ui.app import make_application
-from gallary_downloader.ui.models import JobRow, format_speed
-from gallary_downloader.ui.window import MainWindow
+from snipnest.downloader import DownloadResult
+from snipnest.jobs import DownloadJob, JobEvent, JobEventKind, JobState
+from snipnest.settings import FileSecretStore, Settings
+from snipnest.ui.app import make_application
+from snipnest.ui.models import JobRow, format_speed
+from snipnest.ui.window import MainWindow
 
 pytest.importorskip("PySide6")
 
@@ -58,12 +58,12 @@ def make_job(result: DownloadResult | None = None) -> DownloadJob:
 
 
 def test_заголовок_окна_совпадает_с_названием_приложения(window: MainWindow) -> None:
-    assert window.windowTitle() == "Gallary Downloader"
+    assert window.windowTitle() == "Snipnest"
 
 
 def test_имя_приложения_в_qapplication(settings: Settings) -> None:
     app, _ = make_application(settings)
-    assert app.applicationName() == "Gallary Downloader"
+    assert app.applicationName() == "Snipnest"
 
 
 def test_поле_ссылки_и_кнопка_скачать_есть(window: MainWindow) -> None:
@@ -199,7 +199,7 @@ def test_лог_сворачивается(window: MainWindow) -> None:
 
 def test_непонятная_ссылка_не_создаёт_загрузку(window: MainWindow, monkeypatch) -> None:
     monkeypatch.setattr(
-        "gallary_downloader.ui.window.find_gallery_dl",
+        "snipnest.ui.window.find_gallery_dl",
         lambda explicit=None: "/usr/bin/gallery-dl",
     )
     window.link_text = "https://example.com/not-pinterest"
@@ -210,7 +210,7 @@ def test_непонятная_ссылка_не_создаёт_загрузку(
 
 def test_отсутствие_gallery_dl_даёт_понятное_сообщение(window: MainWindow, monkeypatch) -> None:
     monkeypatch.setattr(
-        "gallary_downloader.ui.window.find_gallery_dl",
+        "snipnest.ui.window.find_gallery_dl",
         lambda explicit=None: None,
     )
     window.link_text = "https://pin.it/abc"
@@ -222,11 +222,11 @@ def test_отсутствие_gallery_dl_даёт_понятное_сообще�
 def test_загрузка_идёт_в_отдельном_потоке(window: MainWindow, monkeypatch, qtbot) -> None:
     """Загрузка стартует, а окно остаётся отзывчивым."""
     monkeypatch.setattr(
-        "gallary_downloader.ui.window.find_gallery_dl",
+        "snipnest.ui.window.find_gallery_dl",
         lambda explicit=None: "/usr/bin/gallery-dl",
     )
     monkeypatch.setattr(
-        "gallary_downloader.sources.GalleryDlRunner",
+        "snipnest.sources.GalleryDlRunner",
         lambda *args, **kwargs: StubRunner(DownloadResult(0, 0, 0, 0, ())),
     )
     window.link_text = "https://pin.it/abc"

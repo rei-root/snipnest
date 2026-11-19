@@ -47,7 +47,7 @@ class MainWindow(DropTargetMixin, QMainWindow):
         parent: QWidget | None = None,
     ) -> None:
         super().__init__(parent)
-        self.setWindowTitle("Gallary Downloader")
+        self.setWindowTitle("Snipnest")
         self.setAcceptDrops(True)
         self.resize(940, 700)
 

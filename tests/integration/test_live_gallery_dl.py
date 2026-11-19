@@ -12,8 +12,8 @@ from pathlib import Path
 
 import pytest
 
-from gallary_downloader.downloader import GalleryDlRunner, find_gallery_dl
-from gallary_downloader.sources import PinterestSource
+from snipnest.downloader import GalleryDlRunner, find_gallery_dl
+from snipnest.sources import PinterestSource
 
 pytestmark = [
     pytest.mark.live,

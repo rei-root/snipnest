@@ -2,10 +2,11 @@
 
 from __future__ import annotations
 
+import importlib
 import json
 import stat
 
-from gallary_downloader.settings import (
+from snipnest.settings import (
     DEFAULT_DESTINATION,
     FileSecretStore,
     Settings,
@@ -68,3 +69,84 @@ def test_путь_к_gallery_dl_запоминается(tmp_path) -> None:
 
     second = Settings(config_path=config, secret_store=FileSecretStore(tmp_path / "secret"))
     assert second.gallery_dl_path == "/usr/bin/gallery-dl"
+
+
+def test_старые_настройки_переносятся_в_новый_каталог(tmp_path) -> None:
+    """После переименования настройки старого приложения не теряются."""
+    migration = importlib.import_module("snipnest.migration")
+    legacy_dir = tmp_path / "legacy"
+    legacy_dir.mkdir()
+    (legacy_dir / "settings.json").write_text(
+        json.dumps({"destination": "/tmp/downloads"}), encoding="utf-8"
+    )
+    new_dir = tmp_path / "new"
+
+    moved = migration.migrate_settings(legacy_dir, new_dir)
+
+    assert moved
+    moved_settings = json.loads((new_dir / "settings.json").read_text(encoding="utf-8"))
+    assert moved_settings["destination"] == "/tmp/downloads"
+
+
+def test_новые_настройки_не_перетираются_старыми(tmp_path) -> None:
+    migration = importlib.import_module("snipnest.migration")
+    legacy_dir = tmp_path / "legacy"
+    legacy_dir.mkdir()
+    (legacy_dir / "settings.json").write_text(
+        json.dumps({"destination": "/tmp/legacy"}), encoding="utf-8"
+    )
+    new_dir = tmp_path / "new"
+    new_dir.mkdir()
+    (new_dir / "settings.json").write_text(
+        json.dumps({"destination": "/tmp/current"}), encoding="utf-8"
+    )
+
+    moved = migration.migrate_settings(legacy_dir, new_dir)
+
+    assert not moved
+    kept = json.loads((new_dir / "settings.json").read_text(encoding="utf-8"))
+    assert kept["destination"] == "/tmp/current"
+
+
+def test_токен_переносится_из_старого_хранилища(monkeypatch) -> None:
+    """Токен из старого keyring-сервиса переносится в новый."""
+    migration = importlib.import_module("snipnest.migration")
+    stored: dict[tuple[str, str], str] = {("old-service", "pinterest-token"): "token-value"}
+    monkeypatch.setattr(
+        migration.keyring,
+        "get_password",
+        lambda service, username: stored.get((service, username)),
+    )
+    monkeypatch.setattr(
+        migration.keyring,
+        "set_password",
+        lambda service, username, secret: stored.__setitem__((service, username), secret),
+    )
+
+    moved = migration.migrate_token("old-service", "snipnest", "pinterest-token")
+
+    assert moved
+    assert stored[("snipnest", "pinterest-token")] == "token-value"
+
+
+def test_при_своём_токене_старый_хранилище_не_трогается(monkeypatch) -> None:
+    migration = importlib.import_module("snipnest.migration")
+    stored: dict[tuple[str, str], str] = {
+        ("old-service", "pinterest-token"): "old-value",
+        ("snipnest", "pinterest-token"): "current-value",
+    }
+    monkeypatch.setattr(
+        migration.keyring,
+        "get_password",
+        lambda service, username: stored.get((service, username)),
+    )
+    monkeypatch.setattr(
+        migration.keyring,
+        "set_password",
+        lambda service, username, secret: stored.__setitem__((service, username), secret),
+    )
+
+    moved = migration.migrate_token("old-service", "snipnest", "pinterest-token")
+
+    assert not moved
+    assert stored[("snipnest", "pinterest-token")] == "current-value"

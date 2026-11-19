@@ -1,0 +1,58 @@
+task_id: 002-snipnest-rename
+ts: '2026-11-19T07:54:08+00:00'
+layer1:
+  status: pass
+  items:
+  - id: AC1
+    verified: true
+layer2:
+  status: pass
+  uncovered: []
+layer3:
+  status: pass
+  e2e_test_ids:
+  - T-e2e-scenario
+  - T-e2e-queue
+  - T-denominator
+pytest_result:
+  exit_code: 0
+  argv:
+  - /home/sato/Документы/gallery-dl-gui/.delta/worktrees/3m7q3c0z4cr9/gallery-dl-gui/.venv/bin/python
+  - -m
+  - pytest
+  - -q
+  - --tb=no
+  - --no-header
+  - -p
+  - no:cacheprovider
+  - tests/unit/test_naming.py::test_в_рабочем_дереве_нет_старого_имени
+  - tests/unit/test_naming.py::test_пакет_импортируется_под_новым_именем
+  - tests/unit/test_naming.py::test_старый_пакет_не_импортируется
+  - tests/unit/test_naming.py::test_имя_конфига_новое
+  - tests/unit/test_naming.py::test_имя_сервиса_хранилища_новое
+  - tests/ui/test_window.py::test_заголовок_окна_совпадает_с_названием_приложения
+  - tests/ui/test_window.py::test_имя_приложения_в_qapplication
+  - tests/unit/test_settings.py::test_старые_настройки_переносятся_в_новый_каталог
+  - tests/unit/test_settings.py::test_новые_настройки_не_перетираются_старыми
+  - tests/unit/test_settings.py::test_токен_переносится_из_старого_хранилища
+  - tests/unit/test_settings.py::test_при_своём_токене_старый_хранилище_не_трогается
+  - tests/unit/test_scope.py::test_приложение_локальное_и_однопользовательское
+  - tests/unit/test_scope.py::test_поддерживается_только_pinterest
+  - tests/integration/test_desktop_entry.py::test_ярлык_называет_приложение_с_большой_буквы
+  - tests/integration/test_desktop_entry.py::test_ярлык_запускает_команду_из_метаданных_пакета
+  - tests/integration/test_desktop_entry.py::test_имя_иконки_совпадает_с_именем_команды
+  - tests/integration/test_desktop_entry.py::test_установщик_ставит_ярлык_и_иконку_под_новым_именем
+  - tests/integration/test_desktop_entry.py::test_логотип_на_месте
+  - tests/integration/test_desktop_entry.py::test_удалённый_репозиторий_новый
+  - tests/integration/test_gallery_dl.py::test_настоящий_бинарник_печатает_версию
+  - tests/e2e/test_user_scenario.py::test_сценарий_пользователя_доходит_до_завершения
+  - tests/e2e/test_user_scenario.py::test_сценарий_пользователя_ставит_загрузку_в_очередь
+  - tests/spec_mini/run_denominator.py::run
+  stdout_tail: ".......................                                          \
+    \        [100%]\n=============================== warnings summary ===============================\n\
+    tests/spec_mini/run_denominator.py::run\n  /home/sato/Документы/gallery-dl-gui/.delta/worktrees/3m7q3c0z4cr9/gallery-dl-gui/.venv/lib/python3.12/site-packages/_pytest/python.py:191:\
+    \ PytestReturnNotNoneWarning: Test functions should return None, but tests/spec_mini/run_denominator.py::run\
+    \ returned <class 'int'>.\n  Did you mean to use `assert` instead of `return`?\n\
+    \  See https://docs.pytest.org/en/stable/how-to/assert.html#return-not-none for\
+    \ more information.\n    warnings.warn(\n\n-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html\n"
+combined: accepted

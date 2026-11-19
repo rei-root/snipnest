@@ -17,21 +17,25 @@ __all__ = [
     "DEFAULT_DESTINATION",
     "KeyringStore",
     "FileSecretStore",
+    "CONFIG_DIR",
+    "CONFIG_FILE",
+    "KEYRING_SERVICE",
+    "KEYRING_USERNAME",
 ]
 
 DEFAULT_DESTINATION = Path.home() / "Изображения" / "Pinterest"
 
-CONFIG_DIR = Path.home() / ".config" / "gallary-downloader"
+CONFIG_DIR = Path.home() / ".config" / "snipnest"
 CONFIG_FILE = CONFIG_DIR / "settings.json"
 
-_KEYRING_SERVICE = "gallary-downloader"
-_KEYRING_USERNAME = "pinterest-token"
+KEYRING_SERVICE = "snipnest"
+KEYRING_USERNAME = "pinterest-token"
 
 
 class KeyringStore:
     """Хранение секрета в системном хранилище (libsecret / kwallet)."""
 
-    def __init__(self, service: str = _KEYRING_SERVICE, username: str = _KEYRING_USERNAME) -> None:
+    def __init__(self, service: str = KEYRING_SERVICE, username: str = KEYRING_USERNAME) -> None:
         self._service = service
         self._username = username
 

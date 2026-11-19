@@ -4,7 +4,7 @@ from __future__ import annotations
 
 import pytest
 
-from gallary_downloader.links import LinkKind, classify_link, is_valid_link
+from snipnest.links import LinkKind, classify_link, is_valid_link
 
 
 @pytest.mark.parametrize(

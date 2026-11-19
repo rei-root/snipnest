@@ -12,7 +12,7 @@ from pathlib import Path
 REPO_ROOT = Path(__file__).resolve().parents[2]
 sys.path.insert(0, str(REPO_ROOT / "src"))
 
-from gallary_downloader.jobs import JobManager, JobState  # noqa: E402
+from snipnest.jobs import JobManager, JobState  # noqa: E402
 
 
 class StubRunner:
@@ -25,7 +25,7 @@ class StubRunner:
         return 2
 
     def run(self, url: str, *, simulate: bool = False) -> object:
-        from gallary_downloader.downloader import DownloadResult
+        from snipnest.downloader import DownloadResult
 
         return DownloadResult(2, 0, 0, 0, ("a.jpg", "b.jpg"))
 

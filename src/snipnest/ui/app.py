@@ -9,8 +9,8 @@ from .window import MainWindow
 
 __all__ = ["APPLICATION_NAME", "make_application", "run"]
 
-APPLICATION_NAME = "Gallary Downloader"
-DESKTOP_FILE_NAME = "gallary-downloader"
+APPLICATION_NAME = "Snipnest"
+DESKTOP_FILE_NAME = "snipnest"
 
 
 def make_application(settings: Settings | None = None) -> tuple[QApplication, MainWindow]:

@@ -6,7 +6,7 @@ import subprocess
 import sys
 from pathlib import Path
 
-MODULES = ("gallary_downloader.manager", "gallary_downloader.jobs", "gallary_downloader.ui")
+MODULES = ("snipnest.manager", "snipnest.jobs", "snipnest.ui")
 
 
 def test_изоляционный_импорт_модулей() -> None:

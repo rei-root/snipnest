@@ -8,7 +8,7 @@ from pathlib import Path
 
 import pytest
 
-from gallary_downloader.downloader import GalleryDlRunner, parse_output_line
+from snipnest.downloader import GalleryDlRunner, parse_output_line
 
 pytestmark = pytest.mark.skipif(
     shutil.which("gallery-dl") is None,

@@ -1,0 +1,207 @@
+entries:
+- id: SRC-I1
+  phase: интервью
+  kind: api
+  title: Desktop Entry Specification 1.5 — имя файла ярлыка, ключи Name, Exec и Icon
+  findings: '§2 «File naming»: desktop-файл должен иметь расширение .desktop; для
+    приложений часть имени до .desktop должна быть корректным D-Bus well-known name
+    — непустые элементы, разделённые точками, каждый только из символов [A-Za-z0-9-_].
+    Имя должно следовать соглашению «reverse DNS» (домен в обратном порядке плюс имя
+    приложения слитно). §6: в меню приложений показывается значение ключа Name. §7
+    «The Exec key»: Exec — командная строка запуска, поле %c подставляет переведённое
+    имя из Name. Ключ Icon: либо абсолютный путь, либо имя иконки, которое ищется
+    в теме иконок. Вывод для задачи: имя файла ярлыка snipnest.desktop состоит только
+    из разрешённых символов и совпадает с именем исполняемого файла snipnest, поэтому
+    ярлык, иконка и setDesktopFileName называют одно и то же имя. Соглашение reverse
+    DNS сформулировано как «should», а не «must», и проект его и раньше не держался
+    (файл был gallary-downloader.desktop) — меню находит ярлык перебором каталога.'
+  url: https://specifications.freedesktop.org/desktop-entry-spec/latest/
+  version: 1.5 (Publication Date 2020-04-27)
+  currency_evidence: 'Страница спецификации отдаёт заголовок «Desktop Entry Specification
+    … Publication Date: 2020-04-27, Version: Version 1.5»; разделы §2 и §7 прочитаны
+    по адресам .../desktop-entry-spec/1.5/file-naming.html и .../1.5/exec-variables.html
+    — это текущая ветка 1.5, а не архивная копия.'
+  topics:
+  - '§2 File naming: расширение .desktop и допустимые символы в имени'
+  - '§6 Name: откуда меню берёт название приложения'
+  - '§7 Exec: командная строка запуска'
+  - 'Icon: имя иконки в теме или абсолютный путь'
+  deprecated_apis: []
+  applies_to:
+  - package: freedesktop desktop-entry-spec
+    version: '1.5'
+  recorded_at: '2026-11-19T07:39:18+00:00'
+- id: SRC-I2
+  phase: интервью
+  kind: api
+  title: Icon Naming Specification 0.8 — правила именования иконок приложений
+  findings: '§3 «Icon Naming Guidelines»: имя иконки задаётся в локали en_US.US_ASCII
+    и может содержать только строчные буквы, цифры, подчёркивание, дефис и точку;
+    пробелы, двоеточия и слэши запрещены. Для контекста Applications сказано буквально:
+    «An application must either use a generic application icon name provided by this
+    specification, or install an icon named the same as the executable for running
+    the application». Вывод: иконку приложения ставят под именем исполняемого файла
+    — после переименования это snipnest.png, а в desktop-файле пишется Icon=snipnest
+    (без расширения). Имя snipnest набору разрешённых символов удовлетворяет.'
+  url: https://specifications.freedesktop.org/icon-naming-spec/latest/
+  version: 0.8 (Publication Date August 9, 2007)
+  currency_evidence: 'Страница спецификации отдаёт заголовок «Icon Naming Specification
+    … Publication Date: August 9, 2007, Version: Version 0.8»; §3 «Icon Naming Guidelines»
+    и таблица стандартных имён прочитаны по этому адресу — это актуальная редакция
+    спецификации freedesktop.org.'
+  topics:
+  - '§3: допустимые символы в имени иконки'
+  - 'Applications: имя иконки совпадает с именем исполняемого файла'
+  deprecated_apis: []
+  applies_to:
+  - package: freedesktop icon-naming-spec
+    version: '0.8'
+  recorded_at: '2026-11-19T07:39:18+00:00'
+- id: SRC-I3
+  phase: интервью
+  kind: capabilities
+  title: Возможности платформы, на которые опирается переименование инструмента
+  findings: 'Переименование упирается в четыре технических решения: как меню находит
+    ярлык и его название, как окружение находит иконку приложения, что происходит
+    с пользовательскими данными при смене имени и что требуется для переноса проекта
+    в другой репозиторий. По каждой возможности принято решение — нужно, не нужно
+    или отложено — с причиной.'
+  url: https://specifications.freedesktop.org/desktop-entry-spec/latest/
+  version: 1.5 и 0.8 (desktop-entry-spec и icon-naming-spec)
+  currency_evidence: 'Решения опираются на две свежие редакции спецификаций freedesktop.org
+    (desktop-entry-spec 1.5 от 2020-04-27 и icon-naming-spec 0.8), прочитанные в этой
+    сессии, и на проверенное состояние репозитория: git@github.com:rei-root/snipnest.git
+    существует и пуст (git ls-remote не отдаёт ни одной ссылки), SSH-доступ к GitHub
+    работает.'
+  topics:
+  - имя в меню приложений берётся из ключа Name desktop-файла
+  - имя иконки приложения совпадает с именем исполняемого файла
+  - перенос пользовательских данных при смене имени — забота приложения
+  - перенос проекта в другой репозиторий с сохранением истории
+  deprecated_apis: []
+  applies_to:
+  - package: freedesktop desktop-entry-spec
+    version: '1.5'
+  capabilities:
+  - id: C-1
+    name: Название в меню приложений задаётся ключом Name desktop-файла
+    decision: нужно
+    rationale: 'Чтобы в меню было «Snipnest», ключ Name ярлыка обязан быть переименован:
+      иначе меню продолжит показывать прежнее название, а имя в меню — ровно то, что
+      просил владелец.'
+  - id: C-2
+    name: Иконка приложения устанавливается под именем исполняемого файла
+    decision: нужно
+    rationale: 'Icon Naming Spec §3: иконку ставят под именем исполняемого файла.
+      После переименования это snipnest.png; со старым именем ярлык ссылался бы на
+      несуществующую иконку и приложение выглядело бы без значка.'
+  - id: C-3
+    name: Перенос пользовательских данных при смене имени приложения
+    decision: нужно
+    rationale: Ни платформа, ни менеджер пакетов не переносят ни конфиг, ни запись
+      keyring при смене имени. Без явного переноса сохранённая папка и токен Pinterest
+      перестанут читаться, и владелец — единственный пользователь — будет вводить
+      токен заново.
+  - id: C-4
+    name: Перенос проекта в другой удалённый репозиторий с сохранением истории
+    decision: нужно
+    rationale: Владелец прямо попросил переинициализировать проект на git@github.com:rei-root/snipnest.git.
+      Имя каталога и имя проекта в git не обязаны совпадать, поэтому история коммитов
+      сохраняется, а меняются URL удалённого репозитория и идентичность продукта.
+  - id: C-5
+    name: Соглашение reverse DNS в имени desktop-файла
+    decision: не_нужно
+    rationale: Спецификация формулирует это как «should», а не «must»; меню находит
+      ярлык перебором каталога, и проект и раньше использовал простое имя без домена.
+      Держать соглашение не зачем — это не то, о чём просил владелец.
+  - id: C-6
+    name: 'Идентичность пакета Python: имя дистрибутива, имя пакета, точка входа'
+    decision: нужно
+    rationale: '«Переименовать весь инструмент» означает и идентичность пакета: дистрибутив
+      snipnest ставит модуль snipnest и команду snipnest. Имя snipnest удовлетворяет
+      требованиям PyPA к имени проекта, поэтому переименование безопасно.'
+  recorded_at: '2026-11-19T07:39:18+00:00'
+- id: SRC-C1
+  phase: код
+  kind: api
+  title: Qt 6 / PySide6 6.12.0 — имя desktop-файла, имя приложения и заголовок окна
+  findings: 'В Qt 6 setDesktopFileName — статический метод QGuiApplication, наследуемый
+    QApplication (в списке статических методов QGuiApplication ветки 6.x он присутствует
+    рядом с setApplicationName и setApplicationDisplayName). Он задаёт базовое имя
+    desktop-файла, который запускает окружение: значение обязано совпадать с именем
+    файла ярлыка без расширения .desktop, иначе окружение не свяжет ярлык с приложением.
+    Значит после переименования значение должно быть «snipnest», а не имя пакета Python
+    и не имя каталога. setApplicationName и setApplicationDisplayName задают имя,
+    которое показывается в меню и в заголовках окон; setWindowTitle задаёт заголовок
+    окна. Устаревших вызовов в этой части нет: QApplication.exec_ удалён в Qt 6 (код
+    зовёт exec()), QRegExp и QDesktopWidget не используются.'
+  url: https://doc.qt.io/qt-6/qguiapplication.html
+  version: Qt 6.x, PySide6 6.12.0
+  currency_evidence: В uv.lock зафиксирован pyside6 6.12.0; установленная копия отдаёт
+    PySide6.__version__ = 6.12.0. Страница qguiapplication.html ветки qt-6 — актуальная
+    документация Qt 6, в ней перечислены используемые статические методы.
+  topics:
+  - QApplication.setDesktopFileName — базовое имя desktop-файла без .desktop
+  - setApplicationName и setApplicationDisplayName
+  - QWidget.setWindowTitle
+  deprecated_apis:
+  - QApplication.exec_
+  - QRegExp
+  - QDesktopWidget
+  applies_to:
+  - package: pyside6
+    version: 6.12.0
+  recorded_at: '2026-11-19T07:48:08+00:00'
+- id: SRC-C2
+  phase: код
+  kind: api
+  title: PyPA Packaging User Guide — имя проекта, нормализация имени, имя пакета
+  findings: 'Имя проекта должно соответствовать ^([A-Z0-9]|[A-Z0-9][A-Z0-9._-]*[A-Z0-9])\Z
+    и начинаться и заканчиваться буквой или цифрой. Нормализация (PEP 503): имя приводится
+    к нижнему регистру, а серии символов . - _ сворачиваются в один дефис. «snipnest»
+    — допустимое имя, его нормализованная форма тоже «snipnest»; прежнее «gallary-downloader»
+    нормализовалось в «gallary-downloader». Имя дистрибутива и имя импортируемого
+    пакета — разные вещи: дистрибутив snipnest ставит пакет snipnest, поэтому каталог
+    исходников src/snipnest, а импорт — `from snipnest...`. Точка входа snipnest =
+    «snipnest.__main__:main» должна совпадать с ключом Exec в desktop-файле.'
+  url: https://packaging.python.org/en/latest/specifications/name-normalization/
+  version: актуальная редакция PyPA Packaging User Guide (PEP 503)
+  currency_evidence: 'Страница «Names and normalization» прочитана по адресу выше:
+    разделы «Name» (допустимое имя проекта) и «Name normalization» (правило PEP 503)
+    приведены в текущей редакции руководства.'
+  topics:
+  - допустимое имя проекта
+  - нормализация имени по PEP 503
+  - имя дистрибутива против имени импортируемого пакета
+  deprecated_apis: []
+  applies_to:
+  - package: snipnest
+    version: 0.1.0
+  recorded_at: '2026-11-19T07:48:08+00:00'
+- id: SRC-C3
+  phase: код
+  kind: api
+  title: keyring 25.7.0 — имя сервиса как адрес записи и ошибки хранилища
+  findings: 'keyring.get_password(service, username) возвращает None, если записи
+    нет, и не бросает исключение; keyring.set_password(service, username, secret)
+    создаёт запись под указанным сервисом; keyring.delete_password поднимает keyring.errors.PasswordDeleteError,
+    если записи нет (это исключение ловит KeyringStore.delete). Имя сервиса — часть
+    адреса записи, а не метка: переименование сервиса на «snipnest» означает, что
+    запись под прежним именем остаётся в хранилище и должна быть перенесена — прочитать
+    под старым сервисом и записать под новым. Токен при переносе остаётся в системном
+    хранилище и в обычный конфиг не попадает.'
+  url: https://keyring.readthedocs.io/en/stable/
+  version: 25.7.0
+  currency_evidence: В uv.lock зафиксирован keyring 25.7.0 — та же версия, что и в
+    задаче 001; используемое API (get_password/set_password/delete_password и PasswordDeleteError)
+    не менялось между 24.x и 25.x, поэтому запись применима к объявленному минимуму
+    keyring>=24.0.
+  topics:
+  - get_password / set_password / delete_password
+  - имя сервиса как часть адреса записи
+  - keyring.errors.PasswordDeleteError
+  deprecated_apis: []
+  applies_to:
+  - package: keyring
+    version: '24.0'
+  recorded_at: '2026-11-19T07:48:08+00:00'

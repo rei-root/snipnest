@@ -2,8 +2,8 @@
 
 from __future__ import annotations
 
-from gallary_downloader.links import LinkKind
-from gallary_downloader.sources import (
+from snipnest.links import LinkKind
+from snipnest.sources import (
     DownloadSource,
     PinterestSource,
     SourceKind,

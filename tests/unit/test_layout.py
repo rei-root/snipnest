@@ -9,8 +9,8 @@ from __future__ import annotations
 
 from pathlib import Path
 
-from gallary_downloader.downloader import GalleryDlRunner
-from gallary_downloader.sources import PinterestSource
+from snipnest.downloader import GalleryDlRunner
+from snipnest.sources import PinterestSource
 
 
 def _command_for(file_count: int, tmp_path: Path) -> list[str]:

@@ -4,8 +4,8 @@ from __future__ import annotations
 
 import pytest
 
-from gallary_downloader.downloader import DownloadEvent, DownloadEventKind, DownloadResult
-from gallary_downloader.jobs import DownloadJob, JobEvent, JobEventKind, JobManager, JobState
+from snipnest.downloader import DownloadEvent, DownloadEventKind, DownloadResult
+from snipnest.jobs import DownloadJob, JobEvent, JobEventKind, JobManager, JobState
 
 
 class FakeRunner:

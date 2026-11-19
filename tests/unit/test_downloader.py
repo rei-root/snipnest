@@ -2,7 +2,7 @@
 
 from __future__ import annotations
 
-from gallary_downloader.downloader import (
+from snipnest.downloader import (
     DownloadEventKind,
     GalleryDlNotFoundError,
     GalleryDlRunner,

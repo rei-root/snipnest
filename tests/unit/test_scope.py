@@ -13,11 +13,11 @@ from __future__ import annotations
 
 from pathlib import Path
 
-from gallary_downloader.settings import CONFIG_DIR, DEFAULT_DESTINATION
-from gallary_downloader.sources import SourceKind, SourceRegistry
+from snipnest.settings import CONFIG_DIR, DEFAULT_DESTINATION
+from snipnest.sources import SourceKind, SourceRegistry
 
 REPO_ROOT = Path(__file__).resolve().parents[2]
-SRC_DIR = REPO_ROOT / "src" / "gallary_downloader"
+SRC_DIR = REPO_ROOT / "src" / "snipnest"
 
 # Сетевые клиенты и серверные frameworks, которых в приложении быть не должно:
 # скачивание делегировано внешнему бинарнику, само приложение никуда не ходит.

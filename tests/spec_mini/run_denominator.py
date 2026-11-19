@@ -24,7 +24,7 @@ DENOMINATOR = REPO_ROOT / "docs" / "ba" / "spec" / "app-spec" / "model" / "oblig
 
 sys.path.insert(0, str(REPO_ROOT / "src"))
 
-from gallary_downloader.jobs import DownloadJob, JobState  # noqa: E402
+from snipnest.jobs import DownloadJob, JobState  # noqa: E402
 
 
 @dataclass

@@ -1,4 +1,4 @@
-# Gallary Downloader
+# Snipnest
 
 GUI-обёртка над [gallery-dl](https://github.com/mikf/gallery-dl) для скачивания
 изображений из Pinterest без терминала.
@@ -17,12 +17,12 @@ GUI-обёртка над [gallery-dl](https://github.com/mikf/gallery-dl) дл�
 - токен Pinterest хранится в системном хранилище (keyring), пароль не вводится;
 - кнопка «Открыть Pinterest» — открывает сайт в браузере;
 - кнопка «Путь к gallery-dl» — если бинарник не найден в PATH;
-- ярлык в меню приложений: **Gallary Downloader**.
+- ярлык в меню приложений: **Snipnest**.
 
 ## Устройство
 
 ```
-src/gallary_downloader/
+src/snipnest/
 ├── links.py       разбор ссылки: картинка или альбом
 ├── downloader.py  запуск внешнего бинарника gallery-dl, разбор его вывода
 ├── jobs.py        состояния загрузки, права, видимость, прогресс
@@ -80,7 +80,7 @@ UI не знает про Pinterest: он спрашивает реестр ис
 написать подкласс `DownloadSource` и зарегистрировать его:
 
 ```python
-from gallary_downloader.sources import DownloadSource, SourceKind, SourceRegistry
+from snipnest.sources import DownloadSource, SourceKind, SourceRegistry
 
 class YouTubeSource(DownloadSource):
     kind = SourceKind.YOUTUBE
@@ -110,13 +110,13 @@ uv sync
 ## Запуск
 
 ```bash
-uv run gallary-downloader
+uv run snipnest
 ```
 
 или
 
 ```bash
-uv run python -m gallary_downloader
+uv run python -m snipnest
 ```
 
 Ярлык в меню приложений ставится так:
@@ -127,18 +127,18 @@ bash packaging/install-desktop-entry.sh
 
 Скрипт делает три вещи:
 
-- копирует `packaging/gallary-downloader.desktop` в `~/.local/share/applications`
+- копирует `packaging/snipnest.desktop` в `~/.local/share/applications`
   (ярлык в меню приложений);
-- ставит иконку `logo/gallery-dl-gui-logo.png` в
-  `~/.local/share/icons/hicolor/*/apps/gallary-downloader.png` во всех
+- ставит иконку `logo/snipnest.png` в
+  `~/.local/share/icons/hicolor/*/apps/snipnest.png` во всех
   стандартных размерах и копирует `index.theme` темы hicolor — без него
   локальный каталог перекрывает системный, и иконка не находится;
-- создаёт лаунчер `~/.local/bin/gallary-downloader`, потому что ярлык
-  вызывает команду по имени (`Exec=gallary-downloader`), а интерпретатор
+- создаёт лаунчер `~/.local/bin/snipnest`, потому что ярлык
+  вызывает команду по имени (`Exec=snipnest`), а интерпретатор
   приложения живёт в venv и в `PATH` меню не попадает.
 
 После этого приложение доступно из меню приложений как
-**Gallary Downloader**.
+**Snipnest**.
 
 Если каталог проекта переехал, лаунчер надо переустановить: он зашивает
 путь к проекту.
