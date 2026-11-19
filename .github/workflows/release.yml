@@ -33,7 +33,15 @@ jobs:
           sudo apt-get update
           sudo apt-get install -y --no-install-recommends \
             libegl1 libgl1 libxkbcommon-x11-0 libdbus-1-3 libfontconfig1 \
-            libfuse2 imagemagick
+            libfuse2 imagemagick python3-venv
+
+      - name: Поставить внешние программы
+        # Модульные тесты собирают команду исполнителя, а для этого нужен
+        # настоящий gallery-dl и yt-dlp — как на машине разработчика.
+        run: |
+          python3 -m venv /opt/snipnest-tools
+          /opt/snipnest-tools/bin/pip install --no-cache-dir gallery-dl yt-dlp
+          echo "/opt/snipnest-tools/bin" >> "$GITHUB_PATH"
 
       - name: Линтеры
         run: make lint
