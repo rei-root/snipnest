@@ -33,10 +33,30 @@ jobs:
         run: make typecheck
 
       - name: Тесты
-        run: make test
+        run: |
+          set -o pipefail
+          uv run pytest tests -m "not live" --tb=short -q 2>&1 | tee /tmp/pytest.log
+          status=$?
+          {
+            echo "### Тесты"
+            echo '```'
+            cat /tmp/pytest.log
+            echo '```'
+          } >> "$GITHUB_STEP_SUMMARY"
+          exit $status
 
       - name: Оракул
-        run: make oracle
+        run: |
+          set -o pipefail
+          make oracle 2>&1 | tee /tmp/oracle.log
+          status=$?
+          {
+            echo "### Оракул"
+            echo '```'
+            cat /tmp/oracle.log
+            echo '```'
+          } >> "$GITHUB_STEP_SUMMARY"
+          exit $status
 
       - name: Поставить инструменты для сборки
         run: |
