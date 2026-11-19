@@ -103,6 +103,21 @@ def test_найденный_компонент_помечен_как_уже_ус
     assert "уже установлен" in window.status_for("gallery-dl")
 
 
+def test_уже_установленный_компонент_заново_не_ставится(qtbot, tmp_path) -> None:
+    """Компонент из пакета .deb не ставится в домашнюю папку второй раз."""
+    found = ComponentLocation(path=Path("/usr/lib/snipnest/components/gallery-dl"), source="system")
+    window = ComponentsDialog(
+        specs=[GALLERY_DL],
+        finder=lambda spec: found,
+        user_root=tmp_path / "user",
+        system_root=tmp_path / "system",
+    )
+    qtbot.addWidget(window)
+
+    assert window.pending_components() == []
+    assert window.install_selected() == []
+
+
 def test_ненайденный_компонент_помечен_как_будущий_скачивание(qtbot, tmp_path) -> None:
     window = ComponentsDialog(
         specs=[GALLERY_DL],

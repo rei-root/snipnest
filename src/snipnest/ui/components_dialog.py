@@ -212,10 +212,19 @@ class ComponentsDialog(QDialog):
                     chosen.append(spec)
         return chosen
 
+    def pending_components(self) -> list[ComponentSpec]:
+        """Отмеченные компоненты, которых ещё нет.
+
+        Уже установленный компонент заново не ставится: в пакете .deb все
+        компоненты лежат внутри, и повторная установка продублировала бы
+        сто мегабайт в домашней папке.
+        """
+        return [spec for spec in self.selected_components() if self._finder(spec) is None]
+
     def install_selected(self) -> list[InstallResult]:
         """Установить отмеченные компоненты (без отдельного потока)."""
         results: list[InstallResult] = []
-        for spec in self.selected_components():
+        for spec in self.pending_components():
             result = self._installer_or_default().install(spec, self._set_message)
             results.append(result)
             self._apply_result(spec, result)
@@ -227,9 +236,9 @@ class ComponentsDialog(QDialog):
         Окно остаётся живым: скачивание идёт в потоке, ход установки
         приходит сигналом.
         """
-        specs = self.selected_components()
+        specs = self.pending_components()
         if not specs:
-            self._set_message("Ничего не отмечено")
+            self._set_message("Всё отмеченное уже установлено")
             return
         self._install_button.setEnabled(False)
         self._thread = QThread(self)
