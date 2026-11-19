@@ -109,17 +109,21 @@ def _find_binary(root: Path, name: str) -> Path | None:
     return None
 
 
-def _install_binary(source: Path, target: Path, binary_name: str) -> Path:
-    """Положить исполняемый файл в ``bin`` каталога компонента."""
+def _install_binary(source: Path, target: Path, spec: ComponentSpec) -> Path:
+    """Положить исполняемый файл в ``bin`` каталога компонента.
+
+    Копируются только нужные файлы: сам исполняемый файл и его спутники
+    (``ffprobe`` рядом с ``ffmpeg``). Остальное содержимое архива — в том
+    числе плеер ``ffplay`` на сто восемьдесят мегабайт — не нужно.
+    """
     bin_dir = target / "bin"
     bin_dir.mkdir(parents=True, exist_ok=True)
-    if source.parent.name == "bin":
-        for item in sorted(source.parent.iterdir()):
-            if item.is_file():
-                shutil.copy2(item, bin_dir / item.name)
-    else:
-        shutil.copy2(source, bin_dir / binary_name)
-    launcher = bin_dir / binary_name
+    shutil.copy2(source, bin_dir / spec.binary)
+    for companion in spec.companions:
+        extra = source.parent / companion
+        if extra.is_file():
+            shutil.copy2(extra, bin_dir / companion)
+    launcher = bin_dir / spec.binary
     launcher.chmod(0o755)
     return launcher
 
@@ -300,5 +304,5 @@ class ComponentInstaller:
             if source is None:
                 shutil.rmtree(target, ignore_errors=True)
                 return InstallResult(spec.id, False, f"В архиве нет файла {spec.binary}")
-            launcher = _install_binary(source, target, spec.binary)
+            launcher = _install_binary(source, target, spec)
         return InstallResult(spec.id, True, "Установлено", ComponentLocation(launcher, "user"))

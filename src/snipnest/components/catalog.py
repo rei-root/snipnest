@@ -40,6 +40,7 @@ class ComponentSpec:
     sha256: str = ""
     size_hint: int = 0
     extra_paths: tuple[str, ...] = ()
+    companions: tuple[str, ...] = ()
 
 
 GALLERY_DL = ComponentSpec(
@@ -101,6 +102,8 @@ FFMPEG = ComponentSpec(
     ),
     sha256="faeb9f258c7b5f3c39ce173375268db8a365ee2badb5b50208caf5e48362c5d5",
     size_hint=151 * 1024 * 1024,
+    # ffprobe нужен yt-dlp для сведений о потоках; ffplay (плеер) не нужен.
+    companions=("ffprobe",),
 )
 
 COMPONENTS: tuple[ComponentSpec, ...] = (GALLERY_DL, YT_DLP, YT_DLP_EJS, DENO, FFMPEG)

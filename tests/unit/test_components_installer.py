@@ -140,7 +140,36 @@ def test_несовпавшая_контрольная_сумма_останав
     assert not (root / "deno" / "bin" / "deno").exists()
 
 
-def test_сбой_загрузки_не_оставляет_каталог_компонента(tmp_path) -> None:
+def test_установка_архива_берёт_только_нужные_файлы(tmp_path) -> None:
+    """Вместе с ffmpeg кладётся ffprobe, а ffplay — нет."""
+    root = tmp_path / "components"
+    archive = tmp_path / "ffmpeg.tar.xz"
+    with zipfile.ZipFile(archive, "w") as bundle:
+        bundle.writestr("bin/ffmpeg", "#!/bin/sh\necho ffmpeg\n")
+        bundle.writestr("bin/ffprobe", "#!/bin/sh\necho ffprobe\n")
+        bundle.writestr("bin/ffplay", "#!/bin/sh\necho ffplay\n")
+    digest = hashlib.sha256(archive.read_bytes()).hexdigest()
+    spec = ComponentSpec(
+        id="ffmpeg",
+        title="ffmpeg",
+        description="Склейка видео",
+        kind=ComponentKind.ARCHIVE,
+        binary="ffmpeg",
+        url="https://example.invalid/ffmpeg.zip",
+        sha256=digest,
+        companions=("ffprobe",),
+    )
+    installer = ComponentInstaller(user_root=root, downloader=_downloader_of(archive))
+
+    result = installer.install(spec)
+
+    assert result.ok, result.message
+    assert (root / "ffmpeg" / "bin" / "ffmpeg").exists()
+    assert (root / "ffmpeg" / "bin" / "ffprobe").exists()
+    assert not (root / "ffmpeg" / "bin" / "ffplay").exists()
+
+
+def test_ошибка_установки_не_оставляет_каталог_компонента(tmp_path) -> None:
     root = tmp_path / "components"
 
     def broken_download(url: str, target: Path) -> None:
