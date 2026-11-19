@@ -23,8 +23,11 @@ _ALLOWED_FILES = frozenset({"docs/TASK-BRIEF.md"})
 _ALLOWED_SOURCES = frozenset({"src/snipnest/migration.py"})
 
 # Каталоги сборки и окружения: в них лежат копии установленного пакета.
+# .delta — рабочее пространство Delta (клоны и воркдеревья), не содержимое
+# проекта.
 _SKIP_DIRS = frozenset(
     {
+        ".delta",
         ".git",
         ".venv",
         "__pycache__",
@@ -83,11 +86,17 @@ def test_пакет_импортируется_под_новым_именем() 
 
 
 def test_старый_пакет_не_импортируется() -> None:
+    """Модули прежнего пакета недоступны: имя не должно работать.
+
+    Проверяется модуль с кодом, а не только имя пакета: после переименования
+    в каталоге может остаться пустой каталог с закэшированным байт-кодом, и
+    тогда имя пакета ещё импортируется — но использовать нечего.
+    """
     try:
-        importlib.import_module(_LEGACY_NAME + "_downloader")
+        importlib.import_module(_LEGACY_NAME + "_downloader.downloader")
     except ModuleNotFoundError:
         return
-    raise AssertionError("старый пакет всё ещё импортируется")
+    raise AssertionError("прежний пакет всё ещё импортируется")
 
 
 def test_имя_конфига_новое() -> None:
