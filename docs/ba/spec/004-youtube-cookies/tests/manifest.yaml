@@ -1,0 +1,197 @@
+tests:
+- id: T-cookies-firefox-profiles
+  layer: unit
+  covers:
+  - R3
+  - AC1
+  file: tests/unit/test_cookies.py
+  fn: test_находятся_профили_firefox
+- id: T-cookies-profile-value
+  layer: unit
+  covers:
+  - R3
+  - R4
+  file: tests/unit/test_cookies.py
+  fn: test_значение_для_yt_dlp_содержит_профиль
+- id: T-cookies-browser
+  layer: unit
+  covers:
+  - R3
+  file: tests/unit/test_cookies.py
+  fn: test_находится_браузер_без_профилей
+- id: T-cookies-none-found
+  layer: unit
+  covers:
+  - R3
+  file: tests/unit/test_cookies.py
+  fn: test_неустановленные_браузеры_не_предлагаются
+- id: T-cookies-empty-profile
+  layer: unit
+  covers:
+  - R3
+  file: tests/unit/test_cookies.py
+  fn: test_профиль_без_cookies_sqlite_не_считается
+- id: T-cookies-file-source
+  layer: unit
+  covers:
+  - R3
+  - R4
+  file: tests/unit/test_cookies.py
+  fn: test_источник_из_файла
+- id: T-cookies-file-empty
+  layer: unit
+  covers:
+  - R4
+  file: tests/unit/test_cookies.py
+  fn: test_источник_из_файла_без_пути
+- id: T-ytdlp-cookies-browser-flag
+  layer: unit
+  covers:
+  - R3
+  - AC1
+  file: tests/unit/test_ytdlp.py
+  fn: test_команда_с_браузером_добавляет_cookies_from_browser
+- id: T-ytdlp-cookies-file-flag
+  layer: unit
+  covers:
+  - R3
+  - AC1
+  file: tests/unit/test_ytdlp.py
+  fn: test_команда_с_файлом_добавляет_cookies
+- id: T-ytdlp-no-cookies-flags
+  layer: unit
+  covers:
+  - R4
+  file: tests/unit/test_ytdlp.py
+  fn: test_без_cookies_флагов_нет
+- id: T-ytdlp-runner-name
+  layer: unit
+  covers:
+  - R3
+  file: tests/unit/test_ytdlp.py
+  fn: test_имя_исполнителя_для_ошибки
+- id: T-settings-cookies-browser
+  layer: unit
+  covers:
+  - R2
+  - R3
+  file: tests/unit/test_settings.py
+  fn: test_источник_cookies_запоминается
+- id: T-settings-cookies-file
+  layer: unit
+  covers:
+  - R2
+  - R3
+  file: tests/unit/test_settings.py
+  fn: test_путь_к_файлу_cookies_запоминается
+- id: T-job-error-names-runner
+  layer: unit
+  covers:
+  - R3
+  file: tests/unit/test_jobs.py
+  fn: test_ошибка_называет_исполнителя
+- id: T-job-error-names-ytdlp
+  layer: unit
+  covers:
+  - R3
+  file: tests/unit/test_jobs.py
+  fn: test_ошибка_youtube_называет_yt_dlp
+- id: T-dialog-lists-sources
+  layer: unit
+  covers:
+  - R3
+  - AC1
+  file: tests/ui/test_dialogs.py
+  fn: test_диалог_показывает_найденные_источники
+- id: T-dialog-selects-browser
+  layer: unit
+  covers:
+  - R3
+  - R4
+  file: tests/ui/test_dialogs.py
+  fn: test_диалог_выбирает_браузер
+- id: T-dialog-selects-file
+  layer: unit
+  covers:
+  - R3
+  - R4
+  file: tests/ui/test_dialogs.py
+  fn: test_диалог_выбирает_файл
+- id: T-dialog-current-choice
+  layer: unit
+  covers:
+  - R3
+  file: tests/ui/test_dialogs.py
+  fn: test_диалог_показывает_текущий_выбор
+- id: T-dialog-no-choice
+  layer: unit
+  covers:
+  - R4
+  file: tests/ui/test_dialogs.py
+  fn: test_диалог_без_выбора_ничего_не_возвращает
+- id: T-dialog-sources-match
+  layer: unit
+  covers:
+  - R3
+  file: tests/ui/test_dialogs.py
+  fn: test_источники_совпадают_с_найденными_в_системе
+- id: T-window-cookies-button
+  layer: unit
+  covers:
+  - R3
+  - AC1
+  file: tests/ui/test_window.py
+  fn: test_в_окне_есть_кнопка_cookies_youtube
+- id: T-window-log-title
+  layer: unit
+  covers:
+  - R3
+  file: tests/ui/test_window.py
+  fn: test_область_лога_называется_лог
+- id: T-source-cookies-to-runner
+  layer: unit
+  covers:
+  - R3
+  - AC1
+  file: tests/ui/test_sources.py
+  fn: test_задание_видео_передаёт_cookies_из_настроек
+- id: T-scope-local-app
+  layer: unit
+  covers:
+  - R5
+  file: tests/unit/test_scope.py
+  fn: test_приложение_локальное_и_однопользовательское
+- id: T-scope-sources
+  layer: unit
+  covers:
+  - R6
+  file: tests/unit/test_scope.py
+  fn: test_поддерживаются_pinterest_и_youtube
+- id: T-ytdlp-real-cookies-option
+  layer: integration
+  covers:
+  - R1
+  - R3
+  file: tests/integration/test_ytdlp.py
+  fn: test_настоящий_бинарник_умеет_брать_cookies_из_браузера
+- id: T-e2e-cookies-browser
+  layer: e2e
+  covers:
+  - R1
+  - R3
+  - AC1
+  file: tests/e2e/test_youtube_scenario.py
+  fn: test_команда_yt_dlp_получает_cookies_из_браузера
+- id: T-e2e-cookies-file
+  layer: e2e
+  covers:
+  - R3
+  - AC1
+  file: tests/e2e/test_youtube_scenario.py
+  fn: test_команда_yt_dlp_получает_файл_cookies
+- id: T-e2e-no-cookies
+  layer: e2e
+  covers:
+  - R4
+  file: tests/e2e/test_youtube_scenario.py
+  fn: test_без_выбранного_источника_cookies_флагов_нет

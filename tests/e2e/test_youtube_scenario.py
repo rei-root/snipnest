@@ -26,6 +26,7 @@ VIDEO_NAME = "Test Video [abc123].mp4"
 
 STUB_YT_DLP = '''#!/usr/bin/env python3
 """Заглушка yt-dlp: повторяет контракт вывода настоящего."""
+import os
 import pathlib
 import sys
 
@@ -34,6 +35,11 @@ args = sys.argv[1:]
 if "--version" in args:
     print("2026.10.26")
     raise SystemExit(0)
+
+# Команда целиком — чтобы тест видел, какие флаги дошли до исполнителя.
+argv_file = os.environ.get("SNIPNEST_STUB_ARGV")
+if argv_file:
+    pathlib.Path(argv_file).write_text("\\n".join(args), encoding="utf-8")
 
 destination = pathlib.Path(args[args.index("--paths") + 1])
 name = "Test Video [abc123].mp4"
@@ -147,3 +153,84 @@ def test_ошибка_yt_dlp_показывается_в_логе(window: MainWi
     assert row is not None
     assert row.state is JobState.FAILED
     assert "Ошибка загрузки" in window.status_text
+
+
+def test_команда_yt_dlp_получает_cookies_из_браузера(
+    window: MainWindow,
+    qtbot,
+    settings: Settings,
+    monkeypatch,
+    tmp_path: Path,
+) -> None:
+    """Выбранный браузер доходит до исполнителя флагом --cookies-from-browser."""
+    argv_file = tmp_path / "argv.txt"
+    monkeypatch.setenv("SNIPNEST_STUB_ARGV", str(argv_file))
+    settings.cookies_browser = "firefox:abc.default-release"
+
+    window.link_text = VIDEO_URL
+    window._on_download_clicked()
+
+    job_id = window.job_ids()[0]
+    qtbot.waitUntil(
+        lambda: (
+            window.row_for(job_id) is not None and window.row_for(job_id).state is JobState.DONE
+        ),
+        timeout=15000,
+    )
+
+    argv = argv_file.read_text(encoding="utf-8").splitlines()
+    assert "--cookies-from-browser" in argv
+    assert "firefox:abc.default-release" in argv
+
+
+def test_команда_yt_dlp_получает_файл_cookies(
+    window: MainWindow,
+    qtbot,
+    settings: Settings,
+    monkeypatch,
+    tmp_path: Path,
+) -> None:
+    """Выбранный файл доходит до исполнителя флагом --cookies."""
+    argv_file = tmp_path / "argv.txt"
+    monkeypatch.setenv("SNIPNEST_STUB_ARGV", str(argv_file))
+    settings.cookies_file = "/home/sato/cookies.txt"
+
+    window.link_text = VIDEO_URL
+    window._on_download_clicked()
+
+    job_id = window.job_ids()[0]
+    qtbot.waitUntil(
+        lambda: (
+            window.row_for(job_id) is not None and window.row_for(job_id).state is JobState.DONE
+        ),
+        timeout=15000,
+    )
+
+    argv = argv_file.read_text(encoding="utf-8").splitlines()
+    assert "--cookies" in argv
+    assert "/home/sato/cookies.txt" in argv
+
+
+def test_без_выбранного_источника_cookies_флагов_нет(
+    window: MainWindow,
+    qtbot,
+    monkeypatch,
+    tmp_path: Path,
+) -> None:
+    argv_file = tmp_path / "argv.txt"
+    monkeypatch.setenv("SNIPNEST_STUB_ARGV", str(argv_file))
+
+    window.link_text = VIDEO_URL
+    window._on_download_clicked()
+
+    job_id = window.job_ids()[0]
+    qtbot.waitUntil(
+        lambda: (
+            window.row_for(job_id) is not None and window.row_for(job_id).state is JobState.DONE
+        ),
+        timeout=15000,
+    )
+
+    argv = argv_file.read_text(encoding="utf-8").splitlines()
+    assert "--cookies" not in argv
+    assert "--cookies-from-browser" not in argv

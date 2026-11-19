@@ -1,0 +1,241 @@
+entries:
+- id: SRC-I1
+  phase: интервью
+  kind: api
+  title: 'yt-dlp wiki FAQ — как передать cookies: --cookies-from-browser и --cookies'
+  findings: 'Контракт cookies в yt-dlp. 1) «The easiest way to pass cookies is to
+    let yt-dlp extract it from your browser (say, Chrome) using --cookies-from-browser
+    chrome»; в Linux для Chrome ищется каталог ~/.config/google-chrome, для Flatpak
+    — ~/.var/app/com.google.Chrome (тогда путь передаётся после двоеточия: --cookies-from-browser
+    chrome:~/.var/app/com.google.Chrome/). 2) Ручная передача: --cookies /path/to/cookies/file.txt.
+    3) Формат файла — Mozilla/Netscape: первая строка должна быть «# HTTP Cookie File»
+    или «# Netscape HTTP Cookie File», переводы строк LF на Unix; «HTTP Error 400:
+    Bad Request» — признак неверного формата переводов строк. 4) Выгрузить cookies
+    в файл можно самим yt-dlp: --cookies-from-browser chrome --cookies cookies.txt,
+    но такой файл содержит cookies всех сайтов и требует осторожности. 5) Назначение
+    cookies — обход проверок бота и CAPTCHA, а также вход там, где экстрактор входа
+    не реализует.'
+  url: https://github.com/yt-dlp/yt-dlp/wiki/FAQ
+  version: master-ветка wiki (прочитана в этой сессии)
+  currency_evidence: 'Раздел «How do I pass cookies to yt-dlp?» прочитан по адресу
+    raw.githubusercontent.com/yt-dlp/yt-dlp-wiki/master/FAQ.md в этой сессии; поведение
+    проверено на этой машине: без cookies ролик dgKRqagdjOU даёт «Sign in to confirm
+    you''re not a bot» (код 1), с --cookies-from-browser firefox:1owjllur.default-release
+    — код 0.'
+  topics:
+  - '--cookies-from-browser: браузер и каталог его профиля в Linux'
+  - '--cookies: файл в формате Mozilla/Netscape, первая строка и переводы строк'
+  - выгрузка cookies в файл средствами yt-dlp и её цена (cookies всех сайтов)
+  - cookies обходят проверку бота и CAPTCHA
+  deprecated_apis: []
+  applies_to:
+  - package: yt-dlp
+    version: 2026.10.26
+  recorded_at: '2026-11-19T12:14:16+00:00'
+- id: SRC-I2
+  phase: интервью
+  kind: api
+  title: yt-dlp wiki Extractors — экспорт YouTube cookies и риск для аккаунта
+  findings: 'Два предупреждения, которые важны для решения владельца. 1) «By using
+    your account with yt-dlp, you run the risk of it being banned (temporarily or
+    permanently)»: аккаунт, которым пользуются через yt-dlp, можно заблокировать,
+    поэтому нужен аккаунт в отдельном окне и умеренный темп запросов. 2) YouTube часто
+    ротирует cookies аккаунта в открытых вкладках, поэтому выгруженный файл перестаёт
+    работать; надёжный способ — приватное окно: войти в YouTube в приватном окне,
+    перейти на https://www.youtube.com/robots.txt (единственная приватная вкладка),
+    выгрузить cookies и закрыть окно, чтобы сессия не открылась в браузере снова.
+    3) Выгружать cookies методом --cookies COOKIEFILE --cookies-from-browser BROWSER
+    для этой цели нельзя: так выгружаются обычные cookies браузера, а не сессия приватного
+    окна. Вывод для задачи: приложение не выгружает cookies само и не запрашивает
+    логин — только говорит yt-dlp, откуда взять; риск блокировки остаётся на владельце,
+    о нём сказано в README.'
+  url: https://github.com/yt-dlp/yt-dlp/wiki/Extractors
+  version: master-ветка wiki (прочитана в этой сессии)
+  currency_evidence: 'Раздел «Exporting YouTube cookies» прочитан по адресу raw.githubusercontent.com/yt-dlp/yt-dlp-wiki/master/Extractors.md
+    в этой сессии; предупреждение о блокировке аккаунта подтверждается самим yt-dlp
+    на этой машине: без cookies извлечение ролика падает с проверкой бота.'
+  topics:
+  - риск блокировки аккаунта при использовании cookies
+  - ротация cookies YouTube и приватное окно как надёжный способ
+  - приложение не выгружает cookies и не запрашивает логин
+  deprecated_apis: []
+  applies_to:
+  - package: yt-dlp
+    version: 2026.10.26
+  recorded_at: '2026-11-19T12:14:16+00:00'
+- id: SRC-I3
+  phase: интервью
+  kind: api
+  title: yt-dlp --help — синтаксис --cookies-from-browser и список браузеров
+  findings: 'Точный синтаксис параметра: «--cookies-from-browser BROWSER[+KEYRING][:PROFILE][::CONTAINER]».
+    Поддерживаемые браузеры перечислены прямо в справке: brave, chrome, chromium,
+    edge, firefox, opera, safari, vivaldi, whale. PROFILE — имя или путь профиля,
+    из которого берутся cookies; на Linux Chromium-браузеры дополнительно могут требовать
+    KEYRING для расшифровки cookies. Вывод для задачи: приложение должно давать владельцу
+    выбор конкретного браузера и профиля, а не одну строку, которую надо угадывать;
+    ключ keyring и контейнеры в задачу не входят.'
+  url: https://github.com/yt-dlp/yt-dlp
+  version: '2026.10.26 (установлен в системе: /usr/bin/yt-dlp)'
+  currency_evidence: 'Справка установленного бинаря (yt-dlp --help) прочитана в этой
+    сессии: в ней перечислены поддерживаемые браузеры и синтаксис PROFILE; обе формы
+    — «firefox» и «firefox:1owjllur.default-release» — проверены на этой машине на
+    ролике dgKRqagdjOU.'
+  topics:
+  - синтаксис BROWSER[+KEYRING][:PROFILE][::CONTAINER]
+  - список поддерживаемых браузеров
+  - 'PROFILE: имя или путь профиля'
+  deprecated_apis: []
+  applies_to:
+  - package: yt-dlp
+    version: 2026.10.26
+  recorded_at: '2026-11-19T12:14:16+00:00'
+- id: SRC-I4
+  phase: интервью
+  kind: capabilities
+  title: Возможности, найденные для доступа к YouTube, и решения по ним
+  findings: 'Доступ к ролику упирается в семь технических решений: откуда брать cookies
+    (браузер или файл), как указать конкретный профиль Firefox, кто и как хранит настройку,
+    что приложение делает с содержимым cookies, что происходит без cookies, чем называется
+    ошибка загрузки и как называется область лога. По каждому принято решение — нужно,
+    не нужно или отложено — с причиной.'
+  url: https://github.com/yt-dlp/yt-dlp/wiki/FAQ
+  version: 2026.10.26
+  currency_evidence: 'Решения опираются на три свежие редакции документации (FAQ и
+    Extractors wiki, справка установленного бинаря), прочитанные в этой сессии, и
+    на проверки на машине владельца: без cookies ролик падает с проверкой бота, с
+    cookies из профиля Firefox — скачивается.'
+  topics:
+  - 'источник cookies: браузер или файл'
+  - конкретный профиль Firefox вместо «какого-то»
+  - 'хранение настройки: имя браузера с профилем или путь к файлу'
+  - содержимое cookies приложение не читает
+  - поведение без cookies
+  - текст ошибки называет настоящего исполнителя
+  - название области лога
+  deprecated_apis: []
+  applies_to:
+  - package: yt-dlp
+    version: 2026.10.26
+  capabilities:
+  - id: C-1
+    name: Cookies берутся из браузера через --cookies-from-browser
+    decision: нужно
+    rationale: 'Это единственный способ, при котором ролик, отклонённый проверкой
+      бота, скачивается без ручного экспорта: проверено на ролике владельца, где без
+      cookies код возврата 1, а с cookies — 0.'
+  - id: C-2
+    name: Выбор конкретного профиля Firefox
+    decision: нужно
+    rationale: Профилей Firefox у владельца два, и вход в YouTube есть не в каждом.
+      Без точного профиля yt-dlp берёт самый свежий cookies.sqlite, и ролик может
+      не открыться; выбор профиля списком снимает угадывание.
+  - id: C-3
+    name: Cookies из файла в формате Netscape через --cookies
+    decision: нужно
+    rationale: 'Формат файла — единственный устойчивый способ: YouTube ротирует cookies
+      в открытых вкладках, и выгруженный из приватного окна файл живёт дольше. Владелец
+      сам экспортирует файл, приложение только указывает путь.'
+  - id: C-4
+    name: Настройка источника cookies хранится рядом с путями к бинарникам
+    decision: нужно
+    rationale: 'Хранится не секрет, а имя браузера с профилем либо путь к файлу, —
+      в settings.json рядом с путями к gallery-dl и yt-dlp. В keyring такой настройке
+      не место: сам секрет там не лежит.'
+  - id: C-5
+    name: Приложение само выгружает cookies из браузера в файл
+    decision: не_нужно
+    rationale: Выгрузка через --cookies-from-browser --cookies пишет cookies всех
+      сайтов, и yt-dlp прямо предупреждает об этом. Приложение не должно молча писать
+      файл с чужими cookies на диск; экспорт — забота владельца.
+  - id: C-6
+    name: PO-токены и клиент mweb
+    decision: отложено
+    rationale: Отдельная механика со своим ключом и своим провайдером; на этой машине
+      ролики качаются и без неё. Если упрётся — это будет отдельная задача.
+  - id: C-7
+    name: Вход по логину и паролю средствами приложения
+    decision: не_нужно
+    rationale: Пароль YouTube в приложении — это секрет, который придётся хранить;
+      cookies из браузера решают ту же задачу без нового секрета в приложении.
+  - id: C-8
+    name: Хранение cookies в keyring
+    decision: не_нужно
+    rationale: 'Содержимое cookies приложение не читает, а значит и хранить нечего:
+      в настройке лежит только указание на источник.'
+  - id: C-9
+    name: Текст ошибки загрузки называет настоящего исполнителя
+    decision: нужно
+    rationale: Сейчас об отказе yt-dlp приложение пишет «gallery-dl завершился с кодом
+      1» — это неверно и сбивает с толку при разборе лога.
+  - id: C-10
+    name: Область лога переименована в «Лог»
+    decision: нужно
+    rationale: В логе теперь вывод двух исполнителей — gallery-dl и yt-dlp, — и название
+      «Лог gallery-dl» вводит в заблуждение.
+  recorded_at: '2026-11-19T12:14:16+00:00'
+- id: SRC-C1
+  phase: код
+  kind: api
+  title: yt-dlp 2026.10.26 — извлечение cookies из профиля Firefox
+  findings: 'Что происходит, когда yt-dlp берёт cookies из браузера. 1) Без профиля
+    yt-dlp ищет cookies.sqlite во всех каталогах Firefox и берёт самый свежий (_newest(_firefox_cookie_dbs(search_roots)))
+    — при двух профилях это может оказаться не тот, в котором есть вход; поэтому профиль
+    указывается явно: --cookies-from-browser firefox:<имя_профиля>. 2) База копируется
+    во временный каталог и читается оттуда (поэтому работающий Firefox не мешает).
+    3) У Chromium-браузеров cookies на Linux зашифрованы и могут требовать ключ к
+    keyring — в задачу это не входит, но при выборе такого браузера yt-dlp может попросить
+    пароль keyring. 4) Значение профиля — имя каталога профиля, а не путь: каталоги
+    лежат в ~/.mozilla/firefox/<имя>. Вывод для кода: приложение показывает владельцу
+    каждый найденный профиль отдельным пунктом и передаёт его как есть.'
+  url: https://github.com/yt-dlp/yt-dlp/blob/master/yt_dlp/cookies.py
+  version: '2026.10.26 (исходники установленного пакета: /usr/lib/python3/dist-packages/yt_dlp/cookies.py)'
+  currency_evidence: 'Исходники установленного yt-dlp 2026.10.26 прочитаны в этой
+    сессии (yt_dlp/cookies.py, функции _extract_firefox_cookies и _firefox_cookie_dbs);
+    обе формы — «firefox» и «firefox:1owjllur.default-release» — проверены на этой
+    машине на ролике dgKRqagdjOU: с cookies код возврата 0, без cookies — проверка
+    бота.'
+  topics:
+  - без профиля берётся самый свежий cookies.sqlite — профиль надо указывать явно
+  - 'база копируется во временный каталог: работающий Firefox не мешает'
+  - у Chromium cookies зашифрованы и могут требовать keyring
+  - значение профиля — имя каталога профиля
+  deprecated_apis: []
+  applies_to:
+  - package: yt-dlp
+    version: 2026.10.26
+  recorded_at: '2026-11-19T12:37:24+00:00'
+- id: SRC-C2
+  phase: код
+  kind: api
+  title: yt-dlp wiki FAQ — формат файла cookies.txt
+  findings: 'Файл cookies.txt должен быть в формате Mozilla/Netscape: первая строка
+    — «# HTTP Cookie File» или «# Netscape HTTP Cookie File», переводы строк LF на
+    Unix. Приложение файл не читает и не проверяет: оно только передаёт путь yt-dlp,
+    и ошибку формата yt-dlp сообщает сам («HTTP Error 400: Bad Request» — признак
+    неверных переводов строк).'
+  url: https://github.com/yt-dlp/yt-dlp/wiki/FAQ
+  version: master-ветка wiki (прочитана в этой сессии)
+  currency_evidence: Раздел «How do I pass cookies to yt-dlp?» прочитан по адресу
+    raw.githubusercontent.com/yt-dlp/yt-dlp-wiki/master/FAQ.md в этой сессии; формат
+    файла на машине владельца не проверялся — файл у него не выгружен, — поэтому проверку
+    формата приложение на себя не берёт.
+  topics:
+  - формат Mozilla/Netscape и первая строка файла
+  - переводы строк LF на Unix
+  - проверку формата делает yt-dlp, не приложение
+  deprecated_apis: []
+  applies_to:
+  - package: yt-dlp
+    version: 2026.10.26
+  recorded_at: '2026-11-19T12:37:24+00:00'
+- id: SRC-C3
+  phase: код
+  kind: not_applicable
+  title: 'Qt и PySide6 — новых API нет: диалог собран из уже знакомых виджетов'
+  findings: 'В коде фазы не появляется новой поверхности Qt: диалог выбора источника
+    cookies собран из тех же виджетов, что и остальные диалоги приложения (QDialog,
+    QComboBox, QLineEdit, QPushButton, QDialogButtonBox), окно — из того же QPushButton
+    в тулбаре.'
+  reason: 'Новый API не изучается, изучать нечего: отдельная запись по документации
+    Qt была бы записью без содержания.'
+  recorded_at: '2026-11-19T12:37:24+00:00'

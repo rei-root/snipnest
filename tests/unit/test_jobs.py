@@ -11,6 +11,9 @@ from snipnest.jobs import DownloadJob, JobEvent, JobEventKind, JobManager, JobSt
 class FakeRunner:
     """Подмена gallery-dl: отдаёт заранее заданный итог."""
 
+    #: Имя исполнителя — оно попадает в сообщение об ошибке.
+    name = "gallery-dl"
+
     def __init__(self, result: DownloadResult, files: list[str] | None = None) -> None:
         self.result = result
         self.files = files or []
@@ -176,3 +179,28 @@ def test_запуск_не_в_очереди_запрещён() -> None:
     job.cancel()
     with pytest.raises(RuntimeError):
         job.start()
+
+
+def test_ошибка_называет_исполнителя() -> None:
+    """В сообщении — та программа, которая качала, а не всегда gallery-dl."""
+    job, _ = make_job(DownloadResult(0, 0, 1, 1, ()))
+    job.start()
+    assert "gallery-dl" in job.error_text
+
+
+def test_ошибка_youtube_называет_yt_dlp() -> None:
+    """Отказ yt-dlp не должен называться отказом gallery-dl."""
+
+    class YtDlpStub(FakeRunner):
+        name = "yt-dlp"
+
+    job = DownloadJob(
+        "job-1",
+        "https://youtu.be/dQw4w9WgXcQ",
+        "/tmp/out",
+        YtDlpStub(DownloadResult(0, 0, 1, 1, ())),
+    )
+    job.start()
+    assert job.state is JobState.FAILED
+    assert "yt-dlp" in job.error_text
+    assert "gallery-dl" not in job.error_text

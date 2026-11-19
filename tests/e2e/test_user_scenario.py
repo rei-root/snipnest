@@ -18,6 +18,9 @@ from snipnest.jobs import JobManager, JobState  # noqa: E402
 class StubRunner:
     """Заглушка gallery-dl: отдаёт два файла и успешный код возврата."""
 
+    #: Имя исполнителя — оно попадает в сообщение об ошибке.
+    name = "gallery-dl"
+
     def __init__(self) -> None:
         self.cancelled = False
 

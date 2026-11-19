@@ -109,3 +109,30 @@ def test_счётчик_файлов_у_video_один() -> None:
     """Одна ссылка — один файл: предварительный проход в сеть не ходит."""
     runner = YtDlpRunner(destination=Path("/tmp/out"))
     assert runner.count_files(URL) == 1
+
+
+def test_команда_с_браузером_добавляет_cookies_from_browser() -> None:
+    runner = YtDlpRunner(
+        destination=Path("/tmp/out"),
+        cookies_browser="firefox:abc.default-release",
+    )
+    command = runner.build_command(URL)
+    assert "--cookies-from-browser" in command
+    assert "firefox:abc.default-release" in command
+
+
+def test_команда_с_файлом_добавляет_cookies() -> None:
+    runner = YtDlpRunner(destination=Path("/tmp/out"), cookies_file="/home/sato/cookies.txt")
+    command = runner.build_command(URL)
+    assert "--cookies" in command
+    assert "/home/sato/cookies.txt" in command
+
+
+def test_без_cookies_флагов_нет() -> None:
+    command = YtDlpRunner(destination=Path("/tmp/out")).build_command(URL)
+    assert "--cookies" not in command
+    assert "--cookies-from-browser" not in command
+
+
+def test_имя_исполнителя_для_ошибки() -> None:
+    assert YtDlpRunner().name == "yt-dlp"

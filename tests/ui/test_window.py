@@ -37,6 +37,9 @@ def window(qtbot, settings: Settings) -> MainWindow:
 class StubRunner:
     """Подмена gallery-dl: отдаёт заранее заданный итог."""
 
+    #: Имя исполнителя — оно попадает в сообщение об ошибке.
+    name = "gallery-dl"
+
     def __init__(self, result: DownloadResult) -> None:
         self.result = result
         self.cancelled = False
@@ -82,6 +85,15 @@ def test_в_окне_есть_кнопки_pinterest(window: MainWindow) -> None
 
 def test_в_окне_есть_кнопка_путь_к_yt_dlp(window: MainWindow) -> None:
     assert window._controls.yt_dlp_button.text() == "Путь к yt-dlp"
+
+
+def test_в_окне_есть_кнопка_cookies_youtube(window: MainWindow) -> None:
+    assert window._controls.cookies_button.text() == "Cookies YouTube"
+
+
+def test_область_лога_называется_лог(window: MainWindow) -> None:
+    """В логе вывод обоих исполнителей — название не должно быть узким."""
+    assert window._log.title == "Лог"
 
 
 def test_в_окне_только_поле_ссылки(window: MainWindow) -> None:

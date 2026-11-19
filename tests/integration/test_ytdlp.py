@@ -52,3 +52,15 @@ def test_путь_назначения_используется(tmp_path: Path) 
     runner = YtDlpRunner(destination=tmp_path)
     command = runner.build_command("https://youtu.be/dQw4w9WgXcQ")
     assert str(tmp_path) in command
+
+
+def test_настоящий_бинарник_умеет_брать_cookies_из_браузера() -> None:
+    """Установленный yt-dlp знает про --cookies-from-browser."""
+    result = subprocess.run(
+        ["yt-dlp", "--help"],
+        capture_output=True,
+        text=True,
+        check=False,
+    )
+    assert result.returncode == 0
+    assert "--cookies-from-browser" in result.stdout

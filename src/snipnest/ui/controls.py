@@ -79,6 +79,9 @@ class TopControls(QWidget):
         self.yt_dlp_button = QPushButton("Путь к yt-dlp", box)
         layout.addWidget(self.yt_dlp_button)
 
+        self.cookies_button = QPushButton("Cookies YouTube", box)
+        layout.addWidget(self.cookies_button)
+
         layout.addStretch(1)
         return box
 

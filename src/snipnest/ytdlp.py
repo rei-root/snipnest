@@ -157,16 +157,21 @@ class YtDlpRunner:
     Запускается в отдельном потоке: UI не должен ждать сеть.
     """
 
+    #: Имя исполнителя — оно попадает в сообщение об ошибке.
+    name = "yt-dlp"
+
     def __init__(
         self,
         binary: str | None = None,
         destination: Path | None = None,
-        cookies: str | None = None,
+        cookies_file: str | None = None,
+        cookies_browser: str | None = None,
         on_event: Callable[[DownloadEvent], None] | None = None,
     ) -> None:
         self._binary = binary
         self._destination = destination
-        self._cookies = cookies
+        self._cookies_file = cookies_file
+        self._cookies_browser = cookies_browser
         self._on_event = on_event
         self._process: subprocess.Popen[str] | None = None
         self._lock = threading.Lock()
@@ -195,8 +200,10 @@ class YtDlpRunner:
             command.extend(["--js-runtimes", runtime])
         if self._destination is not None:
             command.extend(["--paths", str(self._destination)])
-        if self._cookies:
-            command.extend(["--cookies", self._cookies])
+        if self._cookies_browser:
+            command.extend(["--cookies-from-browser", self._cookies_browser])
+        elif self._cookies_file:
+            command.extend(["--cookies", self._cookies_file])
         command.extend(["-f", VIDEO_FORMAT, "--merge-output-format", "mp4"])
         command.extend(["-o", OUTPUT_TEMPLATE])
         if path_file is not None:

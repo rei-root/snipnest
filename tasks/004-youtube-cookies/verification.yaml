@@ -1,0 +1,61 @@
+task_id: 004-youtube-cookies
+ts: '2026-11-19T12:38:32+00:00'
+layer1:
+  status: pass
+  items:
+  - id: AC1
+    verified: true
+layer2:
+  status: pass
+  uncovered: []
+layer3:
+  status: pass
+  e2e_test_ids:
+  - T-e2e-cookies-browser
+  - T-e2e-cookies-file
+  - T-e2e-no-cookies
+pytest_result:
+  exit_code: 0
+  argv:
+  - /home/sato/.cache/uv/builds-v0/.tmpdtgjRa/bin/python
+  - -m
+  - pytest
+  - -q
+  - --tb=no
+  - --no-header
+  - -p
+  - no:cacheprovider
+  - tests/unit/test_cookies.py::test_находятся_профили_firefox
+  - tests/unit/test_cookies.py::test_значение_для_yt_dlp_содержит_профиль
+  - tests/unit/test_cookies.py::test_находится_браузер_без_профилей
+  - tests/unit/test_cookies.py::test_неустановленные_браузеры_не_предлагаются
+  - tests/unit/test_cookies.py::test_профиль_без_cookies_sqlite_не_считается
+  - tests/unit/test_cookies.py::test_источник_из_файла
+  - tests/unit/test_cookies.py::test_источник_из_файла_без_пути
+  - tests/unit/test_ytdlp.py::test_команда_с_браузером_добавляет_cookies_from_browser
+  - tests/unit/test_ytdlp.py::test_команда_с_файлом_добавляет_cookies
+  - tests/unit/test_ytdlp.py::test_без_cookies_флагов_нет
+  - tests/unit/test_ytdlp.py::test_имя_исполнителя_для_ошибки
+  - tests/unit/test_settings.py::test_источник_cookies_запоминается
+  - tests/unit/test_settings.py::test_путь_к_файлу_cookies_запоминается
+  - tests/unit/test_jobs.py::test_ошибка_называет_исполнителя
+  - tests/unit/test_jobs.py::test_ошибка_youtube_называет_yt_dlp
+  - tests/ui/test_dialogs.py::test_диалог_показывает_найденные_источники
+  - tests/ui/test_dialogs.py::test_диалог_выбирает_браузер
+  - tests/ui/test_dialogs.py::test_диалог_выбирает_файл
+  - tests/ui/test_dialogs.py::test_диалог_показывает_текущий_выбор
+  - tests/ui/test_dialogs.py::test_диалог_без_выбора_ничего_не_возвращает
+  - tests/ui/test_dialogs.py::test_источники_совпадают_с_найденными_в_системе
+  - tests/ui/test_window.py::test_в_окне_есть_кнопка_cookies_youtube
+  - tests/ui/test_window.py::test_область_лога_называется_лог
+  - tests/ui/test_sources.py::test_задание_видео_передаёт_cookies_из_настроек
+  - tests/unit/test_scope.py::test_приложение_локальное_и_однопользовательское
+  - tests/unit/test_scope.py::test_поддерживаются_pinterest_и_youtube
+  - tests/integration/test_ytdlp.py::test_настоящий_бинарник_умеет_брать_cookies_из_браузера
+  - tests/e2e/test_youtube_scenario.py::test_команда_yt_dlp_получает_cookies_из_браузера
+  - tests/e2e/test_youtube_scenario.py::test_команда_yt_dlp_получает_файл_cookies
+  - tests/e2e/test_youtube_scenario.py::test_без_выбранного_источника_cookies_флагов_нет
+  stdout_tail: '..............................                                           [100%]
+
+    '
+combined: accepted

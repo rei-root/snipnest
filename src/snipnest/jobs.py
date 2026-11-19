@@ -205,7 +205,7 @@ class DownloadJob:
         if self.result.returncode == 0:
             self._set_state(JobState.DONE)
         else:
-            self.error_text = f"gallery-dl завершился с кодом {self.result.returncode}"
+            self.error_text = f"{self._runner.name} завершился с кодом {self.result.returncode}"
             self._set_state(JobState.FAILED)
             self._emit(JobEventKind.ERROR, text=self.error_text)
 

@@ -13,7 +13,7 @@ from PySide6.QtGui import QDesktopServices
 from PySide6.QtWidgets import QWidget
 
 from ..settings import Settings
-from .dialogs import TokenDialog, choose_directory, choose_executable
+from .dialogs import CookieSourceDialog, TokenDialog, choose_directory, choose_executable
 
 __all__ = ["SettingsActions"]
 
@@ -87,6 +87,26 @@ class SettingsActions:
         self._settings.yt_dlp_path = selected
         self.save()
         self._on_status(f"Путь к yt-dlp: {selected}")
+
+    def choose_youtube_cookies(self) -> None:
+        """Выбрать, откуда yt-dlp берёт cookies для YouTube."""
+        dialog = CookieSourceDialog(
+            self._parent,
+            self._settings.cookies_browser,
+            self._settings.cookies_file,
+        )
+        if dialog.exec() != CookieSourceDialog.DialogCode.Accepted:
+            return
+        browser, path = dialog.selection()
+        self._settings.cookies_browser = browser
+        self._settings.cookies_file = path
+        self.save()
+        if browser:
+            self._on_status(f"Cookies YouTube: браузер {browser}")
+        elif path:
+            self._on_status(f"Cookies YouTube: файл {path}")
+        else:
+            self._on_status("Cookies YouTube: не использовать")
 
     def open_pinterest(self) -> None:
         """Открыть Pinterest в браузере."""

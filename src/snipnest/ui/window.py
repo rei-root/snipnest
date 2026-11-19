@@ -110,6 +110,7 @@ class MainWindow(DropTargetMixin, QMainWindow):
         self._controls.open_pinterest_button.clicked.connect(self._actions.open_pinterest)
         self._controls.gallery_dl_button.clicked.connect(self._actions.choose_gallery_dl)
         self._controls.yt_dlp_button.clicked.connect(self._actions.choose_yt_dlp)
+        self._controls.cookies_button.clicked.connect(self._actions.choose_youtube_cookies)
         self._log.toggle_button.toggled.connect(self._log.set_expanded)
         self._bridge.events_ready.connect(self._drain_events)
 
@@ -205,8 +206,7 @@ class MainWindow(DropTargetMixin, QMainWindow):
             job_id,
             url,
             self._settings.destination,
-            source.binary_path(self._settings),
-            None,
+            self._settings,
             self._controller.post_event,
         )
 

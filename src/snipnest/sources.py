@@ -134,11 +134,14 @@ class DownloadSource:
         job_id: str,
         url: str,
         destination: str,
-        binary: str | None = None,
-        cookies: str | None = None,
+        settings: Settings,
         on_event: Callable[[JobEvent], None] | None = None,
     ) -> DownloadJob:
-        """Собрать загрузку для этой ссылки."""
+        """Собрать загрузку для этой ссылки.
+
+        Источник сам берёт из настроек всё, что ему нужно: путь к своему
+        бинарнику и, если уместно, источник cookies.
+        """
         raise NotImplementedError
 
     def _finish_job(
@@ -201,14 +204,12 @@ class PinterestSource(DownloadSource):
         job_id: str,
         url: str,
         destination: str,
-        binary: str | None = None,
-        cookies: str | None = None,
+        settings: Settings,
         on_event: Callable[[JobEvent], None] | None = None,
     ) -> DownloadJob:
         runner = GalleryDlRunner(
-            binary=binary,
+            binary=self.binary_path(settings),
             destination=Path(destination),
-            cookies=cookies,
             directory_formats=self.directory_formats,
         )
         return self._finish_job(job_id, url, destination, runner, on_event)
@@ -247,14 +248,14 @@ class YouTubeSource(DownloadSource):
         job_id: str,
         url: str,
         destination: str,
-        binary: str | None = None,
-        cookies: str | None = None,
+        settings: Settings,
         on_event: Callable[[JobEvent], None] | None = None,
     ) -> DownloadJob:
         runner = YtDlpRunner(
-            binary=binary,
+            binary=self.binary_path(settings),
             destination=Path(destination),
-            cookies=cookies,
+            cookies_file=settings.cookies_file or None,
+            cookies_browser=settings.cookies_browser or None,
         )
         return self._finish_job(job_id, url, destination, runner, on_event)
 

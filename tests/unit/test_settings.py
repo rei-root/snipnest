@@ -81,6 +81,29 @@ def test_путь_к_yt_dlp_запоминается(tmp_path) -> None:
     assert second.yt_dlp_path == "/usr/bin/yt-dlp"
 
 
+def test_источник_cookies_запоминается(tmp_path) -> None:
+    """Источник cookies — не секрет, он лежит рядом с путями к бинарникам."""
+    config = tmp_path / "settings.json"
+    first = Settings(config_path=config, secret_store=FileSecretStore(tmp_path / "secret"))
+    first.cookies_browser = "firefox:abc.default-release"
+    first.cookies_file = ""
+    first.save()
+
+    second = Settings(config_path=config, secret_store=FileSecretStore(tmp_path / "secret"))
+    assert second.cookies_browser == "firefox:abc.default-release"
+    assert second.cookies_file == ""
+
+
+def test_путь_к_файлу_cookies_запоминается(tmp_path) -> None:
+    config = tmp_path / "settings.json"
+    first = Settings(config_path=config, secret_store=FileSecretStore(tmp_path / "secret"))
+    first.cookies_file = "/home/sato/cookies.txt"
+    first.save()
+
+    second = Settings(config_path=config, secret_store=FileSecretStore(tmp_path / "secret"))
+    assert second.cookies_file == "/home/sato/cookies.txt"
+
+
 def test_старые_настройки_переносятся_в_новый_каталог(tmp_path) -> None:
     """После переименования настройки старого приложения не теряются."""
     migration = importlib.import_module("snipnest.migration")

@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 from snipnest.links import LinkKind
+from snipnest.settings import FileSecretStore, Settings
 from snipnest.sources import (
     DownloadSource,
     PinterestSource,
@@ -11,6 +12,14 @@ from snipnest.sources import (
     YouTubeSource,
 )
 from snipnest.ytdlp import YtDlpRunner
+
+
+def make_settings(tmp_path) -> Settings:
+    """Настройки с отдельным конфигом — без чтения настоящего."""
+    return Settings(
+        config_path=tmp_path / "settings.json",
+        secret_store=FileSecretStore(tmp_path / "secret"),
+    )
 
 
 def test_источник_pinterest_узнаёт_свою_ссылку() -> None:
@@ -84,12 +93,33 @@ def test_описание_ссылки_youtube_даёт_идентификато
     assert info.link_kind is LinkKind.VIDEO
 
 
-def test_задание_видео_собирает_загрузку_с_yt_dlp() -> None:
+def test_задание_видео_собирает_загрузку_с_yt_dlp(tmp_path) -> None:
     source = YouTubeSource()
-    job = source.build_job("job-1", "https://youtu.be/dQw4w9WgXcQ", "/tmp/out")
+    job = source.build_job(
+        "job-1",
+        "https://youtu.be/dQw4w9WgXcQ",
+        "/tmp/out",
+        make_settings(tmp_path),
+    )
     assert job.url == "https://youtu.be/dQw4w9WgXcQ"
     assert job.destination == "/tmp/out"
     assert isinstance(job.runner, YtDlpRunner)
+
+
+def test_задание_видео_передаёт_cookies_из_настроек(tmp_path) -> None:
+    """Выбранный источник cookies доходит до исполнителя."""
+    settings = make_settings(tmp_path)
+    settings.cookies_browser = "firefox:abc.default-release"
+    source = YouTubeSource()
+    job = source.build_job(
+        "job-1",
+        "https://youtu.be/dQw4w9WgXcQ",
+        "/tmp/out",
+        settings,
+    )
+    command = job.runner.build_command("https://youtu.be/dQw4w9WgXcQ")
+    assert "--cookies-from-browser" in command
+    assert "firefox:abc.default-release" in command
 
 
 def test_источник_youtube_не_знает_про_плейлист() -> None:

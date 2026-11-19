@@ -21,3 +21,7 @@ tasks/*.progress
 # искал модель у себя, а per-task спецификацию писал в проект, а не в
 # site-packages. Подробности и команда — в docs/ba/spec/README.md.
 docs/ba/spec/model
+
+# Незавершённые загрузки yt-dlp и выгрузки видео — не часть репозитория.
+*.part
+*.ytdl

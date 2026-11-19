@@ -93,6 +93,8 @@ class Settings:
         self.destination: str = str(DEFAULT_DESTINATION)
         self.gallery_dl_path: str = ""
         self.yt_dlp_path: str = ""
+        self.cookies_browser: str = ""
+        self.cookies_file: str = ""
         self.load()
 
     def load(self) -> None:
@@ -112,6 +114,12 @@ class Settings:
         yt_dlp_path = data.get("yt_dlp_path")
         if isinstance(yt_dlp_path, str):
             self.yt_dlp_path = yt_dlp_path
+        cookies_browser = data.get("cookies_browser")
+        if isinstance(cookies_browser, str):
+            self.cookies_browser = cookies_browser
+        cookies_file = data.get("cookies_file")
+        if isinstance(cookies_file, str):
+            self.cookies_file = cookies_file
 
     def save(self) -> None:
         """Записать настройки в конфиг."""
@@ -120,6 +128,8 @@ class Settings:
             "destination": self.destination,
             "gallery_dl_path": self.gallery_dl_path,
             "yt_dlp_path": self.yt_dlp_path,
+            "cookies_browser": self.cookies_browser,
+            "cookies_file": self.cookies_file,
         }
         self._config_path.write_text(
             json.dumps(data, ensure_ascii=False, indent=2) + "\n",

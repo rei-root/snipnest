@@ -1,4 +1,4 @@
-"""Сворачиваемая область лога вывода gallery-dl."""
+"""Сворачиваемая область лога вывода исполнителя."""
 
 from __future__ import annotations
 
@@ -23,7 +23,8 @@ class LogArea(QWidget):
         layout.setContentsMargins(0, 0, 0, 0)
 
         header = QHBoxLayout()
-        header.addWidget(QLabel("Лог gallery-dl", self))
+        self._title = QLabel("Лог", self)
+        header.addWidget(self._title)
         header.addStretch(1)
         self.toggle_button = QToolButton(self)
         self.toggle_button.setText("Свернуть")
@@ -36,6 +37,11 @@ class LogArea(QWidget):
         self.view.setReadOnly(True)
         self.view.setLineWrapMode(QTextEdit.LineWrapMode.NoWrap)
         layout.addWidget(self.view)
+
+    @property
+    def title(self) -> str:
+        """Название области лога."""
+        return self._title.text()
 
     @property
     def text(self) -> str:
