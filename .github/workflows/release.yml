@@ -26,8 +26,17 @@ jobs:
       - name: Поставить зависимости
         run: uv sync --frozen
 
-      - name: Проверки
-        run: make ci
+      - name: Линтеры
+        run: make lint
+
+      - name: Типы
+        run: make typecheck
+
+      - name: Тесты
+        run: make test
+
+      - name: Оракул
+        run: make oracle
 
       - name: Поставить инструменты для сборки
         run: |

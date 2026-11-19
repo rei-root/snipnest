@@ -50,7 +50,12 @@ def test_логотип_на_месте() -> None:
 
 
 def test_удалённый_репозиторий_новый() -> None:
-    """Репозиторий проекта переведён на snipnest."""
+    """Репозиторий проекта переведён на snipnest.
+
+    Адрес бывает с ``.git`` и без: ``actions/checkout`` в CI добавляет
+    remote как ``https://github.com/<владелец>/<репозиторий>`` — без
+    расширения. Проверяем имя репозитория, а не написание адреса.
+    """
     url = subprocess.run(
         ["git", "remote", "get-url", "origin"],
         cwd=ROOT,
@@ -58,4 +63,4 @@ def test_удалённый_репозиторий_новый() -> None:
         text=True,
         check=True,
     ).stdout.strip()
-    assert url.endswith("snipnest.git")
+    assert url.rstrip("/").removesuffix(".git").endswith("snipnest")
