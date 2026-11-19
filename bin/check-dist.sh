@@ -36,6 +36,11 @@ else
     if [[ "$version_line" != "snipnest $VERSION" ]]; then
         fail "бинарник печатает версию" "получено '${version_line}', ожидалось 'snipnest $VERSION'"
     fi
+    # Переносимый Python должен быть внутри: без него мастер не поставит
+    # Python-компоненты.
+    if ! grep -q "runtime/python/bin/python3" "$BINARY"; then
+        fail "в бинарнике есть переносимый Python" "внутри нет runtime/python/bin/python3"
+    fi
 fi
 
 # 2. AppImage: образ, внутри AppRun, desktop-файл и иконка.
@@ -57,6 +62,9 @@ else
         done
         if [[ -e "$squashfs/usr/bin/snipnest" && ! -x "$squashfs/usr/bin/snipnest" ]]; then
             fail "в appimage есть исполняемый snipnest" "usr/bin/snipnest не исполняемый"
+        fi
+        if [[ ! -x "$squashfs/usr/lib/snipnest/app/runtime/python/bin/python3" ]]; then
+            fail "в appimage есть переносимый Python" "нет runtime/python/bin/python3"
         fi
     fi
 fi
