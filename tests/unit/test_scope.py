@@ -4,9 +4,9 @@
 
 * R2 — стейкхолдеры и пользователи: единственный пользователь — владелец,
   приложение личное и локальное, запускается на его машине, скачивание
-  делает внешний системный gallery-dl;
-* R6 — границы: кроме Pinterest другие соцсети не поддерживаются, в задачу
-  не входят видео, поиск, планировщик и авторизация по логину/паролю.
+  делает внешний системный gallery-dl или yt-dlp;
+* R6 — границы: кроме Pinterest и YouTube другие соцсети не поддерживаются,
+  в задачу не входят поиск, планировщик и авторизация по логину/паролю.
 """
 
 from __future__ import annotations
@@ -46,17 +46,30 @@ def test_приложение_локальное_и_однопользовате
             assert f"import {name}" not in text, f"{path.name} импортирует {name}"
 
 
-def test_поддерживается_только_pinterest() -> None:
-    """R6: кроме Pinterest другие соцсети в задачу не входят."""
+def test_поддерживаются_pinterest_и_youtube() -> None:
+    """R6: кроме Pinterest и YouTube другие соцсети в задачу не входят."""
     registry = SourceRegistry()
 
-    assert [source.title for source in registry.sources] == ["Pinterest"]
+    assert [source.title for source in registry.sources] == ["Pinterest", "YouTube"]
     assert registry.sources[0].kind is SourceKind.PINTEREST
+    assert registry.sources[1].kind is SourceKind.YOUTUBE
 
     for url in (
         "https://youtu.be/dQw4w9WgXcQ",
+        "https://www.youtube.com/watch?v=dQw4w9WgXcQ",
+        "https://www.youtube.com/shorts/dQw4w9WgXcQ",
+    ):
+        assert registry.find(url) is not None, f"{url} должен поддерживаться"
+
+    for url in (
         "https://www.tiktok.com/@user/video/1234567890",
         "https://vk.com/video-1_2",
         "https://example.com/pin/123456/",
     ):
         assert registry.find(url) is None, f"{url} не должен поддерживаться"
+
+
+def test_плейлист_youtube_не_поддерживается() -> None:
+    """R6: плейлисты в задачу не входят — одна ссылка означает одно видео."""
+    registry = SourceRegistry()
+    assert registry.find("https://www.youtube.com/playlist?list=PL123") is None

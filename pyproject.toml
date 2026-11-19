@@ -30,7 +30,10 @@ packages = ["src/snipnest"]
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]
-addopts = "-q"
+# --import-mode=importlib: имя модуля теста берётся из пути, а не из имени
+# файла. Иначе два теста с одинаковым именем в разных каталогах (например
+# test_ytdlp.py в unit и в integration) не собираются вместе.
+addopts = "-q --import-mode=importlib"
 # Драйвер знаменателя (tests/spec_mini/run_denominator.py) — не тест-файл по
 # имени, но адресуется орком как `file::run`, поэтому pytest должен собирать
 # функцию с этим именем. Других функций `run` в наборе нет: в тестах `run` —

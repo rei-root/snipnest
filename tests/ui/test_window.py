@@ -80,6 +80,10 @@ def test_в_окне_есть_кнопки_pinterest(window: MainWindow) -> None
     assert window._controls.open_pinterest_button.text() == "Открыть Pinterest"
 
 
+def test_в_окне_есть_кнопка_путь_к_yt_dlp(window: MainWindow) -> None:
+    assert window._controls.yt_dlp_button.text() == "Путь к yt-dlp"
+
+
 def test_в_окне_только_поле_ссылки(window: MainWindow) -> None:
     """R6: поиск, логин и пароль в задачу не входят — редактируемое поле одно."""
     editable = [edit for edit in window.findChildren(QLineEdit) if not edit.isReadOnly()]
@@ -122,6 +126,27 @@ def test_событие_прогресса_обновляет_строку(windo
     assert row.progress_label == "скачано 2 из 5"
     assert row.speed_label == "2.0 КБ/с"
     assert window.progress_value == 40
+
+
+def test_процент_от_исполнителя_двигает_прогресс_бар(window: MainWindow) -> None:
+    """Видео качается долго: процент приходит от исполнителя, а не от счётчика файлов."""
+    job = make_job()
+    window._panel.add_job(job)
+
+    window._apply_event(
+        JobEvent(
+            kind=JobEventKind.PROGRESS,
+            job_id=job.job_id,
+            downloaded=0,
+            total=1,
+            percent=45,
+        )
+    )
+
+    row = window.row_for(job.job_id)
+    assert row is not None
+    assert row.progress_percent == 45
+    assert window.progress_value == 45
 
 
 def test_событие_файла_добавляет_имя_файла(window: MainWindow) -> None:
@@ -197,11 +222,7 @@ def test_лог_сворачивается(window: MainWindow) -> None:
     assert window._log.view.isHidden()
 
 
-def test_непонятная_ссылка_не_создаёт_загрузку(window: MainWindow, monkeypatch) -> None:
-    monkeypatch.setattr(
-        "snipnest.ui.window.find_gallery_dl",
-        lambda explicit=None: "/usr/bin/gallery-dl",
-    )
+def test_непонятная_ссылка_не_создаёт_загрузку(window: MainWindow) -> None:
     window.link_text = "https://example.com/not-pinterest"
     window._on_download_clicked()
     assert window.job_ids() == []
@@ -210,7 +231,7 @@ def test_непонятная_ссылка_не_создаёт_загрузку(
 
 def test_отсутствие_gallery_dl_даёт_понятное_сообщение(window: MainWindow, monkeypatch) -> None:
     monkeypatch.setattr(
-        "snipnest.ui.window.find_gallery_dl",
+        "snipnest.sources.find_gallery_dl",
         lambda explicit=None: None,
     )
     window.link_text = "https://pin.it/abc"
@@ -222,7 +243,7 @@ def test_отсутствие_gallery_dl_даёт_понятное_сообще�
 def test_загрузка_идёт_в_отдельном_потоке(window: MainWindow, monkeypatch, qtbot) -> None:
     """Загрузка стартует, а окно остаётся отзывчивым."""
     monkeypatch.setattr(
-        "snipnest.ui.window.find_gallery_dl",
+        "snipnest.sources.find_gallery_dl",
         lambda explicit=None: "/usr/bin/gallery-dl",
     )
     monkeypatch.setattr(
@@ -236,6 +257,31 @@ def test_загрузка_идёт_в_отдельном_потоке(window: Ma
     row = window.row_for(window.job_ids()[0])
     assert row is not None
     assert row.state in (JobState.QUEUED, JobState.RUNNING, JobState.DONE)
+
+
+def test_ссылка_на_youtube_создаёт_загрузку(window: MainWindow, monkeypatch) -> None:
+    """Ссылка на YouTube распознаётся и попадает в список загрузок."""
+    monkeypatch.setattr(
+        "snipnest.sources.YtDlpRunner",
+        lambda *args, **kwargs: StubRunner(DownloadResult(0, 0, 0, 0, ())),
+    )
+    window.link_text = "https://youtu.be/dQw4w9WgXcQ"
+    window._on_download_clicked()
+
+    assert len(window.job_ids()) == 1
+    assert "не распознана" not in window.status_text
+
+
+def test_отсутствие_yt_dlp_даёт_понятное_сообщение(window: MainWindow, monkeypatch) -> None:
+    monkeypatch.setattr(
+        "snipnest.sources.find_yt_dlp",
+        lambda explicit=None: None,
+    )
+    window.link_text = "https://youtu.be/dQw4w9WgXcQ"
+    window._on_download_clicked()
+
+    assert window.job_ids() == []
+    assert "yt-dlp не найден" in window.status_text
 
 
 def test_подпись_скорости_человекочитаемая() -> None:

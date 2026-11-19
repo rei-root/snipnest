@@ -1,6 +1,6 @@
 """Главное окно приложения.
 
-Сверху — поле ссылки, папка сохранения и кнопки Pinterest. Ниже — список
+Сверху — поле ссылки, папка сохранения и кнопки источников. Ниже — список
 загрузок, прогресс-бар, статус и сворачиваемый лог.
 """
 
@@ -19,14 +19,12 @@ from PySide6.QtWidgets import (
     QWidget,
 )
 
-from ..downloader import find_gallery_dl
 from ..jobs import DownloadJob, JobEvent
 from ..settings import Settings
 from ..sources import SourceRegistry
 from .bridge import JobEventBridge
 from .controller import JobController
 from .controls import TopControls
-from .dialogs import describe_missing_binary
 from .dnd import DropTargetMixin
 from .logarea import LogArea
 from .models import JobRow
@@ -111,6 +109,7 @@ class MainWindow(DropTargetMixin, QMainWindow):
         self._controls.token_button.clicked.connect(self._actions.edit_token)
         self._controls.open_pinterest_button.clicked.connect(self._actions.open_pinterest)
         self._controls.gallery_dl_button.clicked.connect(self._actions.choose_gallery_dl)
+        self._controls.yt_dlp_button.clicked.connect(self._actions.choose_yt_dlp)
         self._log.toggle_button.toggled.connect(self._log.set_expanded)
         self._bridge.events_ready.connect(self._drain_events)
 
@@ -169,20 +168,18 @@ class MainWindow(DropTargetMixin, QMainWindow):
 
         source = self._registry.find(url)
         if source is None:
-            self._set_status("Ссылка не распознана: поддерживается Pinterest")
+            self._set_status("Ссылка не распознана: поддерживаются Pinterest и YouTube")
             self._show_error(
                 "Непонятная ссылка",
                 f"Приложение не умеет работать со ссылкой:\n{url}\n"
-                "Поддерживаются ссылки Pinterest.",
+                "Поддерживаются ссылки Pinterest и YouTube.",
             )
             return
 
-        if find_gallery_dl(self._settings.gallery_dl_path or None) is None:
-            self._set_status("gallery-dl не найден")
-            self._show_error(
-                "gallery-dl не найден",
-                describe_missing_binary(self._settings.gallery_dl_path),
-            )
+        missing = source.missing_binary_message(self._settings)
+        if missing is not None:
+            self._set_status(f"{source.binary.name} не найден")
+            self._show_error("Бинарник не найден", missing)
             return
 
         job = self._build_job(self._next_job_id(), url)
@@ -208,7 +205,7 @@ class MainWindow(DropTargetMixin, QMainWindow):
             job_id,
             url,
             self._settings.destination,
-            self._settings.gallery_dl_path or None,
+            source.binary_path(self._settings),
             None,
             self._controller.post_event,
         )

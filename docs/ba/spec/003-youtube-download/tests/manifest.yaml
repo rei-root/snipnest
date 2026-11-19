@@ -1,0 +1,296 @@
+tests:
+- id: T-yt-link-video
+  layer: unit
+  covers:
+  - R3
+  file: tests/unit/test_youtube.py
+  fn: test_обычное_видео_распознаётся
+- id: T-yt-link-short
+  layer: unit
+  covers:
+  - R3
+  file: tests/unit/test_youtube.py
+  fn: test_короткая_ссылка_распознаётся
+- id: T-yt-link-shorts
+  layer: unit
+  covers:
+  - R3
+  - AC1
+  file: tests/unit/test_youtube.py
+  fn: test_шортс_распознаётся
+- id: T-yt-link-live-embed
+  layer: unit
+  covers:
+  - R3
+  file: tests/unit/test_youtube.py
+  fn: test_прямая_трансляция_и_вставка_распознаются
+- id: T-yt-link-mobile
+  layer: unit
+  covers:
+  - R3
+  file: tests/unit/test_youtube.py
+  fn: test_мобильная_версия_и_плейлист_в_ссылке_распознаются
+- id: T-yt-link-foreign
+  layer: unit
+  covers:
+  - R6
+  file: tests/unit/test_youtube.py
+  fn: test_чужой_сайт_не_распознаётся
+- id: T-yt-link-playlist
+  layer: unit
+  covers:
+  - R4
+  - R6
+  file: tests/unit/test_youtube.py
+  fn: test_плейлист_не_видео
+- id: T-yt-link-channel
+  layer: unit
+  covers:
+  - R6
+  file: tests/unit/test_youtube.py
+  fn: test_канал_и_домашняя_страница_не_видео
+- id: T-ytdlp-command-destination
+  layer: unit
+  covers:
+  - R4
+  - AC1
+  file: tests/unit/test_ytdlp.py
+  fn: test_команда_кладёт_файл_в_выбранную_папку
+- id: T-ytdlp-command-no-playlist
+  layer: unit
+  covers:
+  - R4
+  file: tests/unit/test_ytdlp.py
+  fn: test_команда_не_качает_плейлист
+- id: T-ytdlp-command-filename
+  layer: unit
+  covers:
+  - R4
+  - AC1
+  file: tests/unit/test_ytdlp.py
+  fn: test_имя_файла_по_шаблону
+- id: T-ytdlp-command-merge
+  layer: unit
+  covers:
+  - R4
+  file: tests/unit/test_ytdlp.py
+  fn: test_команда_склеивает_видео_и_звук_в_mp4
+- id: T-ytdlp-command-format
+  layer: unit
+  covers:
+  - R4
+  file: tests/unit/test_ytdlp.py
+  fn: test_команда_берёт_лучшее_качество_с_предпочтением_mp4
+- id: T-ytdlp-progress-line
+  layer: unit
+  covers:
+  - R3
+  file: tests/unit/test_ytdlp.py
+  fn: test_разбор_строки_прогресса
+- id: T-ytdlp-progress-no-speed
+  layer: unit
+  covers:
+  - R3
+  file: tests/unit/test_ytdlp.py
+  fn: test_разбор_строки_прогресса_без_скорости
+- id: T-ytdlp-already-downloaded
+  layer: unit
+  covers:
+  - R4
+  file: tests/unit/test_ytdlp.py
+  fn: test_разбор_строки_уже_скачанного
+- id: T-ytdlp-log-line
+  layer: unit
+  covers:
+  - R3
+  file: tests/unit/test_ytdlp.py
+  fn: test_обычная_строка_идёт_в_лог
+- id: T-ytdlp-stream-count
+  layer: unit
+  covers:
+  - R3
+  file: tests/unit/test_ytdlp.py
+  fn: test_число_потоков_из_информационной_строки
+- id: T-ytdlp-overall-percent
+  layer: unit
+  covers:
+  - R3
+  file: tests/unit/test_ytdlp.py
+  fn: test_общий_процент_считается_по_потокам
+- id: T-ytdlp-find-binary
+  layer: unit
+  covers:
+  - R3
+  file: tests/unit/test_ytdlp.py
+  fn: test_поиск_бинарника_в_path
+- id: T-ytdlp-wrong-path
+  layer: unit
+  covers:
+  - R3
+  file: tests/unit/test_ytdlp.py
+  fn: test_явный_путь_к_несуществующему_бинарнику
+- id: T-ytdlp-missing-binary
+  layer: unit
+  covers:
+  - R3
+  file: tests/unit/test_ytdlp.py
+  fn: test_отсутствие_бинарника_даёт_понятную_ошибку
+- id: T-ytdlp-count-files
+  layer: unit
+  covers:
+  - R4
+  file: tests/unit/test_ytdlp.py
+  fn: test_счётчик_файлов_у_video_один
+- id: T-job-progress-percent
+  layer: unit
+  covers:
+  - R3
+  file: tests/unit/test_jobs.py
+  fn: test_событие_прогресса_исполнителя_меняет_процент_и_скорость
+- id: T-settings-yt-dlp-path
+  layer: unit
+  covers:
+  - R3
+  file: tests/unit/test_settings.py
+  fn: test_путь_к_yt_dlp_запоминается
+- id: T-scope-sources
+  layer: unit
+  covers:
+  - R2
+  - R6
+  file: tests/unit/test_scope.py
+  fn: test_поддерживаются_pinterest_и_youtube
+- id: T-scope-playlist
+  layer: unit
+  covers:
+  - R6
+  file: tests/unit/test_scope.py
+  fn: test_плейлист_youtube_не_поддерживается
+- id: T-scope-local
+  layer: unit
+  covers:
+  - R2
+  - R5
+  file: tests/unit/test_scope.py
+  fn: test_приложение_локальное_и_однопользовательское
+- id: T-source-youtube-matches
+  layer: unit
+  covers:
+  - R3
+  file: tests/ui/test_sources.py
+  fn: test_источник_youtube_узнаёт_свою_ссылку
+- id: T-source-youtube-describe
+  layer: unit
+  covers:
+  - R3
+  file: tests/ui/test_sources.py
+  fn: test_описание_ссылки_youtube_даёт_идентификатор_видео
+- id: T-source-youtube-job
+  layer: unit
+  covers:
+  - R3
+  file: tests/ui/test_sources.py
+  fn: test_задание_видео_собирает_загрузку_с_yt_dlp
+- id: T-source-youtube-no-playlist
+  layer: unit
+  covers:
+  - R4
+  - R6
+  file: tests/ui/test_sources.py
+  fn: test_источник_youtube_не_знает_про_плейлист
+- id: T-source-youtube-registry
+  layer: unit
+  covers:
+  - R3
+  file: tests/ui/test_sources.py
+  fn: test_реестр_находит_youtube_по_ссылке
+- id: T-source-youtube-layout
+  layer: unit
+  covers:
+  - R4
+  file: tests/ui/test_sources.py
+  fn: test_раскладка_youtube_кладёт_файл_прямо_в_выбранную_папку
+- id: T-source-youtube-short-describe
+  layer: unit
+  covers:
+  - R3
+  file: tests/ui/test_sources.py
+  fn: test_описание_короткой_ссылки_youtube
+- id: T-window-yt-dlp-button
+  layer: unit
+  covers:
+  - R3
+  file: tests/ui/test_window.py
+  fn: test_в_окне_есть_кнопка_путь_к_yt_dlp
+- id: T-window-youtube-link
+  layer: unit
+  covers:
+  - R3
+  - AC1
+  file: tests/ui/test_window.py
+  fn: test_ссылка_на_youtube_создаёт_загрузку
+- id: T-window-yt-dlp-missing
+  layer: unit
+  covers:
+  - R3
+  - AC1
+  file: tests/ui/test_window.py
+  fn: test_отсутствие_yt_dlp_даёт_понятное_сообщение
+- id: T-window-percent-bar
+  layer: unit
+  covers:
+  - R3
+  file: tests/ui/test_window.py
+  fn: test_процент_от_исполнителя_двигает_прогресс_бар
+- id: T-ytdlp-real-version
+  layer: integration
+  covers:
+  - R3
+  file: tests/integration/test_ytdlp.py
+  fn: test_настоящий_бинарник_печатает_версию
+- id: T-ytdlp-real-found
+  layer: integration
+  covers:
+  - R3
+  file: tests/integration/test_ytdlp.py
+  fn: test_бинарник_находится_в_path
+- id: T-ytdlp-real-missing
+  layer: integration
+  covers:
+  - R3
+  file: tests/integration/test_ytdlp.py
+  fn: test_несуществующий_бинарник_даёт_ошибку
+- id: T-ytdlp-real-command
+  layer: integration
+  covers:
+  - R4
+  file: tests/integration/test_ytdlp.py
+  fn: test_команда_содержит_папку_и_ссылку
+- id: T-ytdlp-real-destination
+  layer: integration
+  covers:
+  - R4
+  file: tests/integration/test_ytdlp.py
+  fn: test_путь_назначения_используется
+- id: T-e2e-youtube-file
+  layer: e2e
+  covers:
+  - R1
+  - R3
+  - AC1
+  file: tests/e2e/test_youtube_scenario.py
+  fn: test_видео_попадает_в_выбранную_папку
+- id: T-e2e-youtube-folder
+  layer: e2e
+  covers:
+  - R4
+  - AC1
+  file: tests/e2e/test_youtube_scenario.py
+  fn: test_в_выбранной_папке_появился_файл
+- id: T-e2e-youtube-error
+  layer: e2e
+  covers:
+  - R3
+  - AC1
+  file: tests/e2e/test_youtube_scenario.py
+  fn: test_ошибка_yt_dlp_показывается_в_логе

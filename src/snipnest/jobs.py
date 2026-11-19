@@ -12,7 +12,13 @@ import time
 from collections.abc import Callable
 from pathlib import Path
 
-from .downloader import DownloadEvent, DownloadEventKind, DownloadResult, GalleryDlRunner
+from .downloader import (
+    DownloadEvent,
+    DownloadEventKind,
+    DownloadResult,
+    DownloadRunner,
+    GalleryDlRunner,
+)
 from .manager import JobManager
 
 __all__ = [
@@ -66,6 +72,7 @@ class JobEvent:
     downloaded: int = 0
     total: int = 0
     bytes_per_second: float = 0.0
+    percent: float | None = None
     result: DownloadResult | None = None
 
 
@@ -77,6 +84,7 @@ class JobProgress:
     skipped: int = 0
     total: int = 0
     bytes_per_second: float = 0.0
+    percent: float | None = None
 
     @property
     def label(self) -> str:
@@ -92,7 +100,7 @@ class DownloadJob:
         job_id: str,
         url: str,
         destination: str,
-        runner: GalleryDlRunner | None = None,
+        runner: DownloadRunner | None = None,
         on_event: Callable[[JobEvent], None] | None = None,
     ) -> None:
         self.job_id = job_id
@@ -115,7 +123,12 @@ class DownloadJob:
         """Подключить подписчика событий после создания загрузки."""
         self._on_event = on_event
 
-    def set_runner(self, runner: GalleryDlRunner) -> None:
+    @property
+    def runner(self) -> DownloadRunner:
+        """Исполнитель загрузки."""
+        return self._runner
+
+    def set_runner(self, runner: DownloadRunner) -> None:
         """Подключить исполнителя: его события идут в загрузку.
 
         Без этого загрузка узнаёт о файлах только по итогу, а прогресс
@@ -222,12 +235,22 @@ class DownloadJob:
         return True
 
     def handle_download_event(self, event: DownloadEvent) -> None:
-        """Перевести событие gallery-dl в событие загрузки."""
+        """Перевести событие исполнителя в событие загрузки."""
         if self._counting:
             # Предварительный проход --simulate только считает файлы:
             # в список скачанных они не попадают.
             return
-        if event.kind is DownloadEventKind.FILE_DOWNLOADED:
+        if event.kind is DownloadEventKind.PROGRESS:
+            # Процент и скорость приходят от исполнителя: у видео один
+            # файл на полтора часа, счётчик файлов тут бесполезен.
+            if event.percent is not None:
+                self.progress.percent = event.percent
+            if event.bytes_per_second is not None:
+                # Скорость исполнителя своя: средняя по объёму посчитается
+                # только после конца файла, а до этого она была бы нулём.
+                self.progress.bytes_per_second = event.bytes_per_second
+            self._emit_progress()
+        elif event.kind is DownloadEventKind.FILE_DOWNLOADED:
             self.progress.downloaded += 1
             if event.path:
                 self.files.append(event.path)
@@ -266,6 +289,7 @@ class DownloadJob:
             downloaded=self.progress.downloaded,
             total=self.progress.total,
             bytes_per_second=self.progress.bytes_per_second,
+            percent=self.progress.percent,
         )
 
     def _emit(self, kind: JobEventKind, **fields: object) -> None:
@@ -278,6 +302,7 @@ class DownloadJob:
         downloaded = fields.get("downloaded")
         total = fields.get("total")
         speed = fields.get("bytes_per_second")
+        percent = fields.get("percent")
         result = fields.get("result")
         self._on_event(
             dataclasses.replace(
@@ -288,6 +313,7 @@ class DownloadJob:
                 downloaded=downloaded if isinstance(downloaded, int) else 0,
                 total=total if isinstance(total, int) else 0,
                 bytes_per_second=speed if isinstance(speed, float) else 0.0,
+                percent=percent if isinstance(percent, float) else None,
                 result=result if isinstance(result, DownloadResult) else None,
             )
         )

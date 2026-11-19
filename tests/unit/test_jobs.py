@@ -130,6 +130,34 @@ def test_подпись_счётчика_имеет_вид_скачано_x_из
     assert job.progress.label == "скачано 2 из 5"
 
 
+def test_событие_прогресса_исполнителя_меняет_процент_и_скорость() -> None:
+    """Видео идёт долго: процент и скорость приходят от исполнителя."""
+    job, events = make_job()
+    job.handle_download_event(
+        DownloadEvent(
+            DownloadEventKind.PROGRESS,
+            percent=45.2,
+            bytes_per_second=5 * 1024 * 1024,
+        )
+    )
+
+    assert job.progress.percent == pytest.approx(45.2)
+    assert job.progress.bytes_per_second == pytest.approx(5 * 1024 * 1024)
+    assert any(e.kind is JobEventKind.PROGRESS for e in events)
+
+
+def test_скорость_исполнителя_не_затирается_средней_по_объёму() -> None:
+    """Средняя скорость считается по объёму файла, а у видео он один и большой."""
+    job, _ = make_job(DownloadResult(1, 0, 0, 0, ("a.mp4",)), ["a.mp4"])
+    job.start()
+
+    job.handle_download_event(
+        DownloadEvent(DownloadEventKind.PROGRESS, percent=10.0, bytes_per_second=1024.0)
+    )
+
+    assert job.progress.bytes_per_second == pytest.approx(1024.0)
+
+
 def test_менеджер_раздаёт_разные_идентификаторы() -> None:
     manager = JobManager()
     first = manager.submit("https://pin.it/a", "/tmp")

@@ -1,9 +1,12 @@
-"""Слой источников: абстракция сайта и конкретная реализация Pinterest.
+"""Слой источников: абстракция сайта и конкретные реализации.
 
 UI не знает, с какого сайта пришла ссылка. Он спрашивает реестр источников,
 какой источник умеет работать со ссылкой, и получает от него готовую
-загрузку. Добавление YouTube или TikTok — это новый класс в этом модуле и
-одна строка в реестре, правки UI не требуют.
+загрузку с нужным исполнителем. Добавление нового источника — это новый
+класс в этом модуле и одна строка в реестре, правки UI не требуют.
+
+Источник отвечает и за свой бинарник: Pinterest работает через gallery-dl,
+YouTube — через yt-dlp, у каждого свой путь в настройках.
 """
 
 from __future__ import annotations
@@ -13,15 +16,21 @@ import enum
 from collections.abc import Callable
 from pathlib import Path
 
-from .downloader import GalleryDlRunner
+from .binaries import find_gallery_dl, find_yt_dlp
+from .downloader import DownloadRunner, GalleryDlRunner
 from .jobs import DownloadJob, JobEvent
 from .links import LinkInfo, LinkKind, classify_link, is_valid_link
+from .settings import Settings
+from .youtube import parse_youtube_link
+from .ytdlp import YtDlpRunner
 
 __all__ = [
     "SourceKind",
     "SourceInfo",
+    "SourceBinary",
     "DownloadSource",
     "PinterestSource",
+    "YouTubeSource",
     "SourceRegistry",
     "DEFAULT_SOURCES",
 ]
@@ -31,6 +40,7 @@ class SourceKind(enum.Enum):
     """Вид источника: откуда приходит ссылка."""
 
     PINTEREST = "pinterest"
+    YOUTUBE = "youtube"
 
 
 @dataclasses.dataclass(frozen=True)
@@ -43,6 +53,7 @@ class SourceInfo:
     url: str
     pin_id: str | None = None
     board_path: str | None = None
+    video_id: str | None = None
 
     @property
     def is_single_image(self) -> bool:
@@ -55,6 +66,18 @@ class SourceInfo:
         return self.link_kind is LinkKind.BOARD
 
 
+@dataclasses.dataclass(frozen=True)
+class SourceBinary:
+    """Бинарник, которым работает источник.
+
+    ``setting`` — имя настройки с путём к бинарнику: путь, который владелец
+    указал сам (пусто — искать в PATH).
+    """
+
+    name: str
+    setting: str
+
+
 class DownloadSource:
     """Источник загрузок.
 
@@ -65,6 +88,7 @@ class DownloadSource:
 
     kind: SourceKind
     title: str
+    binary: SourceBinary
 
     def matches(self, url: str) -> bool:
         """True, если источник умеет работать с этой ссылкой."""
@@ -82,6 +106,29 @@ class DownloadSource:
         """
         return [""]
 
+    def binary_path(self, settings: Settings) -> str | None:
+        """Путь к бинарнику, указанный владельцем в настройках."""
+        return getattr(settings, self.binary.setting, "") or None
+
+    def find_binary(self, settings: Settings) -> str | None:
+        """Рабочий путь к бинарнику источника или None, если его нет."""
+        raise NotImplementedError
+
+    def missing_binary_message(self, settings: Settings) -> str | None:
+        """Сообщение о нехватке бинарника или None, если всё в порядке."""
+        if self.find_binary(settings) is not None:
+            return None
+        path = self.binary_path(settings)
+        if path:
+            return (
+                f"{self.binary.name} не найден по пути {path}. "
+                "Укажите правильный путь в настройках."
+            )
+        return (
+            f"{self.binary.name} не найден в PATH. "
+            "Установите его или укажите путь к бинарнику вручную."
+        )
+
     def build_job(
         self,
         job_id: str,
@@ -94,12 +141,28 @@ class DownloadSource:
         """Собрать загрузку для этой ссылки."""
         raise NotImplementedError
 
+    def _finish_job(
+        self,
+        job_id: str,
+        url: str,
+        destination: str,
+        runner: DownloadRunner,
+        on_event: Callable[[JobEvent], None] | None,
+    ) -> DownloadJob:
+        """Оформить загрузку: подключить исполнителя и подписчика событий."""
+        job = DownloadJob(job_id, url, destination, runner, None)
+        job.set_runner(runner)
+        if on_event is not None:
+            job.set_event_sink(on_event)
+        return job
+
 
 class PinterestSource(DownloadSource):
     """Pinterest: картинка (pin) или альбом (board)."""
 
     kind = SourceKind.PINTEREST
     title = "Pinterest"
+    binary = SourceBinary("gallery-dl", "gallery_dl_path")
 
     #: Папка альбома: название доски из данных Pinterest. Модификатор ``?//``
     #: оставляет поле пустым, если доски нет, — тогда файлы лягут прямо в
@@ -108,6 +171,9 @@ class PinterestSource(DownloadSource):
 
     def matches(self, url: str) -> bool:
         return is_valid_link(url)
+
+    def find_binary(self, settings: Settings) -> str | None:
+        return find_gallery_dl(self.binary_path(settings))
 
     def directory_formats(self, file_count: int) -> list[str]:
         """Картинка — прямо в выбранную папку, альбом — в папку с названием.
@@ -145,11 +211,52 @@ class PinterestSource(DownloadSource):
             cookies=cookies,
             directory_formats=self.directory_formats,
         )
-        job = DownloadJob(job_id, url, destination, runner, None)
-        job.set_runner(runner)
-        if on_event is not None:
-            job.set_event_sink(on_event)
-        return job
+        return self._finish_job(job_id, url, destination, runner, on_event)
+
+
+class YouTubeSource(DownloadSource):
+    """YouTube: видео — обычное, короткая ссылка или Shorts."""
+
+    kind = SourceKind.YOUTUBE
+    title = "YouTube"
+    binary = SourceBinary("yt-dlp", "yt_dlp_path")
+
+    def matches(self, url: str) -> bool:
+        return parse_youtube_link(url) is not None
+
+    def find_binary(self, settings: Settings) -> str | None:
+        return find_yt_dlp(self.binary_path(settings))
+
+    def directory_formats(self, file_count: int) -> list[str]:
+        """Видео — прямо в выбранную папку, без своих подкаталогов."""
+        return [""]
+
+    def describe(self, url: str) -> SourceInfo:
+        link = parse_youtube_link(url)
+        video_id = link.video_id if link is not None else ""
+        return SourceInfo(
+            kind=self.kind,
+            title=self.title,
+            link_kind=LinkKind.VIDEO,
+            url=url,
+            video_id=video_id,
+        )
+
+    def build_job(
+        self,
+        job_id: str,
+        url: str,
+        destination: str,
+        binary: str | None = None,
+        cookies: str | None = None,
+        on_event: Callable[[JobEvent], None] | None = None,
+    ) -> DownloadJob:
+        runner = YtDlpRunner(
+            binary=binary,
+            destination=Path(destination),
+            cookies=cookies,
+        )
+        return self._finish_job(job_id, url, destination, runner, on_event)
 
 
 class SourceRegistry:
@@ -182,4 +289,4 @@ class SourceRegistry:
         return source.describe(url)
 
 
-DEFAULT_SOURCES: list[DownloadSource] = [PinterestSource()]
+DEFAULT_SOURCES: list[DownloadSource] = [PinterestSource(), YouTubeSource()]

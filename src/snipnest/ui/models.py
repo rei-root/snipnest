@@ -57,6 +57,7 @@ class JobRow:
     skipped: int = 0
     total: int = 0
     bytes_per_second: float = 0.0
+    percent: float | None = None
     files: list[str] = dataclasses.field(default_factory=list)
     log_lines: list[str] = dataclasses.field(default_factory=list)
     result: DownloadResult | None = None
@@ -84,7 +85,13 @@ class JobRow:
 
     @property
     def progress_percent(self) -> int:
-        """Доля выполнения в процентах для прогресс-бара."""
+        """Доля выполнения в процентах для прогресс-бара.
+
+        Процент от исполнителя важнее счётчика файлов: у видео файл один,
+        а качается он долго.
+        """
+        if self.percent is not None:
+            return min(100, max(0, int(self.percent)))
         if self.total <= 0:
             return 0
         return min(100, int(self.downloaded * 100 / self.total))
@@ -102,6 +109,8 @@ class JobRow:
             self.downloaded = event.downloaded
             self.total = event.total
             self.bytes_per_second = event.bytes_per_second
+            if event.percent is not None:
+                self.percent = event.percent
         elif event.kind is JobEventKind.FILE:
             if event.path and event.path not in self.files:
                 self.files.append(event.path)

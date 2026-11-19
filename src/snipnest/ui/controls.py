@@ -1,4 +1,4 @@
-"""Верхняя часть окна: поле ссылки, папка сохранения, кнопки Pinterest.
+"""Верхняя часть окна: поле ссылки, папка сохранения, кнопки.
 
 Отдельный виджет, чтобы главное окно не разрасталось.
 """
@@ -35,7 +35,7 @@ class TopControls(QWidget):
 
         self.link_edit = QLineEdit(box)
         self.link_edit.setPlaceholderText(
-            "Ссылка на картинку или альбом Pinterest (можно перетащить из браузера)"
+            "Ссылка на Pinterest или видео YouTube (можно перетащить из браузера)"
         )
         self.link_edit.setClearButtonEnabled(True)
         layout.addWidget(self.link_edit)
@@ -75,6 +75,9 @@ class TopControls(QWidget):
 
         self.gallery_dl_button = QPushButton("Путь к gallery-dl", box)
         layout.addWidget(self.gallery_dl_button)
+
+        self.yt_dlp_button = QPushButton("Путь к yt-dlp", box)
+        layout.addWidget(self.yt_dlp_button)
 
         layout.addStretch(1)
         return box

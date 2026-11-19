@@ -8,7 +8,9 @@ from snipnest.sources import (
     PinterestSource,
     SourceKind,
     SourceRegistry,
+    YouTubeSource,
 )
+from snipnest.ytdlp import YtDlpRunner
 
 
 def test_источник_pinterest_узнаёт_свою_ссылку() -> None:
@@ -64,3 +66,53 @@ def test_описание_ссылки_через_реестр() -> None:
     assert info is not None
     assert info.kind is SourceKind.PINTEREST
     assert info.pin_id == "42"
+
+
+def test_источник_youtube_узнаёт_свою_ссылку() -> None:
+    source = YouTubeSource()
+    assert source.matches("https://youtu.be/dQw4w9WgXcQ")
+    assert source.matches("https://www.youtube.com/watch?v=dQw4w9WgXcQ")
+    assert source.matches("https://www.youtube.com/shorts/dQw4w9WgXcQ")
+    assert not source.matches("https://pin.it/abc")
+
+
+def test_описание_ссылки_youtube_даёт_идентификатор_видео() -> None:
+    source = YouTubeSource()
+    info = source.describe("https://www.youtube.com/shorts/dQw4w9WgXcQ")
+    assert info.kind is SourceKind.YOUTUBE
+    assert info.video_id == "dQw4w9WgXcQ"
+    assert info.link_kind is LinkKind.VIDEO
+
+
+def test_задание_видео_собирает_загрузку_с_yt_dlp() -> None:
+    source = YouTubeSource()
+    job = source.build_job("job-1", "https://youtu.be/dQw4w9WgXcQ", "/tmp/out")
+    assert job.url == "https://youtu.be/dQw4w9WgXcQ"
+    assert job.destination == "/tmp/out"
+    assert isinstance(job.runner, YtDlpRunner)
+
+
+def test_источник_youtube_не_знает_про_плейлист() -> None:
+    source = YouTubeSource()
+    assert not source.matches("https://www.youtube.com/playlist?list=PL123")
+
+
+def test_реестр_находит_youtube_по_ссылке() -> None:
+    registry = SourceRegistry()
+    found = registry.find("https://youtu.be/dQw4w9WgXcQ")
+    assert found is not None
+    assert found.kind is SourceKind.YOUTUBE
+    assert registry.find("https://www.youtube.com/playlist?list=PL123") is None
+
+
+def test_раскладка_youtube_кладёт_файл_прямо_в_выбранную_папку() -> None:
+    source = YouTubeSource()
+    assert source.directory_formats(1) == [""]
+    assert source.directory_formats(2) == [""]
+
+
+def test_описание_короткой_ссылки_youtube() -> None:
+    source = YouTubeSource()
+    info = source.describe("https://youtu.be/dQw4w9WgXcQ")
+    assert info.video_id == "dQw4w9WgXcQ"
+    assert info.link_kind is LinkKind.VIDEO

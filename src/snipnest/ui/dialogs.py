@@ -1,4 +1,4 @@
-"""Диалоги: токен Pinterest, путь к gallery-dl."""
+"""Диалоги: токен Pinterest, путь к бинарнику."""
 
 from __future__ import annotations
 
@@ -16,7 +16,6 @@ __all__ = [
     "TokenDialog",
     "choose_directory",
     "choose_executable",
-    "describe_missing_binary",
 ]
 
 
@@ -66,14 +65,11 @@ def choose_directory(parent: QWidget | None, current: str) -> str | None:
     return selected or None
 
 
-def choose_executable(parent: QWidget | None, current: str) -> str | None:
-    """Выбрать бинарник gallery-dl. None, если владелец отказался."""
-    path, _ = QFileDialog.getOpenFileName(parent, "Путь к gallery-dl", current)
+def choose_executable(
+    parent: QWidget | None,
+    current: str,
+    title: str = "Путь к бинарнику",
+) -> str | None:
+    """Выбрать бинарник. None, если владелец отказался."""
+    path, _ = QFileDialog.getOpenFileName(parent, title, current)
     return path or None
-
-
-def describe_missing_binary(binary_path: str) -> str:
-    """Текст сообщения об отсутствии gallery-dl."""
-    if binary_path:
-        return f"gallery-dl не найден по пути {binary_path}. Укажите правильный путь в настройках."
-    return "gallery-dl не найден в PATH. Установите его или укажите путь к бинарнику вручную."

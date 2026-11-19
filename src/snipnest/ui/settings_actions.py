@@ -1,4 +1,4 @@
-"""Действия с настройками: папка сохранения, токен, путь к gallery-dl.
+"""Действия над настройками: папка сохранения, токен, пути к бинарникам.
 
 Отдельный модуль, чтобы окно не занималось деталями диалогов.
 """
@@ -64,12 +64,29 @@ class SettingsActions:
 
     def choose_gallery_dl(self) -> None:
         """Указать путь к бинарнику gallery-dl вручную."""
-        selected = choose_executable(self._parent, self._settings.gallery_dl_path)
+        selected = choose_executable(
+            self._parent,
+            self._settings.gallery_dl_path,
+            "Путь к gallery-dl",
+        )
         if selected is None:
             return
         self._settings.gallery_dl_path = selected
         self.save()
         self._on_status(f"Путь к gallery-dl: {selected}")
+
+    def choose_yt_dlp(self) -> None:
+        """Указать путь к бинарнику yt-dlp вручную."""
+        selected = choose_executable(
+            self._parent,
+            self._settings.yt_dlp_path,
+            "Путь к yt-dlp",
+        )
+        if selected is None:
+            return
+        self._settings.yt_dlp_path = selected
+        self.save()
+        self._on_status(f"Путь к yt-dlp: {selected}")
 
     def open_pinterest(self) -> None:
         """Открыть Pinterest в браузере."""

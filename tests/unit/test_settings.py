@@ -71,6 +71,16 @@ def test_путь_к_gallery_dl_запоминается(tmp_path) -> None:
     assert second.gallery_dl_path == "/usr/bin/gallery-dl"
 
 
+def test_путь_к_yt_dlp_запоминается(tmp_path) -> None:
+    config = tmp_path / "settings.json"
+    first = Settings(config_path=config, secret_store=FileSecretStore(tmp_path / "secret"))
+    first.yt_dlp_path = "/usr/bin/yt-dlp"
+    first.save()
+
+    second = Settings(config_path=config, secret_store=FileSecretStore(tmp_path / "secret"))
+    assert second.yt_dlp_path == "/usr/bin/yt-dlp"
+
+
 def test_старые_настройки_переносятся_в_новый_каталог(tmp_path) -> None:
     """После переименования настройки старого приложения не теряются."""
     migration = importlib.import_module("snipnest.migration")

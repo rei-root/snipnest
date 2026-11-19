@@ -1,4 +1,4 @@
-"""Определение типа ссылки Pinterest: одиночная картинка или альбом.
+"""Определение типа ссылки: картинка или альбом Pinterest, видео YouTube.
 
 Модуль чистый: ни одной сетевой проверки, только разбор URL.
 """
@@ -13,10 +13,11 @@ __all__ = ["LinkKind", "LinkInfo", "classify_link", "is_valid_link"]
 
 
 class LinkKind(enum.Enum):
-    """Тип ссылки Pinterest."""
+    """Тип ссылки."""
 
     PIN = "pin"
     BOARD = "board"
+    VIDEO = "video"
     UNKNOWN = "unknown"
 
 

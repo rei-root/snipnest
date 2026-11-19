@@ -81,7 +81,7 @@ class FileSecretStore:
 
 
 class Settings:
-    """Настройки приложения: папка сохранения, путь к gallery-dl, токен."""
+    """Настройки приложения: папка сохранения, пути к бинарникам, токен."""
 
     def __init__(
         self,
@@ -92,6 +92,7 @@ class Settings:
         self._secret_store = secret_store or KeyringStore()
         self.destination: str = str(DEFAULT_DESTINATION)
         self.gallery_dl_path: str = ""
+        self.yt_dlp_path: str = ""
         self.load()
 
     def load(self) -> None:
@@ -108,6 +109,9 @@ class Settings:
         gallery_dl_path = data.get("gallery_dl_path")
         if isinstance(gallery_dl_path, str):
             self.gallery_dl_path = gallery_dl_path
+        yt_dlp_path = data.get("yt_dlp_path")
+        if isinstance(yt_dlp_path, str):
+            self.yt_dlp_path = yt_dlp_path
 
     def save(self) -> None:
         """Записать настройки в конфиг."""
@@ -115,6 +119,7 @@ class Settings:
         data = {
             "destination": self.destination,
             "gallery_dl_path": self.gallery_dl_path,
+            "yt_dlp_path": self.yt_dlp_path,
         }
         self._config_path.write_text(
             json.dumps(data, ensure_ascii=False, indent=2) + "\n",
