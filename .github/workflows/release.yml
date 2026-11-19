@@ -26,6 +26,15 @@ jobs:
       - name: Поставить зависимости
         run: uv sync --frozen
 
+      - name: Поставить системные библиотеки
+        # Qt тянет libEGL, libGL, xkbcommon и dbus из системы: без них
+        # pytest-qt падает на импорте QtGui ещё до первого теста.
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y --no-install-recommends \
+            libegl1 libgl1 libxkbcommon-x11-0 libdbus-1-3 libfontconfig1 \
+            libfuse2 imagemagick
+
       - name: Линтеры
         run: make lint
 
@@ -62,11 +71,6 @@ jobs:
             echo '```'
           } >> "$GITHUB_STEP_SUMMARY"
           exit $status
-
-      - name: Поставить инструменты для сборки
-        run: |
-          sudo apt-get update
-          sudo apt-get install -y --no-install-recommends libfuse2 imagemagick
 
       - name: Собрать бинарник
         run: make dist-onefile
