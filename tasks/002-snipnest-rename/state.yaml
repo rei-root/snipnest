@@ -1,6 +1,6 @@
 {
   "context": {
-    "last_ba_input": "переименование всего инструмента: пакет Python gallary_downloader → snipnest; дистрибутив gallary-downloader → snipnest; команда запуска gallary-downloader → snipnest; файл ярлыка packaging/gallary-downloader.desktop → packaging/snipnest.desktop с Name=Snipnest, Exec=snipnest, Icon=snipnest, StartupWMClass=snipnest; логотип logo/gallery-dl-gui-logo.png → logo/snipnest.png и устанавливается как snipnest.png; заголовок окна и имя приложения — «Snipnest»; имя desktop-файла, сообщаемое QApplication, — snipnest; папка конфига ~/.config/snipnest; сервис keyring snipnest. Функциональность не меняется: скачивание картинки и альбома, прогресс, скорость, счётчик «скачано X из Y», список файлов, итог, перетаскивание ссылок, токен в системном хранилище.",
+    "last_ba_input": "старый ярлык gallary-downloader.desktop, старые иконки gallary-downloader.png и старый лаунчер удаляются из системы при установке новых — в меню приложений не должно остаться двух записей; пользовательские данные переносятся: настройки из ~/.config/gallary-downloader и токен Pinterest из сервиса keyring gallary-downloader переносятся в новое место при первом запуске, чтобы владелец не вводил токен заново; дословная запись интервью T2 и её цитаты не переписываются, новое имя фиксируется в артефактах задачи; нормативная часть доменной модели (89 обязательств) не меняется — переименование не трогает предметную область.",
     "research_ids": [
       "SRC-I1",
       "SRC-I2",
