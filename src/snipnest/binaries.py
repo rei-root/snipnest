@@ -131,16 +131,20 @@ def build_child_env() -> dict[str, str]:
     """
     env = dict(os.environ)
 
-    # Каталоги, которые не должны достаться ребёнку: venv приложения и
-    # каталоги его собственного интерпретатора. ``base_prefix`` тут не
-    # нужен: там стоит системный Python, который внешней программе как раз
-    # и нужен.
+    # Каталоги, которые не должны достаться ребёнку: venv приложения.
+    #
+    # venv — это когда ``sys.prefix`` отличается от ``sys.base_prefix``.
+    # Системный Python убирать нельзя: в нём живёт gallery-dl. Раньше
+    # каталог вычислялся как ``realpath(sys.executable)`` — в venv, созданном
+    # на системном Python, это был ``/usr/bin``, и он выпадал из PATH.
     shadowing: set[str] = set()
     venv_dir = os.environ.get("VIRTUAL_ENV")
     if venv_dir:
         shadowing.add(os.path.join(venv_dir, "bin"))
-    shadowing.add(os.path.join(sys.prefix, "bin"))
-    shadowing.add(os.path.dirname(os.path.realpath(sys.executable)))
+    if sys.prefix != sys.base_prefix:
+        shadowing.add(os.path.join(sys.prefix, "bin"))
+    if getattr(sys, "frozen", False):
+        shadowing.add(os.path.dirname(os.path.realpath(sys.executable)))
 
     path = env.get("PATH", "")
     parts = [part for part in path.split(os.pathsep) if part]

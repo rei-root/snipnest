@@ -36,6 +36,21 @@ def test_системные_каталоги_остаются_в_path() -> None:
     assert "/usr/bin" in parts
 
 
+def test_системный_каталог_остаётся_даже_если_интерпретатор_системный(monkeypatch) -> None:
+    """venv на системном Python: каталог ``/usr/bin`` ребёнку нужен.
+
+    ``realpath`` интерпретатора в таком venv указывает на ``/usr/bin``;
+    если его выбрасывать, gallery-dl из ``/usr/bin`` перестаёт находиться.
+    """
+    monkeypatch.setattr(sys, "executable", "/usr/bin/python3")
+    monkeypatch.setattr(sys, "prefix", "/usr")
+    monkeypatch.setattr(sys, "base_prefix", "/usr")
+
+    env = build_child_env()
+
+    assert "/usr/bin" in env.get("PATH", "").split(os.pathsep)
+
+
 def test_pythonhome_и_pythonpath_сброшены() -> None:
     env = build_child_env()
     assert "PYTHONHOME" not in env
