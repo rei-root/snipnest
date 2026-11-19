@@ -5,7 +5,10 @@
     "research_ids": [
       "SRC-I1",
       "SRC-I2",
-      "SRC-I3"
+      "SRC-I3",
+      "SRC-C1",
+      "SRC-C2",
+      "SRC-C3"
     ]
   },
   "current_actor": "тестописатель",
