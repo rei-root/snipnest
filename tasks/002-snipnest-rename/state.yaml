@@ -1,6 +1,6 @@
 {
   "context": {
-    "last_ba_input": "пользователь один — владелец, приложение запускается на его личной машине в графическом сеансе KDE. Имя в меню приложений теперь «Snipnest» (с большой буквы), имя инструмента в целом — snipnest. Репозиторий проекта переинициализируется на git@github.com:rei-root/snipnest.git; история коммитов сохраняется, меняются URL удалённого репозитория и идентичность продукта.",
+    "last_ba_input": "переименование всего инструмента: пакет Python gallary_downloader → snipnest; дистрибутив gallary-downloader → snipnest; команда запуска gallary-downloader → snipnest; файл ярлыка packaging/gallary-downloader.desktop → packaging/snipnest.desktop с Name=Snipnest, Exec=snipnest, Icon=snipnest, StartupWMClass=snipnest; логотип logo/gallery-dl-gui-logo.png → logo/snipnest.png и устанавливается как snipnest.png; заголовок окна и имя приложения — «Snipnest»; имя desktop-файла, сообщаемое QApplication, — snipnest; папка конфига ~/.config/snipnest; сервис keyring snipnest. Функциональность не меняется: скачивание картинки и альбома, прогресс, скорость, счётчик «скачано X из Y», список файлов, итог, перетаскивание ссылок, токен в системном хранилище.",
     "research_ids": [
       "SRC-I1",
       "SRC-I2",
