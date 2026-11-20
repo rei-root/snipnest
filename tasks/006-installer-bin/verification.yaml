@@ -1,0 +1,50 @@
+task_id: 006-installer-bin
+ts: '2026-11-20T07:26:28+00:00'
+layer1:
+  status: pass
+  items:
+  - id: AC1
+    verified: true
+layer2:
+  status: pass
+  uncovered: []
+layer3:
+  status: pass
+  e2e_test_ids:
+  - T-installer-e2e-установка-в-домашний-каталог-создаёт-лаунчер
+  - T-installer-e2e-установщик-не-трогает-систему-без-подтверждения
+  - T-installer-delivers-app
+pytest_result:
+  exit_code: 1
+  argv:
+  - /home/sato/.local/share/uv/tools/skill-for-ai-orch/bin/python
+  - -m
+  - pytest
+  - -q
+  - --tb=no
+  - --no-header
+  - -p
+  - no:cacheprovider
+  - tests/unit/test_packaging_names.py::test_имя_образа_содержит_платформу_glibc_и_архитектуру
+  - tests/unit/test_packaging_names.py::test_имя_пакета_deb_не_меняется
+  - tests/unit/test_packaging_names.py::test_версия_берётся_из_пакета
+  - tests/unit/test_packaging_names.py::test_базовая_glibc_указана_одним_числом
+  - tests/unit/test_packaging_names.py::test_адрес_релиза_ведёт_на_тег_версии
+  - tests/integration/test_installer_script.py::test_установщик_собирается_одним_исполняемым_файлом
+  - tests/integration/test_installer_script.py::test_в_установщике_нет_приложения
+  - tests/integration/test_installer_script.py::test_на_debian_ставится_пакет
+  - tests/integration/test_installer_script.py::test_на_arch_образ_кладётся_в_opt
+  - tests/integration/test_installer_script.py::test_на_rhel_тот_же_план_образа
+  - tests/integration/test_installer_script.py::test_на_неизвестной_системе_берётся_образ
+  - tests/integration/test_installer_script.py::test_в_режиме_пользователя_всё_идёт_в_домашний_каталог
+  - tests/integration/test_installer_script.py::test_план_содержит_имя_образа_с_платформой_и_архитектурой
+  - tests/integration/test_installer_script.py::test_справка_печатается
+  - tests/integration/test_installer_script.py::test_версия_печатается
+  - tests/integration/test_installer_script.py::test_неизвестный_ключ_останавливает_установщик
+  - tests/e2e/test_installer_e2e.py::test_установка_в_домашний_каталог_создаёт_лаунчер
+  - tests/e2e/test_installer_e2e.py::test_установщик_не_трогает_систему_без_подтверждения
+  - tests/unit/test_scope.py::test_приложение_локальное_и_однопользовательское
+  - tests/unit/test_scope.py::test_поддерживаются_pinterest_и_youtube
+  - tests/e2e/test_installer_e2e.py::test_установка_в_домашний_каталог_создаёт_лаунчер
+  stdout_tail: ''
+combined: accepted
