@@ -106,3 +106,21 @@ jobs:
             dist/*.deb
             dist/SHA256SUMS
           fail_on_unmatched_files: true
+
+      - name: Убрать устаревшие файлы релиза
+        # В релизе могли остаться файлы прошлой сборки (например, бинарник
+        # приложения вместо установщика). Их надо убрать, чтобы в релизе
+        # лежало ровно то, что собрано сейчас.
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          set +e
+          tag="${GITHUB_REF_NAME}"
+          names="$(gh release view "$tag" --json assets --jq '.assets[].name' 2>/dev/null)"
+          for name in $names; do
+            case "$name" in
+              snipnest-installer-*.bin|*.AppImage|*.deb|SHA256SUMS) continue ;;
+            esac
+            echo "удаляю устаревший файл: $name"
+            gh release delete-asset "$tag" "$name" --yes
+          done
