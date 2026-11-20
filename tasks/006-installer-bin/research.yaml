@@ -1,0 +1,159 @@
+entries:
+- id: SRC-I1
+  phase: интервью
+  kind: capabilities
+  title: 'Установщик приложения: семейства дистрибутивов и их пакетные менеджеры'
+  findings: 'Семейство дистрибутива определяется по ID и ID_LIKE из /etc/os-release:
+    debian (Ubuntu, Mint, Kali), arch (Arch, Manjaro, Endeavour), rhel (Fedora, RHEL,
+    CentOS, Rocky, Alma), suse (openSUSE), gentoo, alpine. У каждого семейства свой
+    пакетный менеджер и своя раскладка: debian ставит .deb через apt-get, arch — pacman,
+    rhel — dnf. Родного пакета для arch- и rhel-систем у проекта нет, поэтому установщик
+    кладёт переносимый образ в /opt и делает лаунчер с ярлыком — этот способ работает
+    на любом семействе.'
+  url: https://www.freedesktop.org/software/systemd/man/os-release.html
+  version: os-release, стандарт freedesktop.org
+  currency_evidence: 'формат os-release принят freedesktop.org и используется всеми
+    современными дистрибутивами; на машине: Debian 13, /etc/os-release читается'
+  topics:
+  - ID и ID_LIKE в /etc/os-release
+  - 'семейства: debian, arch, rhel, suse, gentoo, alpine'
+  - 'пакетные менеджеры: apt-get, dnf, pacman, zypper, apk, emerge'
+  deprecated_apis: []
+  applies_to: []
+  capabilities:
+  - id: C-1
+    name: Определение семейства дистрибутива по /etc/os-release
+    decision: нужно
+    rationale: установщик должен понимать, куда и чем ставить
+  - id: C-2
+    name: Установка .deb через apt-get (debian-based)
+    decision: нужно
+    rationale: на debian-системах родной пакет ставится пакетным менеджером
+  - id: C-3
+    name: Установка переносимого образа в /opt с лаунчером и ярлыком
+    decision: нужно
+    rationale: для arch-, rhel-, suse-систем и всего прочего своего пакета нет
+  - id: C-4
+    name: Установка в домашний каталог без прав root
+    decision: нужно
+    rationale: часть людей не может ставить в систему; такой режим должен быть отдельным
+      ключом
+  - id: C-5
+    name: Режим показа плана без установки (--dry-run)
+    decision: нужно
+    rationale: 'установщик спрашивает права root: человек должен увидеть, что будет
+      сделано, до того как согласится'
+  - id: C-6
+    name: Установка с локального файла рядом (--local)
+    decision: нужно
+    rationale: сети может не быть, а файл мог скачаться заранее
+  - id: C-7
+    name: Проверка контрольной суммы скачанного файла
+    decision: нужно
+    rationale: файл качается из сети и ставится с правами root — сумму проверять обязательно
+  - id: C-8
+    name: Проверка версии glibc перед установкой
+    decision: нужно
+    rationale: образы собраны под glibc 2.38; на старых системах они не запустятся,
+      и это надо сказать заранее
+  - id: C-9
+    name: Установщик на языке POSIX shell, одним файлом
+    decision: нужно
+    rationale: 'установщик запускается до того, как в системе появилось приложение:
+      он должен работать везде, где есть /bin/sh'
+  - id: C-10
+    name: Сборка .rpm и .pkg.tar.zst для arch- и rhel-систем
+    decision: не_нужно
+    rationale: владелец просил только переносимый образ и .deb; свой пакет для каждого
+      семейства — отдельная работа
+  - id: C-11
+    name: Графический установщик
+    decision: не_нужно
+    rationale: 'владелец просил установщик, а не мастер компонентов: мастер уже есть
+      внутри приложения'
+  recorded_at: '2026-11-20T07:15:00+00:00'
+- id: SRC-C1
+  phase: код
+  kind: api
+  title: os-release — определение семейства дистрибутива
+  findings: Файл /etc/os-release — список переменных вида KEY=value. Установщик читает
+    его построчно, не выполняя, и определяет семейство по ID и ID_LIKE. Путь к файлу
+    переопределяется переменной SNIPNEST_OS_RELEASE — так установщик проверяется в
+    тестах на чужих системах.
+  url: https://www.freedesktop.org/software/systemd/man/os-release.html
+  version: стандарт freedesktop.org
+  currency_evidence: формат используют systemd, дистрибутивы и контейнерные образы;
+    на машине Debian 13 файл читается
+  topics:
+  - ID, ID_LIKE, PRETTY_NAME
+  - чтение файла без его выполнения
+  deprecated_apis: []
+  applies_to: []
+  recorded_at: '2026-11-20T07:25:05+00:00'
+- id: SRC-C2
+  phase: код
+  kind: api
+  title: apt-get install ./пакет.deb — установка локального пакета
+  findings: 'apt-get умеет ставить локальный файл: apt-get install -y ./file.deb.
+    Пакет ставится вместе с зависимостями, его статус виден в списке пакетов. Если
+    apt-get нет (минимальный образ), остаётся dpkg -i.'
+  url: https://manpages.debian.org/bookworm/apt/apt-get.8.en.html
+  version: apt 2.6 (bookworm)
+  currency_evidence: manpage из дистрибутива; команда работает на debian-системах
+    с apt-get
+  topics:
+  - apt-get install -y ./путь/пакет.deb
+  - dpkg -i как запасной путь
+  deprecated_apis: []
+  applies_to: []
+  recorded_at: '2026-11-20T07:25:05+00:00'
+- id: SRC-C3
+  phase: код
+  kind: api
+  title: AppImage — распаковка образа без FUSE
+  findings: 'Образ AppImage умеет распаковывать себя без FUSE: --appimage-extract
+    создаёт каталог squashfs-root, с образцом файла — только этот файл. Установщик
+    берёт оттуда desktop-файл и иконку, чтобы ярлык в меню был тем же, что и в образе.'
+  url: https://docs.appimage.org/
+  version: AppImage docs, ревизия b29179c
+  currency_evidence: документация проекта AppImage; режим --appimage-extract проверен
+    на собранном образе
+  topics:
+  - '--appimage-extract: распаковать в squashfs-root'
+  - '--appimage-extract: один файл'
+  deprecated_apis: []
+  applies_to: []
+  recorded_at: '2026-11-20T07:25:05+00:00'
+- id: SRC-C4
+  phase: код
+  kind: api
+  title: getconf GNU_LIBC_VERSION — версия glibc
+  findings: 'Версия glibc берётся из getconf GNU_LIBC_VERSION, запасной путь — разбор
+    вывода ldd --version. Сравнение версий делается через sort -V: версия 2.38 и выше
+    проходит проверку, 2.36 — нет.'
+  url: https://man7.org/linux/man-pages/man3/getconf.3.html
+  version: glibc getconf
+  currency_evidence: manpage glibc; на машине glibc 2.43, значение совпадает с ldd
+    --version
+  topics:
+  - getconf GNU_LIBC_VERSION
+  - сравнение версий через sort -V
+  deprecated_apis: []
+  applies_to: []
+  recorded_at: '2026-11-20T07:25:05+00:00'
+- id: SRC-C5
+  phase: код
+  kind: api
+  title: sha256sum — проверка контрольной суммы файла
+  findings: 'Файл SHA256SUMS — обычный вывод sha256sum: «сумма  имя». Установщик скачивает
+    его рядом с программой, находит строку нужного файла и сверяет сумму; если файла
+    нет, установка продолжается с предупреждением.'
+  url: https://man7.org/linux/man-pages/man1/sha256sum.1.html
+  version: coreutils 9.x
+  currency_evidence: manpage coreutils; команда есть и в busybox-системах
+  topics:
+  - sha256sum -c
+  - формат файла SHA256SUMS
+  deprecated_apis: []
+  applies_to: []
+  recorded_at: '2026-11-20T07:25:05+00:00'

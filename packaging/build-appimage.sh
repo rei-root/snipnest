@@ -8,8 +8,9 @@ set -euo pipefail
 # shellcheck source=packaging/common.sh
 source "$(dirname "${BASH_SOURCE[0]}")/common.sh"
 
-VERSION="$(sed -n 's/^__version__ = "\(.*\)"/\1/p' "$ROOT/src/snipnest/__init__.py")"
+VERSION="$(app_version)"
 [[ -n "$VERSION" ]] || fail "не найдена версия в src/snipnest/__init__.py"
+APPIMAGE_NAME="$(appimage_name)"
 
 ensure_runtime
 ensure_appimagetool
@@ -46,7 +47,7 @@ EOF
 chmod +x "$APPDIR/AppRun"
 
 mkdir -p "$DIST"
-OUTPUT="$DIST/snipnest-${VERSION}-x86_64.AppImage"
+OUTPUT="$DIST/$APPIMAGE_NAME"
 rm -f "$OUTPUT"
 log "Собираю AppImage"
 "$APPIMAGETOOL_RUN" --no-appstream "$APPDIR" "$OUTPUT" >/dev/null

@@ -1,22 +1,21 @@
 #!/usr/bin/env bash
-# Оракул задачи 005: собранные артефакты (бинарник, AppImage, .deb).
+# Оракул задач 005 и 006: собранные артефакты (установщик, AppImage, .deb).
 #
 # Возвращает 0 тогда и только тогда, когда критерии выполнены. Печатает имя
 # упавшего критерия и причину.
 #
-# Артефакты берутся из dist/. Собрать их: make dist-onefile dist-appimage dist-deb
+# Артефакты берутся из dist/. Собрать их:
+#   make dist-installer dist-appimage dist-deb
 set -uo pipefail
 
 ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 DIST="$ROOT/dist"
 
-VERSION="$(grep -oP '(?<=^version = ")[^"]+' "$ROOT/pyproject.toml" | head -1)"
-if [[ -z "$VERSION" ]]; then
-  VERSION="$(grep -oP '(?<=__version__ = ")[^"]+' "$ROOT/src/snipnest/__init__.py" | head -1)"
-fi
+VERSION="$(sed -n 's/^__version__ = "\(.*\)"/\1/p' "$ROOT/src/snipnest/__init__.py" | head -1)"
+GLIBC="$(sed -n 's/^glibc *//p' "$ROOT/packaging/abi.txt" | tail -1)"
 
-BINARY="$DIST/snipnest"
-APPIMAGE="$DIST/snipnest-${VERSION}-x86_64.AppImage"
+INSTALLER="$DIST/snipnest-installer-linux-amd64.bin"
+APPIMAGE="$DIST/snipnest-${VERSION}-linux-glibc-${GLIBC}-x86_64.AppImage"
 DEB="$DIST/snipnest_${VERSION}_amd64.deb"
 
 COMPONENTS=(gallery-dl yt-dlp yt-dlp-ejs deno ffmpeg)
@@ -28,25 +27,43 @@ fail() {
     FAILED=1
 }
 
-# 1. Бинарник: один исполняемый файл.
-if [[ ! -x "$BINARY" ]]; then
-    fail "бинарник собран" "нет исполняемого файла $BINARY"
-else
-    version_line="$("$BINARY" --version 2>/dev/null | head -1)"
-    if [[ "$version_line" != "snipnest $VERSION" ]]; then
-        fail "бинарник печатает версию" "получено '${version_line}', ожидалось 'snipnest $VERSION'"
+# 1. Установщик: один исполняемый файл, внутри которого нет приложения.
+check_installer() {
+    if [[ ! -x "$INSTALLER" ]]; then
+        fail "установщик собран" "нет исполняемого файла $INSTALLER"
+        return
     fi
-    # Переносимый Python должен быть внутри: без него мастер не поставит
-    # Python-компоненты.
-    if ! grep -q "runtime/python/bin/python3" "$BINARY"; then
-        fail "в бинарнике есть переносимый Python" "внутри нет runtime/python/bin/python3"
+    head_line="$(head -1 "$INSTALLER")"
+    if [[ "$head_line" != "#!/bin/sh" ]]; then
+        fail "установщик написан на POSIX shell" "первая строка: '$head_line'"
     fi
-fi
+    if ! grep -q "snipnest-installer" "$INSTALLER"; then
+        fail "установщик называет себя" "внутри нет строки snipnest-installer"
+    fi
+    for payload in "_internal" "PySide6" "usr/lib/snipnest/app"; do
+        if grep -q "$payload" "$INSTALLER"; then
+            fail "в установщике нет приложения" "внутри есть '$payload'"
+        fi
+    done
+    if ! "$INSTALLER" --help >/dev/null 2>&1; then
+        fail "установщик печатает справку" "--help не отработал"
+    fi
+    if ! "$INSTALLER" --version >/dev/null 2>&1; then
+        fail "установщик печатает версию" "--version не отработал"
+    fi
+}
 
-# 2. AppImage: образ, внутри AppRun, desktop-файл и иконка.
-if [[ ! -f "$APPIMAGE" ]]; then
-    fail "appimage собран" "нет файла $APPIMAGE"
-else
+# 2. AppImage: образ с приложением, без установщика. В имени — платформа,
+# версия glibc и архитектура.
+check_appimage() {
+    if [[ ! -f "$APPIMAGE" ]]; then
+        fail "appimage собран" "нет файла $APPIMAGE"
+        return
+    fi
+    base="$(basename "$APPIMAGE")"
+    if [[ "$base" != snipnest-*-linux-glibc-*-x86_64.AppImage ]]; then
+        fail "в имени appimage есть платформа, glibc и архитектура" "имя '$base'"
+    fi
     extract_dir="$DIST/appimage-extract"
     rm -rf "$extract_dir"
     mkdir -p "$extract_dir"
@@ -54,25 +71,31 @@ else
     squashfs="$extract_dir/squashfs-root"
     if [[ ! -d "$squashfs" ]]; then
         fail "appimage распаковывается" "не появился каталог squashfs-root"
-    else
-        for needed in AppRun snipnest.desktop snipnest.png; do
-            if [[ ! -e "$squashfs/$needed" ]]; then
-                fail "в appimage есть $needed" "нет файла squashfs-root/$needed"
-            fi
-        done
-        if [[ -e "$squashfs/usr/bin/snipnest" && ! -x "$squashfs/usr/bin/snipnest" ]]; then
-            fail "в appimage есть исполняемый snipnest" "usr/bin/snipnest не исполняемый"
-        fi
-        if [[ ! -x "$squashfs/usr/lib/snipnest/app/runtime/python/bin/python3" ]]; then
-            fail "в appimage есть переносимый Python" "нет runtime/python/bin/python3"
-        fi
+        return
     fi
-fi
+    for needed in AppRun snipnest.desktop snipnest.png; do
+        if [[ ! -e "$squashfs/$needed" ]]; then
+            fail "в appimage есть $needed" "нет файла squashfs-root/$needed"
+        fi
+    done
+    if [[ -e "$squashfs/usr/bin/snipnest" && ! -x "$squashfs/usr/bin/snipnest" ]]; then
+        fail "в appimage есть исполняемый snipnest" "usr/bin/snipnest не исполняемый"
+    fi
+    if [[ ! -x "$squashfs/usr/lib/snipnest/app/runtime/python/bin/python3" ]]; then
+        fail "в appimage есть переносимый Python" "нет runtime/python/bin/python3"
+    fi
+    # Установщика внутри образа быть не должно: образ — это приложение.
+    if find "$squashfs" -name "snipnest-installer*" -print -quit | grep -q .; then
+        fail "в appimage нет установщика" "внутри есть файл snipnest-installer*"
+    fi
+}
 
 # 3. .deb: метаданные, раскладка и компоненты внутри.
-if [[ ! -f "$DEB" ]]; then
-    fail "deb собран" "нет файла $DEB"
-else
+check_deb() {
+    if [[ ! -f "$DEB" ]]; then
+        fail "deb собран" "нет файла $DEB"
+        return
+    fi
     if ! dpkg-deb --info "$DEB" >/dev/null 2>&1; then
         fail "deb читается" "dpkg-deb --info не отработал"
     fi
@@ -96,12 +119,16 @@ else
     mkdir -p "$root_dir"
     if ! dpkg-deb -x "$DEB" "$root_dir" >/dev/null 2>&1; then
         fail "deb распаковывается" "dpkg-deb -x не отработал"
-    else
-        if [[ ! -x "$root_dir/usr/bin/snipnest" ]]; then
-            fail "в распакованном deb есть лаунчер" "нет исполняемого usr/bin/snipnest"
-        fi
+        return
     fi
-fi
+    if [[ ! -x "$root_dir/usr/bin/snipnest" ]]; then
+        fail "в распакованном deb есть лаунчер" "нет исполняемого usr/bin/snipnest"
+    fi
+}
+
+check_installer
+check_appimage
+check_deb
 
 if [[ "$FAILED" -eq 0 ]]; then
     echo "OK: артефакты собраны и устроены верно (версия $VERSION)"

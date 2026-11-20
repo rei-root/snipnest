@@ -167,7 +167,36 @@ registry.register(TikTokSource())
 
 Готовые сборки лежат в Releases репозитория.
 
-**Пакет .deb** (Debian, Ubuntu, Mint, Kali и другие debian-based):
+**Установщик** — один файл, который определяет дистрибутив и ставит
+приложение его родным способом:
+
+```bash
+chmod +x snipnest-installer-linux-amd64.bin
+./snipnest-installer-linux-amd64.bin
+```
+
+Установщик сам разберётся, что перед ним:
+
+- на debian-based (Debian, Ubuntu, Mint, Kali) поставит пакет `.deb`
+  через `apt-get`;
+- на arch-based (Arch, Manjaro), rhel-based (Fedora, RHEL, Rocky, Alma),
+  suse-based и прочих — положит переносимый образ в `/opt/snipnest`,
+  сделает лаунчер в `/usr/local/bin`, ярлык в меню приложений и иконки.
+
+Ключи установщика:
+
+| Ключ | Что делает |
+|---|---|
+| `--user` | поставить в домашний каталог, без прав администратора |
+| `--dry-run` | показать план и ничего не ставить |
+| `--local ФАЙЛ` | поставить из локального файла, без сети |
+| `--yes` | не спрашивать подтверждения |
+| `--help` | справка |
+
+Самого приложения внутри установщика нет: он его скачивает из релиза и
+проверяет по `SHA256SUMS`.
+
+**Пакет .deb** (если хочется поставить пакетом вручную):
 
 ```bash
 sudo apt install ./snipnest_0.2.0_amd64.deb
@@ -175,26 +204,18 @@ sudo apt install ./snipnest_0.2.0_amd64.deb
 
 Пакет самодостаточный: внутри программа, Qt, переносимый Python и все пять
 компонентов. После установки приложение работает без сети. Пакет большой
-(около 300 МБ) — именно потому, что всё внутри.
+(около 230 МБ) — именно потому, что всё внутри.
 
-**AppImage**:
-
-```bash
-chmod +x snipnest-0.2.0-x86_64.AppImage
-./snipnest-0.2.0-x86_64.AppImage
-```
-
-Образ работает на любой машине с Linux; на системах без FUSE запускается
-через `--appimage-extract-and-run`.
-
-**Один файл**:
+**AppImage** — приложение целиком, без установки:
 
 ```bash
-chmod +x snipnest
-./snipnest
+chmod +x snipnest-0.2.0-linux-glibc-2.38-x86_64.AppImage
+./snipnest-0.2.0-linux-glibc-2.38-x86_64.AppImage
 ```
 
-Ни Python, ни Qt в системе не нужны.
+Имя образа говорит, под что он собран: платформа (`linux`), версия glibc
+(`glibc-2.38`) и архитектура (`x86_64`). Образ работает на любой машине с
+Linux; на системах без FUSE запускается через `--appimage-extract-and-run`.
 
 ### Из исходников
 
@@ -280,8 +301,8 @@ make ci          # всё вместе
 deno):
 
 ```bash
-make dist-onefile    # dist/snipnest — один исполняемый файл
-make dist-appimage   # dist/snipnest-<версия>-x86_64.AppImage
+make dist-installer  # dist/snipnest-installer-linux-amd64.bin — установщик
+make dist-appimage   # dist/snipnest-<версия>-linux-glibc-<версия>-x86_64.AppImage
 make dist-deb        # dist/snipnest_<версия>_amd64.deb
 make dist            # все три
 make check-dist      # проверить собранные артефакты

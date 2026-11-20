@@ -6,7 +6,7 @@ set -euo pipefail
 
 ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 BUILD="$ROOT/build"
-DIST="$ROOT/dist"
+DIST="${DIST:-$ROOT/dist}"
 DOWNLOADS="$BUILD/downloads"
 
 RUNTIME_DIR="$BUILD/runtime/python"
@@ -28,6 +28,31 @@ log() {
 fail() {
     printf 'ОШИБКА: %s\n' "$*" >&2
     exit 1
+}
+
+#: Версия приложения — из пакета.
+app_version() {
+    sed -n 's/^__version__ = "\(.*\)"/\1/p' "$ROOT/src/snipnest/__init__.py" | head -1
+}
+
+#: Минимальная glibc, под которую собраны артефакты.
+abi_glibc() {
+    sed -n 's/^glibc *//p' "$ROOT/packaging/abi.txt" | tail -1
+}
+
+#: Имя переносимого образа: платформа, glibc и архитектура.
+appimage_name() {
+    printf 'snipnest-%s-linux-glibc-%s-x86_64.AppImage' "$(app_version)" "$(abi_glibc)"
+}
+
+#: Имя пакета .deb.
+deb_name() {
+    printf 'snipnest_%s_amd64.deb' "$(app_version)"
+}
+
+#: Адрес релиза, из которого установщик берёт файлы.
+release_url() {
+    printf 'https://github.com/rei-root/snipnest/releases/download/v%s' "$(app_version)"
 }
 
 #: Скачать файл, если его ещё нет.

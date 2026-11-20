@@ -80,8 +80,8 @@ jobs:
           } >> "$GITHUB_STEP_SUMMARY"
           exit $status
 
-      - name: Собрать бинарник
-        run: make dist-onefile
+      - name: Собрать установщик
+        run: make dist-installer
 
       - name: Собрать AppImage
         run: make dist-appimage
@@ -92,11 +92,17 @@ jobs:
       - name: Проверить артефакты
         run: make check-dist
 
+      - name: Посчитать суммы
+        run: |
+          cd dist
+          sha256sum snipnest-installer-*.bin *.AppImage *.deb > SHA256SUMS
+
       - name: Выложить в Releases
         uses: softprops/action-gh-release@v2
         with:
           files: |
-            dist/snipnest
+            dist/snipnest-installer-*.bin
             dist/*.AppImage
             dist/*.deb
+            dist/SHA256SUMS
           fail_on_unmatched_files: true
