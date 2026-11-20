@@ -100,6 +100,18 @@ jobs:
       - name: Выложить в Releases
         uses: softprops/action-gh-release@v2
         with:
+          body: |
+            Установка на любой Linux:
+
+            ```
+            chmod +x snipnest-installer-linux-amd64.bin
+            ./snipnest-installer-linux-amd64.bin
+            ```
+
+            Установщик сам определяет дистрибутив: на debian-based ставит
+            пакет `.deb` через `apt-get`, на остальных кладёт переносимый
+            образ в `/opt/snipnest` и делает лаунчер с ярлыком.
+            Ключи: `--user`, `--dry-run`, `--local ФАЙЛ`, `--yes`, `--help`.
           files: |
             dist/snipnest-installer-*.bin
             dist/*.AppImage
@@ -109,17 +121,18 @@ jobs:
 
       - name: Убрать устаревшие файлы релиза
         # В релизе могли остаться файлы прошлой сборки (например, бинарник
-        # приложения вместо установщика). Их надо убрать, чтобы в релизе
-        # лежало ровно то, что собрано сейчас.
+        # приложения вместо установщика). Оставляем ровно то, что собрано
+        # сейчас, — по списку файлов в dist/.
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
           set +e
           tag="${GITHUB_REF_NAME}"
+          keep=" $(cd dist && ls | tr '\n' ' ')"
           names="$(gh release view "$tag" --json assets --jq '.assets[].name' 2>/dev/null)"
           for name in $names; do
-            case "$name" in
-              snipnest-installer-*.bin|*.AppImage|*.deb|SHA256SUMS) continue ;;
+            case "$keep" in
+              *" $name "*) continue ;;
             esac
             echo "удаляю устаревший файл: $name"
             gh release delete-asset "$tag" "$name" --yes
