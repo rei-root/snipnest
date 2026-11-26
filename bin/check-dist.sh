@@ -29,6 +29,13 @@ fail() {
 
 # 1. Установщик: один исполняемый файл — графическая программа с Qt внутри.
 check_installer() {
+    if [[ ! -f "$INSTALLER" ]]; then
+        fail "установщик собран" "нет файла $INSTALLER"
+        return
+    fi
+    # Скачанный из релиза файл приходит без исполняемого бита — оракулу
+    # он нужен запущенным.
+    chmod +x "$INSTALLER" 2>/dev/null || true
     if [[ ! -x "$INSTALLER" ]]; then
         fail "установщик собран" "нет исполняемого файла $INSTALLER"
         return

@@ -63,6 +63,9 @@ check_binary() {
         fail "установщик собран" "нет файла $INSTALLER"
         return
     fi
+    # Скачанный из релиза файл приходит без исполняемого бита — оракулу
+    # он нужен запущенным.
+    chmod +x "$INSTALLER" 2>/dev/null || true
     if [[ "$(head -c 4 "$INSTALLER")" != $'\x7fELF' ]]; then
         fail "установщик собран" "это не исполняемый файл ELF"
         return
