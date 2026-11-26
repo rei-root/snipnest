@@ -17,7 +17,8 @@ from collections.abc import Callable
 from pathlib import Path
 
 from .binaries import find_gallery_dl, find_yt_dlp
-from .downloader import DownloadRunner, GalleryDlRunner
+from .downloader import DownloadRunner, GalleryDlRunner, ImageConverter
+from .formats import SaveFormat
 from .jobs import DownloadJob, JobEvent
 from .links import LinkInfo, LinkKind, classify_link, is_valid_link
 from .settings import Settings
@@ -136,11 +137,17 @@ class DownloadSource:
         destination: str,
         settings: Settings,
         on_event: Callable[[JobEvent], None] | None = None,
+        save_format: SaveFormat | None = None,
+        converter: ImageConverter | None = None,
     ) -> DownloadJob:
         """Собрать загрузку для этой ссылки.
 
         Источник сам берёт из настроек всё, что ему нужно: путь к своему
         бинарнику и, если уместно, источник cookies.
+
+        ``save_format`` — выбор владельца: в каком виде сохранять файлы.
+        ``converter`` — функция перевода картинки; её знает только слой
+        интерфейса, поэтому она подставляется снаружи.
         """
         raise NotImplementedError
 
@@ -206,11 +213,18 @@ class PinterestSource(DownloadSource):
         destination: str,
         settings: Settings,
         on_event: Callable[[JobEvent], None] | None = None,
+        save_format: SaveFormat | None = None,
+        converter: ImageConverter | None = None,
     ) -> DownloadJob:
+        image_extension = ""
+        if save_format is not None:
+            image_extension = save_format.image.extension
         runner = GalleryDlRunner(
             binary=self.binary_path(settings),
             destination=Path(destination),
             directory_formats=self.directory_formats,
+            image_extension=image_extension,
+            converter=converter,
         )
         return self._finish_job(job_id, url, destination, runner, on_event)
 
@@ -250,12 +264,21 @@ class YouTubeSource(DownloadSource):
         destination: str,
         settings: Settings,
         on_event: Callable[[JobEvent], None] | None = None,
+        save_format: SaveFormat | None = None,
+        converter: ImageConverter | None = None,
     ) -> DownloadJob:
+        video_format = None
+        audio_format = None
+        if save_format is not None:
+            video_format = save_format.video
+            audio_format = save_format.audio
         runner = YtDlpRunner(
             binary=self.binary_path(settings),
             destination=Path(destination),
             cookies_file=settings.cookies_file or None,
             cookies_browser=settings.cookies_browser or None,
+            video_format=video_format,
+            audio_format=audio_format,
         )
         return self._finish_job(job_id, url, destination, runner, on_event)
 

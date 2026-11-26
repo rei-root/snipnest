@@ -23,14 +23,17 @@ from ..components.catalog import GALLERY_DL, YT_DLP, ComponentKind
 from ..components.finder import find_component
 from ..components.installer import ComponentInstaller
 from ..components.state import ComponentState
+from ..formats import FormatKind, SaveFormat
 from ..jobs import DownloadJob, JobEvent
 from ..settings import Settings
-from ..sources import SourceRegistry
+from ..sources import SourceKind, SourceRegistry
 from .bridge import JobEventBridge
 from .components_dialog import ComponentsDialog
 from .controller import JobController
 from .controls import TopControls
 from .dnd import DropTargetMixin
+from .format_selector import FormatSelector
+from .imaging import convert_image
 from .logarea import LogArea
 from .models import JobRow
 from .panel import JobsPanel
@@ -70,6 +73,11 @@ class MainWindow(DropTargetMixin, QMainWindow):
         self._presenter = EventPresenter(self._set_status, self._append_log)
         self._connect_signals()
         self._controls.destination_edit.setText(self._settings.destination)
+        self._controls.format_selector.set_choices(
+            image_id=self._settings.image_format,
+            video_id=self._settings.video_format,
+            audio_id=self._settings.audio_format,
+        )
 
     # -- построение интерфейса --------------------------------------------
 
@@ -119,6 +127,8 @@ class MainWindow(DropTargetMixin, QMainWindow):
         self._controls.components_button.clicked.connect(self._on_components_clicked)
         self._log.toggle_button.toggled.connect(self._log.set_expanded)
         self._bridge.events_ready.connect(self._drain_events)
+        self._controls.link_edit.textChanged.connect(self._on_link_changed)
+        self._controls.format_selector.changed.connect(self._on_format_changed)
 
     # -- публичный доступ для тестов и проверок ----------------------------
 
@@ -156,6 +166,11 @@ class MainWindow(DropTargetMixin, QMainWindow):
         """Текущее значение общего прогресс-бара."""
         return self._progress_bar.value()
 
+    @property
+    def format_selector(self) -> FormatSelector:
+        """Выбор формата сохранения."""
+        return self._controls.format_selector
+
     def row_for(self, job_id: str) -> JobRow | None:
         """Строка загрузки по идентификатору."""
         return self._panel.row_for(job_id)
@@ -189,7 +204,7 @@ class MainWindow(DropTargetMixin, QMainWindow):
             self._show_error("Бинарник не найден", missing)
             return
 
-        job = self._build_job(self._next_job_id(), url)
+        job = self._build_job(self._next_job_id(), url, self.format_selector.selected_format())
         self._controller.add(job)
         self._panel.add_job(job)
         self._controls.link_text = ""
@@ -203,7 +218,7 @@ class MainWindow(DropTargetMixin, QMainWindow):
         self._counter += 1
         return f"job-{self._counter}"
 
-    def _build_job(self, job_id: str, url: str) -> DownloadJob:
+    def _build_job(self, job_id: str, url: str, save_format: SaveFormat) -> DownloadJob:
         """Собрать загрузку через слой источников."""
         source = self._registry.find(url)
         if source is None:
@@ -214,7 +229,30 @@ class MainWindow(DropTargetMixin, QMainWindow):
             self._settings.destination,
             self._settings,
             self._controller.post_event,
+            save_format=save_format,
+            converter=convert_image,
         )
+
+    # -- выбор формата ------------------------------------------------------
+
+    def _on_link_changed(self, text: str) -> None:
+        """Ссылка изменилась: форматы под неё."""
+        self._update_format_choices(text)
+
+    def _update_format_choices(self, text: str) -> None:
+        """Показать форматы для того, что в поле ссылки."""
+        url = text.strip()
+        source = self._registry.find(url) if url else None
+        is_video = source is not None and source.kind is SourceKind.YOUTUBE
+        self._controls.format_selector.set_kind(FormatKind.VIDEO if is_video else FormatKind.IMAGE)
+
+    def _on_format_changed(self) -> None:
+        """Владелец сменил формат: запомним выбор."""
+        selector = self._controls.format_selector
+        self._settings.image_format = selector.image_id
+        self._settings.video_format = selector.video_id
+        self._settings.audio_format = selector.audio_id
+        self._settings.save()
 
     def _drain_events(self) -> None:
         """Перенести накопленные события в GUI-поток и применить их."""

@@ -7,6 +7,7 @@ from pathlib import Path
 import pytest
 
 from snipnest.downloader import DownloadEventKind
+from snipnest.formats import audio_format_by_id, video_format_by_id
 from snipnest.ytdlp import (
     YtDlpNotFoundError,
     YtDlpRunner,
@@ -179,3 +180,101 @@ def test_без_cookies_флагов_нет() -> None:
 
 def test_имя_исполнителя_для_ошибки() -> None:
     assert YtDlpRunner().name == "yt-dlp"
+
+
+def _video_format(format_id: str):
+    """Формат видео по идентификатору."""
+    found = video_format_by_id(format_id)
+    assert found is not None
+    return found
+
+
+def _audio_format(format_id: str):
+    """Формат звука по идентификатору."""
+    found = audio_format_by_id(format_id)
+    assert found is not None
+    return found
+
+
+def test_команда_для_mp4_берёт_h264_и_aac() -> None:
+    """R3: MP4 — видео H.264 со звуком AAC."""
+    runner = YtDlpRunner(destination=Path("/tmp/out"), video_format=_video_format("mp4"))
+
+    command = runner.build_command(URL)
+
+    selector = command[command.index("-f") + 1]
+    assert "ext=mp4" in selector
+    assert "ext=m4a" in selector
+    assert command[command.index("--merge-output-format") + 1] == "mp4"
+
+
+def test_команда_для_webm_берёт_vp9_и_opus() -> None:
+    """R3: WebM — видео VP9 со звуком Opus."""
+    runner = YtDlpRunner(destination=Path("/tmp/out"), video_format=_video_format("webm"))
+
+    command = runner.build_command(URL)
+
+    selector = command[command.index("-f") + 1]
+    assert "ext=webm" in selector
+    assert command[command.index("--merge-output-format") + 1] == "webm"
+
+
+def test_команда_для_mkv_берёт_любые_кодеки() -> None:
+    """R3: MKV — контейнер, который берёт любые доступные кодеки."""
+    runner = YtDlpRunner(destination=Path("/tmp/out"), video_format=_video_format("mkv"))
+
+    command = runner.build_command(URL)
+
+    assert command[command.index("--merge-output-format") + 1] == "mkv"
+
+
+def test_команда_только_звука_извлекает_аудио() -> None:
+    """R3: «только звук» — звуковой поток переводится в выбранный формат."""
+    runner = YtDlpRunner(
+        destination=Path("/tmp/out"),
+        video_format=_video_format("audio"),
+        audio_format=_audio_format("flac"),
+    )
+
+    command = runner.build_command(URL)
+
+    assert "-x" in command
+    assert command[command.index("--audio-format") + 1] == "flac"
+    assert "--merge-output-format" not in command
+
+
+def test_раздельные_файлы_скачиваются_двумя_запусками() -> None:
+    """R3: «видео и звук отдельно» — видеопоток и звуковой поток отдельно."""
+    runner = YtDlpRunner(destination=Path("/tmp/out"), video_format=_video_format("separate"))
+
+    steps = runner.build_steps(URL)
+
+    assert len(steps) == 2
+    assert steps[0].command[steps[0].command.index("-f") + 1] == "bv*"
+    assert steps[1].command[steps[1].command.index("-f") + 1] == "ba"
+
+
+def test_раздельные_файлы_получают_разные_имена() -> None:
+    """R4: расширения потоков могут совпасть, поэтому имена различаются."""
+    runner = YtDlpRunner(destination=Path("/tmp/out"), video_format=_video_format("separate"))
+
+    steps = runner.build_steps(URL)
+
+    templates = [step.command[step.command.index("-o") + 1] for step in steps]
+    assert templates[0] != templates[1]
+    assert "(видео)" in templates[0]
+    assert "(звук)" in templates[1]
+
+
+def test_счётчик_файлов_у_раздельных_файлов_два() -> None:
+    """R3: раздельные файлы — два файла на диске."""
+    runner = YtDlpRunner(destination=Path("/tmp/out"), video_format=_video_format("separate"))
+
+    assert runner.count_files(URL) == 2
+
+
+def test_счётчик_файлов_у_обычного_видео_один() -> None:
+    """R4: умолчание прежнее — одна ссылка даёт один файл."""
+    runner = YtDlpRunner(destination=Path("/tmp/out"))
+
+    assert runner.count_files(URL) == 1

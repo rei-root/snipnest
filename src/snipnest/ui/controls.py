@@ -14,11 +14,13 @@ from PySide6.QtWidgets import (
     QWidget,
 )
 
+from .format_selector import FormatSelector
+
 __all__ = ["TopControls"]
 
 
 class TopControls(QWidget):
-    """Поле ссылки, выбор папки сохранения и кнопки источника."""
+    """Поле ссылки, выбор папки сохранения, выбор формата и кнопки источника."""
 
     def __init__(self, parent: QWidget | None = None) -> None:
         super().__init__(parent)
@@ -26,6 +28,7 @@ class TopControls(QWidget):
         layout.setContentsMargins(0, 0, 0, 0)
         layout.addWidget(self._build_link_row())
         layout.addWidget(self._build_destination_row())
+        layout.addWidget(self._build_format_row())
         layout.addWidget(self._build_toolbar())
 
     def _build_link_row(self) -> QWidget:
@@ -60,6 +63,16 @@ class TopControls(QWidget):
 
         self.choose_destination_button = QPushButton("Выбрать папку", box)
         layout.addWidget(self.choose_destination_button)
+        return box
+
+    def _build_format_row(self) -> QWidget:
+        box = QWidget(self)
+        layout = QHBoxLayout(box)
+        layout.setContentsMargins(0, 0, 0, 0)
+
+        self.format_selector = FormatSelector(box)
+        layout.addWidget(self.format_selector)
+        layout.addStretch(1)
         return box
 
     def _build_toolbar(self) -> QWidget:

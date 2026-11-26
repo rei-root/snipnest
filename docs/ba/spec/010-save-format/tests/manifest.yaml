@@ -1,0 +1,277 @@
+tests:
+- id: T-format-image-list
+  layer: unit
+  covers:
+  - R3
+  file: tests/unit/test_formats.py
+  fn: test_форматы_картинки_перечислены
+- id: T-format-video-list
+  layer: unit
+  covers:
+  - R3
+  file: tests/unit/test_formats.py
+  fn: test_форматы_видео_перечислены
+- id: T-format-audio-list
+  layer: unit
+  covers:
+  - R3
+  file: tests/unit/test_formats.py
+  fn: test_форматы_звука_перечислены
+- id: T-format-defaults
+  layer: unit
+  covers:
+  - R4
+  file: tests/unit/test_formats.py
+  fn: test_умолчания_прежние
+- id: T-format-lookup
+  layer: unit
+  covers:
+  - R3
+  file: tests/unit/test_formats.py
+  fn: test_поиск_формата_по_идентификатору
+- id: T-format-no-quality
+  layer: unit
+  covers:
+  - R6
+  file: tests/unit/test_formats.py
+  fn: test_выбора_качества_видео_нет
+- id: T-format-original-keeps
+  layer: unit
+  covers:
+  - R4
+  file: tests/unit/test_formats.py
+  fn: test_формат_по_умолчанию_для_картинки_ничего_не_перекодирует
+- id: T-format-choice-object
+  layer: unit
+  covers:
+  - R3
+  file: tests/unit/test_formats.py
+  fn: test_выбор_владельца_хранит_вид_и_форматы
+- id: T-cmd-mp4
+  layer: unit
+  covers:
+  - R3
+  file: tests/unit/test_ytdlp.py
+  fn: test_команда_для_mp4_берёт_h264_и_aac
+- id: T-cmd-webm
+  layer: unit
+  covers:
+  - R3
+  file: tests/unit/test_ytdlp.py
+  fn: test_команда_для_webm_берёт_vp9_и_opus
+- id: T-cmd-mkv
+  layer: unit
+  covers:
+  - R3
+  file: tests/unit/test_ytdlp.py
+  fn: test_команда_для_mkv_берёт_любые_кодеки
+- id: T-cmd-audio-only
+  layer: unit
+  covers:
+  - R3
+  file: tests/unit/test_ytdlp.py
+  fn: test_команда_только_звука_извлекает_аудио
+- id: T-cmd-separate
+  layer: unit
+  covers:
+  - R3
+  file: tests/unit/test_ytdlp.py
+  fn: test_раздельные_файлы_скачиваются_двумя_запусками
+- id: T-cmd-separate-names
+  layer: unit
+  covers:
+  - R4
+  file: tests/unit/test_ytdlp.py
+  fn: test_раздельные_файлы_получают_разные_имена
+- id: T-count-separate
+  layer: unit
+  covers:
+  - R3
+  file: tests/unit/test_ytdlp.py
+  fn: test_счётчик_файлов_у_раздельных_файлов_два
+- id: T-count-default
+  layer: unit
+  covers:
+  - R4
+  file: tests/unit/test_ytdlp.py
+  fn: test_счётчик_файлов_у_обычного_видео_один
+- id: T-convert-image
+  layer: unit
+  covers:
+  - R3
+  file: tests/unit/test_downloader.py
+  fn: test_скачанная_картинка_перекодируется_в_выбранный_формат
+- id: T-convert-replaces
+  layer: unit
+  covers:
+  - R4
+  file: tests/unit/test_downloader.py
+  fn: test_исходный_файл_заменяется_перекодированным
+- id: T-convert-not-image
+  layer: unit
+  covers:
+  - R4
+  file: tests/unit/test_downloader.py
+  fn: test_файл_не_картинка_не_перекодируется
+- id: T-convert-off
+  layer: unit
+  covers:
+  - R4
+  file: tests/unit/test_downloader.py
+  fn: test_без_выбора_формата_файл_не_трогается
+- id: T-imaging-jpeg
+  layer: unit
+  covers:
+  - R3
+  file: tests/ui/test_imaging.py
+  fn: test_png_переводится_в_jpeg
+- id: T-imaging-webp
+  layer: unit
+  covers:
+  - R3
+  file: tests/ui/test_imaging.py
+  fn: test_png_переводится_в_webp
+- id: T-imaging-same
+  layer: unit
+  covers:
+  - R4
+  file: tests/ui/test_imaging.py
+  fn: test_картинка_уже_в_нужном_формате_остаётся_на_месте
+- id: T-imaging-garbage
+  layer: unit
+  covers:
+  - R4
+  file: tests/ui/test_imaging.py
+  fn: test_мусорный_файл_не_переводится
+- id: T-imaging-alpha
+  layer: unit
+  covers:
+  - R4
+  file: tests/ui/test_imaging.py
+  fn: test_прозрачность_заливается_белым
+- id: T-imaging-quality-jpeg
+  layer: unit
+  covers:
+  - R4
+  file: tests/ui/test_imaging.py
+  fn: test_качество_jpeg_соответствует_договорённому
+- id: T-imaging-quality-webp
+  layer: unit
+  covers:
+  - R4
+  file: tests/ui/test_imaging.py
+  fn: test_качество_webp_соответствует_договорённому
+- id: T-selector-image
+  layer: unit
+  covers:
+  - R3
+  file: tests/ui/test_format_selector.py
+  fn: test_для_фото_показываются_форматы_картинки
+- id: T-selector-video
+  layer: unit
+  covers:
+  - R3
+  file: tests/ui/test_format_selector.py
+  fn: test_для_видео_показываются_форматы_видео
+- id: T-selector-audio
+  layer: unit
+  covers:
+  - R3
+  file: tests/ui/test_format_selector.py
+  fn: test_список_звука_доступен_только_для_звука
+- id: T-selector-choice
+  layer: unit
+  covers:
+  - R3
+  file: tests/ui/test_format_selector.py
+  fn: test_выбранный_формат_возвращается_выборкой
+- id: T-selector-remember
+  layer: unit
+  covers:
+  - R3
+  file: tests/ui/test_format_selector.py
+  fn: test_выбор_помнится_между_видами_ссылки
+- id: T-selector-restore
+  layer: unit
+  covers:
+  - R3
+  file: tests/ui/test_format_selector.py
+  fn: test_выбор_восстанавливается_из_настроек
+- id: T-selector-changed
+  layer: unit
+  covers:
+  - R3
+  file: tests/ui/test_format_selector.py
+  fn: test_смена_выбора_сообщает_об_этом
+- id: T-window-image-formats
+  layer: unit
+  covers:
+  - R3
+  file: tests/ui/test_window_format.py
+  fn: test_ссылка_на_фото_показывает_форматы_картинки
+- id: T-window-video-formats
+  layer: unit
+  covers:
+  - R3
+  file: tests/ui/test_window_format.py
+  fn: test_ссылка_на_видео_показывает_форматы_видео
+- id: T-window-video-choice
+  layer: unit
+  covers:
+  - R3
+  file: tests/ui/test_window_format.py
+  fn: test_выбранный_формат_видео_доходит_до_исполнителя
+- id: T-window-image-choice
+  layer: unit
+  covers:
+  - R3
+  file: tests/ui/test_window_format.py
+  fn: test_выбранный_формат_картинки_доходит_до_исполнителя
+- id: T-scope-local
+  layer: unit
+  covers:
+  - R2
+  - R5
+  file: tests/unit/test_scope.py
+  fn: test_приложение_локальное_и_однопользовательское
+- id: T-scope-sources
+  layer: unit
+  covers:
+  - R6
+  file: tests/unit/test_scope.py
+  fn: test_поддерживаются_pinterest_и_youtube
+- id: T-real-ytdlp-flags
+  layer: integration
+  covers:
+  - R3
+  file: tests/integration/test_save_format.py
+  fn: test_настоящий_yt_dlp_понимает_флаги_выбора_формата
+- id: T-real-ytdlp-separate
+  layer: integration
+  covers:
+  - R3
+  file: tests/integration/test_save_format.py
+  fn: test_настоящий_yt_dlp_понимает_выбор_раздельных_файлов
+- id: T-e2e-photo-original
+  layer: e2e
+  covers:
+  - R4
+  - AC1
+  file: tests/e2e/test_format_scenario.py
+  fn: test_фото_остаётся_фотом_без_перекодировки
+- id: T-e2e-photo-format
+  layer: e2e
+  covers:
+  - R1
+  - R3
+  - AC1
+  file: tests/e2e/test_format_scenario.py
+  fn: test_фото_сохраняется_в_выбранном_формате
+- id: T-e2e-separate
+  layer: e2e
+  covers:
+  - R1
+  - R3
+  - AC1
+  file: tests/e2e/test_format_scenario.py
+  fn: test_видео_и_звук_раздельными_файлами

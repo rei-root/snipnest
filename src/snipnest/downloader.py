@@ -6,6 +6,7 @@
 
 from __future__ import annotations
 
+import contextlib
 import dataclasses
 import enum
 import json
@@ -16,6 +17,7 @@ from pathlib import Path
 from typing import Protocol
 
 from .binaries import build_child_env, find_gallery_dl
+from .formats import CONVERTIBLE_EXTENSIONS
 
 __all__ = [
     "DirectoryFormats",
@@ -25,6 +27,7 @@ __all__ = [
     "DownloadRunner",
     "GalleryDlRunner",
     "GalleryDlNotFoundError",
+    "ImageConverter",
     "build_child_env",
     "flat_directory_formats",
     "parse_output_line",
@@ -36,6 +39,14 @@ DirectoryFormats = Callable[[int], Sequence[str]]
 
 Шаблоны — форматы опции ``directory`` gallery-dl: пустой шаблон кладёт файл
 прямо в выбранную папку, непустой — в подкаталог с указанным именем.
+"""
+
+ImageConverter = Callable[[Path, str], Path | None]
+"""Перевод картинки в другой формат: путь на диске и расширение цели.
+
+Возвращает путь к готовому файлу или None, если перевести не вышло. Функцию
+подставляет тот, кто знает про Qt: сам исполнитель о перекодировке ничего не
+знает.
 """
 
 
@@ -141,12 +152,16 @@ class GalleryDlRunner:
         cookies: str | None = None,
         on_event: Callable[[DownloadEvent], None] | None = None,
         directory_formats: DirectoryFormats = flat_directory_formats,
+        image_extension: str = "",
+        converter: ImageConverter | None = None,
     ) -> None:
         self._binary = binary
         self._destination = destination
         self._cookies = cookies
         self._on_event = on_event
         self._directory_formats = directory_formats
+        self._image_extension = image_extension
+        self._converter = converter
         self._file_count = 0
         self._process: subprocess.Popen[str] | None = None
         self._lock = threading.Lock()
@@ -250,10 +265,38 @@ class GalleryDlRunner:
         self, event: DownloadEvent, files: list[str], skipped_paths: list[str]
     ) -> None:
         if event.kind is DownloadEventKind.FILE_DOWNLOADED:
-            files.append(event.path or "")
-        elif event.kind is DownloadEventKind.FILE_SKIPPED:
+            path = self._convert(event.path or "")
+            files.append(path)
+            self._emit(dataclasses.replace(event, path=path))
+            return
+        if event.kind is DownloadEventKind.FILE_SKIPPED:
             skipped_paths.append(event.path or "")
         self._emit(event)
+
+    def _convert(self, path: str) -> str:
+        """Перевести картинку в выбранный формат. Вернуть итоговый путь.
+
+        Переводится только то, что приложение скачало сейчас: уже
+        существующий файл не трогается — его и не качали.
+        """
+        if not self._image_extension or self._converter is None or not path:
+            return path
+        source = Path(path)
+        if source.suffix.lower().lstrip(".") not in CONVERTIBLE_EXTENSIONS:
+            return path
+        converted = self._converter(source, self._image_extension)
+        if converted is None:
+            self._emit(
+                DownloadEvent(
+                    DownloadEventKind.LOG,
+                    text=f"не удалось перевести {path} в {self._image_extension}",
+                )
+            )
+            return path
+        if converted != source:
+            with contextlib.suppress(OSError):
+                source.unlink()
+        return str(converted)
 
     def _read_stdout(
         self, process: subprocess.Popen[str], handle: Callable[[DownloadEvent], None]

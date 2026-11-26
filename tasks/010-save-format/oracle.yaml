@@ -1,0 +1,86 @@
+task_id: 010-save-format
+oracle:
+  path: bin/check-save-format.sh
+  command: bash bin/check-save-format.sh
+  sha256: d0ab56c1f8effeb63db24b15e9fa30044a66ce5717e8190422e638c6b655078e
+  recorded_at: '2026-11-26T16:21:51+00:00'
+red_output: "==================================== ERRORS ====================================\n\
+  _________________ ERROR collecting tests/unit/test_formats.py __________________\n\
+  ImportError while importing test module '/home/sato/Документы/snipnest/.delta/worktrees/zst5dfdadpj6/snipnest/tests/unit/test_formats.py'.\n\
+  Hint: make sure your test modules/packages have valid Python names.\nTraceback:\n\
+  tests/unit/test_formats.py:11: in <module>\n    from snipnest.formats import (\n\
+  E   ModuleNotFoundError: No module named 'snipnest.formats'\n__________________\
+  \ ERROR collecting tests/unit/test_ytdlp.py ___________________\nImportError while\
+  \ importing test module '/home/sato/Документы/snipnest/.delta/worktrees/zst5dfdadpj6/snipnest/tests/unit/test_ytdlp.py'.\n\
+  Hint: make sure your test modules/packages have valid Python names.\nTraceback:\n\
+  tests/unit/test_ytdlp.py:10: in <module>\n    from snipnest.formats import audio_format_by_id,\
+  \ video_format_by_id\nE   ModuleNotFoundError: No module named 'snipnest.formats'\n\
+  __________________ ERROR collecting tests/ui/test_imaging.py ___________________\n\
+  ImportError while importing test module '/home/sato/Документы/snipnest/.delta/worktrees/zst5dfdadpj6/snipnest/tests/ui/test_imaging.py'.\n\
+  Hint: make sure your test modules/packages have valid Python names.\nTraceback:\n\
+  tests/ui/test_imaging.py:18: in <module>\n    from snipnest.ui.imaging import convert_image\n\
+  E   ModuleNotFoundError: No module named 'snipnest.ui.imaging'\n______________ ERROR\
+  \ collecting tests/ui/test_format_selector.py _______________\nImportError while\
+  \ importing test module '/home/sato/Документы/snipnest/.delta/worktrees/zst5dfdadpj6/snipnest/tests/ui/test_format_selector.py'.\n\
+  Hint: make sure your test modules/packages have valid Python names.\nTraceback:\n\
+  tests/ui/test_format_selector.py:12: in <module>\n    from snipnest.formats import\
+  \ FormatKind\nE   ModuleNotFoundError: No module named 'snipnest.formats'\n===========================\
+  \ short test summary info ============================\nERROR tests/unit/test_formats.py\n\
+  ERROR tests/unit/test_ytdlp.py\nERROR tests/ui/test_imaging.py\nERROR tests/ui/test_format_selector.py\n\
+  !!!!!!!!!!!!!!!!!!! Interrupted: 4 errors during collection !!!!!!!!!!!!!!!!!!!!\n\
+  КРИТЕРИЙ НЕ ВЫПОЛНЕН: формат сохранения выбирается и применяется"
+passability: 'Тот же оракул на ветке orch/010-save-format с реализацией печатает «OK:
+  формат сохранения выбирается и применяется» и возвращает 0. Проверяется: каталог
+  форматов (картинки original/jpg/png/webp, видео mp4/webm/mkv/audio/separate, звук
+  mp3/m4a/opus/flac/wav) и умолчания; команда yt-dlp для каждого варианта (mp4 с H.264
+  и AAC, webm с VP9 и Opus, mkv, извлечение звука через -x с выбранным форматом, раздельные
+  файлы двумя запусками с разными именами); перевод картинки средствами Qt в выбранный
+  формат, качество JPEG и WebP 90, прозрачность на белом фоне, мусорный файл картинкой
+  не считается; выбор в окне зависит от вида ссылки, помнится между запусками и доходит
+  до исполнителя; сценарий целиком на заглушках: картинка без выбора остаётся png,
+  с выбором JPEG в папке лежит один photo.jpg, а при «видео и звук отдельно» — два
+  файла «Название [id] (видео).mp4» и «Название [id] (звук).m4a». Тот же оракул на
+  чистой основной ветке (реализация убрана, тесты и сам оракул на месте) даёт красный
+  вывод выше: модулей snipnest.formats, snipnest.ui.imaging и snipnest.ui.format_selector
+  ещё нет.'
+records:
+- id: O-save-format
+  red_output: "==================================== ERRORS ====================================\n\
+    _________________ ERROR collecting tests/unit/test_formats.py __________________\n\
+    ImportError while importing test module '/home/sato/Документы/snipnest/.delta/worktrees/zst5dfdadpj6/snipnest/tests/unit/test_formats.py'.\n\
+    Hint: make sure your test modules/packages have valid Python names.\nTraceback:\n\
+    tests/unit/test_formats.py:11: in <module>\n    from snipnest.formats import (\n\
+    E   ModuleNotFoundError: No module named 'snipnest.formats'\n__________________\
+    \ ERROR collecting tests/unit/test_ytdlp.py ___________________\nImportError while\
+    \ importing test module '/home/sato/Документы/snipnest/.delta/worktrees/zst5dfdadpj6/snipnest/tests/unit/test_ytdlp.py'.\n\
+    Hint: make sure your test modules/packages have valid Python names.\nTraceback:\n\
+    tests/unit/test_ytdlp.py:10: in <module>\n    from snipnest.formats import audio_format_by_id,\
+    \ video_format_by_id\nE   ModuleNotFoundError: No module named 'snipnest.formats'\n\
+    __________________ ERROR collecting tests/ui/test_imaging.py ___________________\n\
+    ImportError while importing test module '/home/sato/Документы/snipnest/.delta/worktrees/zst5dfdadpj6/snipnest/tests/ui/test_imaging.py'.\n\
+    Hint: make sure your test modules/packages have valid Python names.\nTraceback:\n\
+    tests/ui/test_imaging.py:18: in <module>\n    from snipnest.ui.imaging import\
+    \ convert_image\nE   ModuleNotFoundError: No module named 'snipnest.ui.imaging'\n\
+    ______________ ERROR collecting tests/ui/test_format_selector.py _______________\n\
+    ImportError while importing test module '/home/sato/Документы/snipnest/.delta/worktrees/zst5dfdadpj6/snipnest/tests/ui/test_format_selector.py'.\n\
+    Hint: make sure your test modules/packages have valid Python names.\nTraceback:\n\
+    tests/ui/test_format_selector.py:12: in <module>\n    from snipnest.formats import\
+    \ FormatKind\nE   ModuleNotFoundError: No module named 'snipnest.formats'\n===========================\
+    \ short test summary info ============================\nERROR tests/unit/test_formats.py\n\
+    ERROR tests/unit/test_ytdlp.py\nERROR tests/ui/test_imaging.py\nERROR tests/ui/test_format_selector.py\n\
+    !!!!!!!!!!!!!!!!!!! Interrupted: 4 errors during collection !!!!!!!!!!!!!!!!!!!!\n\
+    КРИТЕРИЙ НЕ ВЫПОЛНЕН: формат сохранения выбирается и применяется"
+  passability: 'Тот же оракул на ветке orch/010-save-format с реализацией печатает
+    «OK: формат сохранения выбирается и применяется» и возвращает 0. Проверяется:
+    каталог форматов (картинки original/jpg/png/webp, видео mp4/webm/mkv/audio/separate,
+    звук mp3/m4a/opus/flac/wav) и умолчания; команда yt-dlp для каждого варианта (mp4
+    с H.264 и AAC, webm с VP9 и Opus, mkv, извлечение звука через -x с выбранным форматом,
+    раздельные файлы двумя запусками с разными именами); перевод картинки средствами
+    Qt в выбранный формат, качество JPEG и WebP 90, прозрачность на белом фоне, мусорный
+    файл картинкой не считается; выбор в окне зависит от вида ссылки, помнится между
+    запусками и доходит до исполнителя; сценарий целиком на заглушках: картинка без
+    выбора остаётся png, с выбором JPEG в папке лежит один photo.jpg, а при «видео
+    и звук отдельно» — два файла «Название [id] (видео).mp4» и «Название [id] (звук).m4a».
+    Тот же оракул на чистой основной ветке (реализация убрана, тесты и сам оракул
+    на месте) даёт красный вывод выше: модулей snipnest.formats, snipnest.ui.imaging
+    и snipnest.ui.format_selector ещё нет.'

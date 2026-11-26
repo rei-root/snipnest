@@ -12,6 +12,8 @@ from pathlib import Path
 
 import keyring
 
+from .formats import DEFAULT_AUDIO_FORMAT, DEFAULT_IMAGE_FORMAT, DEFAULT_VIDEO_FORMAT
+
 __all__ = [
     "Settings",
     "DEFAULT_DESTINATION",
@@ -95,6 +97,9 @@ class Settings:
         self.yt_dlp_path: str = ""
         self.cookies_browser: str = ""
         self.cookies_file: str = ""
+        self.image_format: str = DEFAULT_IMAGE_FORMAT
+        self.video_format: str = DEFAULT_VIDEO_FORMAT
+        self.audio_format: str = DEFAULT_AUDIO_FORMAT
         self.load()
 
     def load(self) -> None:
@@ -120,6 +125,15 @@ class Settings:
         cookies_file = data.get("cookies_file")
         if isinstance(cookies_file, str):
             self.cookies_file = cookies_file
+        image_format = data.get("image_format")
+        if isinstance(image_format, str) and image_format:
+            self.image_format = image_format
+        video_format = data.get("video_format")
+        if isinstance(video_format, str) and video_format:
+            self.video_format = video_format
+        audio_format = data.get("audio_format")
+        if isinstance(audio_format, str) and audio_format:
+            self.audio_format = audio_format
 
     def save(self) -> None:
         """Записать настройки в конфиг."""
@@ -130,6 +144,9 @@ class Settings:
             "yt_dlp_path": self.yt_dlp_path,
             "cookies_browser": self.cookies_browser,
             "cookies_file": self.cookies_file,
+            "image_format": self.image_format,
+            "video_format": self.video_format,
+            "audio_format": self.audio_format,
         }
         self._config_path.write_text(
             json.dumps(data, ensure_ascii=False, indent=2) + "\n",
