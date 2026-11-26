@@ -257,20 +257,21 @@ stage_dir() {
 install_deb() {
     file="$1"
     dir="$(stage_dir)" || fail "негде создать временный каталог для пакета"
-    stage="$dir/$DEB_NAME"
-    cp "$file" "$stage" || fail "не удалось подготовить пакет $DEB_NAME"
-    chmod 644 "$stage"
+    stage="$dir"
+    package="$dir/$DEB_NAME"
+    cp "$file" "$package" || fail "не удалось подготовить пакет $DEB_NAME"
+    chmod 644 "$package"
 
     log "Ставлю пакет $DEB_NAME"
     if command -v apt-get >/dev/null 2>&1; then
-        if run_priv apt-get install -y "$(apt_path "$stage")"; then
+        if run_priv apt-get install -y "$(apt_path "$package")"; then
             log "Пакет $DEB_NAME поставлен через apt-get."
             return 0
         fi
         warn "apt-get не справился — ставлю через dpkg"
     fi
     if command -v dpkg >/dev/null 2>&1; then
-        if run_priv dpkg -i "$stage"; then
+        if run_priv dpkg -i "$package"; then
             log "Пакет $DEB_NAME поставлен через dpkg."
             return 0
         fi
