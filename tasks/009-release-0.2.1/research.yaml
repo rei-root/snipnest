@@ -1,0 +1,67 @@
+entries:
+- id: SRC-I1
+  phase: интервью
+  kind: api
+  title: GitHub Actions — событие push с фильтром по тегам
+  findings: 'Релиз публикуется тегом: workflow с on.push.tags запускается, когда отправлен
+    тег, и собирает артефакты под этот тег. Значит, чтобы релиз 0.2.1 появился, нужен
+    тег v0.2.1 в репозитории — и он ставится только после слияния задачи в main.'
+  url: https://docs.github.com/en/actions/writing-workflows/choosing-when-your-workflow-runs/events-that-trigger-workflows?apiVersion=2022-11-28
+  version: документация GitHub Actions (X-GitHub-Api-Version 2022-11-28)
+  currency_evidence: 'актуальная документация GitHub Actions: раздел Events that trigger
+    workflows'
+  topics:
+  - 'push с фильтром tags: workflow запускается только по тегам'
+  - 'ограничение: не больше трёх тегов за раз'
+  deprecated_apis: []
+  applies_to: []
+  recorded_at: '2026-11-26T15:15:58+00:00'
+- id: SRC-I2
+  phase: интервью
+  kind: api
+  title: 'Hatch — версия пакета: источник в коде'
+  findings: 'Версия пакета берётся из файла проекта (в нашем случае src/snipnest/__init__.py)
+    — это и есть источник истины: и сборщики читают её оттуда, и метаданные пакета.
+    Менять версию значит менять одно место, а не искать литералы по репозиторию.'
+  url: https://hatch.pypa.io/latest/config/metadata/
+  version: 'актуальная документация Hatch: Configuring project metadata'
+  currency_evidence: 'актуальная документация Hatch: раздел Version, источники code/path'
+  topics:
+  - 'Version: static или dynamic'
+  - 'Version source: code — версия берётся из файла проекта'
+  deprecated_apis: []
+  applies_to: []
+  recorded_at: '2026-11-26T15:15:58+00:00'
+- id: SRC-C1
+  phase: код
+  kind: api
+  title: 'Hatch — Version source: Code (версия читается из файла)'
+  findings: 'Метаданные пакета и сборщики берут версию из одного файла (src/snipnest/__init__.py),
+    поэтому её достаточно поменять в одном месте: имя пакета .deb, имя образа, адрес
+    релиза и сведения о сборке внутри установщика собираются из неё автоматически.'
+  url: https://hatch.pypa.io/latest/config/metadata/
+  version: 'актуальная документация Hatch: Configuring project metadata'
+  currency_evidence: 'актуальная документация Hatch: раздел Version, источники code/path'
+  topics:
+  - 'path: файл, в котором объявлена версия'
+  - 'regex: как из файла берётся значение'
+  deprecated_apis: []
+  applies_to: []
+  recorded_at: '2026-11-26T15:15:58+00:00'
+- id: SRC-C2
+  phase: код
+  kind: api
+  title: GitHub Actions — публикация релиза по тегу
+  findings: 'Порядок релиза: задача слита в main, на main отправлен тег vX.Y.Z, по
+    тегу CI собирает артефакты и выкладывает их в Releases под этим тегом. Проверка
+    релиза — после публикации: в Releases лежат файлы с версией в имени и тот самый
+    установщик.'
+  url: https://docs.github.com/en/actions/writing-workflows/choosing-when-your-workflow-runs/events-that-trigger-workflows?apiVersion=2022-11-28
+  version: документация GitHub Actions (X-GitHub-Api-Version 2022-11-28)
+  currency_evidence: 'актуальная документация GitHub Actions: раздел Events that trigger
+    workflows'
+  topics:
+  - 'push по тегу: сборка и публикация релиза'
+  deprecated_apis: []
+  applies_to: []
+  recorded_at: '2026-11-26T15:15:58+00:00'

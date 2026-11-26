@@ -5,6 +5,7 @@ from __future__ import annotations
 import json
 from pathlib import Path
 
+import snipnest
 from snipnest.installer import resources
 
 
@@ -29,7 +30,7 @@ def test_размеры_иконок_на_месте() -> None:
 def test_сведения_о_сборке_читаются_из_файла(tmp_path, monkeypatch) -> None:
     path = tmp_path / "build-info.json"
     path.write_text(
-        json.dumps({"version": "0.2.0", "min_glibc": "2.38"}),
+        json.dumps({"version": snipnest.__version__, "min_glibc": "2.38"}),
         encoding="utf-8",
     )
     monkeypatch.setenv("SNIPNEST_BUILD_INFO", str(path))
@@ -37,7 +38,7 @@ def test_сведения_о_сборке_читаются_из_файла(tmp_p
 
     info = resources.build_info()
 
-    assert info["version"] == "0.2.0"
+    assert info["version"] == snipnest.__version__
     assert info["min_glibc"] == "2.38"
 
 

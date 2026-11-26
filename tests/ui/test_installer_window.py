@@ -5,6 +5,7 @@ from __future__ import annotations
 import pytest
 from PySide6.QtCore import Qt, QThread
 
+import snipnest
 from snipnest.installer.detect import Family
 from snipnest.installer.plan import Mode
 from snipnest.installer.window import InstallerContext, InstallerWindow, _InstallWorker
@@ -13,7 +14,7 @@ from snipnest.installer.window import InstallerContext, InstallerWindow, _Instal
 def _context(**overrides) -> InstallerContext:
     """Сведения о системе для теста."""
     values = {
-        "version": "0.2.0",
+        "version": snipnest.__version__,
         "family": Family.DEBIAN,
         "glibc": "2.43",
         "min_glibc": "2.38",

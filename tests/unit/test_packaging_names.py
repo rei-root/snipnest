@@ -6,6 +6,8 @@ import re
 import subprocess
 from pathlib import Path
 
+import snipnest
+
 ROOT = Path(__file__).resolve().parents[2]
 COMMON = ROOT / "packaging" / "common.sh"
 
@@ -34,7 +36,7 @@ def test_имя_пакета_deb_не_меняется() -> None:
 
 
 def test_версия_берётся_из_пакета() -> None:
-    assert _helper("app_version") == "0.2.0"
+    assert _helper("app_version") == snipnest.__version__
 
 
 def test_базовая_glibc_указана_одним_числом() -> None:
@@ -42,4 +44,4 @@ def test_базовая_glibc_указана_одним_числом() -> None:
 
 
 def test_адрес_релиза_ведёт_на_тег_версии() -> None:
-    assert _helper("release_url").endswith("/v0.2.0")
+    assert _helper("release_url").endswith(f"/v{snipnest.__version__}")

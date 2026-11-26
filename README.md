@@ -198,7 +198,7 @@ rhel-based, `pacman` на arch-based, `zypper` на suse-based, `apk` на Alpin
 **Пакет .deb** (если хочется поставить пакетом вручную):
 
 ```bash
-sudo apt install ./snipnest_0.2.0_amd64.deb
+sudo apt install ./snipnest_0.2.1_amd64.deb
 ```
 
 Если apt напечатал «Отказано в доступе» от служебного пользователя `_apt` —
@@ -207,7 +207,7 @@ sudo apt install ./snipnest_0.2.0_amd64.deb
 Поставить пакет можно и совсем без apt:
 
 ```bash
-sudo dpkg -i snipnest_0.2.0_amd64.deb
+sudo dpkg -i snipnest_0.2.1_amd64.deb
 ```
 
 Пакет самодостаточный: внутри программа, Qt, переносимый Python и все пять
@@ -316,8 +316,8 @@ make dist            # все три
 make check-dist      # проверить собранные артефакты
 ```
 
-Собирается только под `amd64`. Артефакты подписываются в CI по тегу
-(`v0.2.0`) и выкладываются в Releases.
+Собирается только под `amd64`. Артефакты собираются в CI по тегу версии
+(`vX.Y.Z`) и выкладываются в Releases.
 
 Тесты интерфейса идут на платформе `offscreen`, если в системе нет
 графической сессии (`DISPLAY` и `WAYLAND_DISPLAY` не заданы). Файл

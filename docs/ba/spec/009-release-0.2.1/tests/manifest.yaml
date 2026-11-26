@@ -1,0 +1,103 @@
+tests:
+- id: T-release-packaging-scope-test_версия_приложения_соответствует_выпуску
+  layer: unit
+  covers:
+  - R3
+  - R5
+  file: tests/unit/test_packaging_scope.py
+  fn: test_версия_приложения_соответствует_выпуску
+- id: T-release-packaging-scope-test_другие_платформы_не_входят
+  layer: unit
+  covers:
+  - R6
+  file: tests/unit/test_packaging_scope.py
+  fn: test_другие_платформы_не_входят
+- id: T-release-packaging-names-test_версия_берётся_из_пакета
+  layer: unit
+  covers:
+  - R3
+  - R4
+  file: tests/unit/test_packaging_names.py
+  fn: test_версия_берётся_из_пакета
+- id: T-release-packaging-names-test_адрес_релиза_ведёт_на_тег_версии
+  layer: unit
+  covers:
+  - R3
+  file: tests/unit/test_packaging_names.py
+  fn: test_адрес_релиза_ведёт_на_тег_версии
+- id: T-release-packaging-names-test_имя_образа_содержит_платформу_glibc_и_архитектуру
+  layer: unit
+  covers:
+  - R3
+  file: tests/unit/test_packaging_names.py
+  fn: test_имя_образа_содержит_платформу_glibc_и_архитектуру
+- id: T-release-packaging-names-test_имя_пакета_deb_не_меняется
+  layer: unit
+  covers:
+  - R3
+  file: tests/unit/test_packaging_names.py
+  fn: test_имя_пакета_deb_не_меняется
+- id: T-release-installer-plan-test_имя_образа_содержит_версию_glibc_и_архитектуру
+  layer: unit
+  covers:
+  - R3
+  file: tests/unit/test_installer_plan.py
+  fn: test_имя_образа_содержит_версию_glibc_и_архитектуру
+- id: T-release-installer-plan-test_адрес_релиза_ведёт_на_тег_версии
+  layer: unit
+  covers:
+  - R3
+  file: tests/unit/test_installer_plan.py
+  fn: test_адрес_релиза_ведёт_на_тег_версии
+- id: T-release-installer-resources-test_сведения_о_сборке_читаются_из_файла
+  layer: unit
+  covers:
+  - R3
+  file: tests/unit/test_installer_resources.py
+  fn: test_сведения_о_сборке_читаются_из_файла
+- id: T-release-release-version-test_версия_в_имени_пакета
+  layer: integration
+  covers:
+  - R3
+  file: tests/integration/test_release_version.py
+  fn: test_версия_в_имени_пакета
+- id: T-release-release-version-test_версия_в_имени_образа
+  layer: integration
+  covers:
+  - R3
+  file: tests/integration/test_release_version.py
+  fn: test_версия_в_имени_образа
+- id: T-release-release-version-test_адрес_релиза_ведёт_на_тег_версии
+  layer: integration
+  covers:
+  - R3
+  file: tests/integration/test_release_version.py
+  fn: test_адрес_релиза_ведёт_на_тег_версии
+- id: T-release-release-version-test_сборщик_установщика_кладёт_версию_и_адрес_релиза
+  layer: integration
+  covers:
+  - R3
+  - R4
+  file: tests/integration/test_release_version.py
+  fn: test_сборщик_установщика_кладёт_версию_и_адрес_релиза
+- id: T-release-release-e2e-test_сборка_релиза_запускается_по_тегу
+  layer: e2e
+  covers:
+  - R1
+  - R3
+  file: tests/e2e/test_release_e2e.py
+  fn: test_сборка_релиза_запускается_по_тегу
+- id: T-release-release-e2e-test_в_релизе_есть_установщик_образ_и_пакет
+  layer: e2e
+  covers:
+  - R2
+  - R3
+  file: tests/e2e/test_release_e2e.py
+  fn: test_в_релизе_есть_установщик_образ_и_пакет
+- id: T-release-release-e2e-test_текст_релиза_рассказывает_про_графический_установщик
+  layer: e2e
+  covers:
+  - R2
+  - R3
+  file: tests/e2e/test_release_e2e.py
+  fn: test_текст_релиза_рассказывает_про_графический_установщик

@@ -4,6 +4,7 @@ from __future__ import annotations
 
 from pathlib import Path
 
+import snipnest
 from snipnest.installer.detect import Family
 from snipnest.installer.plan import Mode, build_plan, image_name, release_url
 
@@ -13,7 +14,7 @@ def _plan(mode: Mode, tmp_path: Path | None = None):
     return build_plan(
         mode,
         Family.DEBIAN,
-        version="0.2.0",
+        version=snipnest.__version__,
         glibc="2.38",
         home=tmp_path,
     )
@@ -38,15 +39,15 @@ def test_домашняя_установка_идёт_в_local() -> None:
 
 
 def test_имя_образа_содержит_версию_glibc_и_архитектуру() -> None:
-    name = image_name("0.2.0", "2.38")
+    name = image_name(snipnest.__version__, "2.38")
 
-    assert name == "snipnest-0.2.0-linux-glibc-2.38-x86_64.AppImage"
+    assert name == f"snipnest-{snipnest.__version__}-linux-glibc-2.38-x86_64.AppImage"
 
 
 def test_адрес_релиза_ведёт_на_тег_версии() -> None:
-    url = release_url("0.2.0")
+    url = release_url(snipnest.__version__)
 
-    assert url.endswith("/v0.2.0")
+    assert url.endswith(f"/v{snipnest.__version__}")
 
 
 def test_план_показывает_куда_что_кладётся() -> None:

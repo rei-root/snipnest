@@ -27,6 +27,7 @@ from PySide6.QtWidgets import (
     QWidget,
 )
 
+from .. import __version__
 from .dependencies import dependencies_for, package_command, package_names
 from .detect import Family, detect_family, glibc_version, version_at_least
 from .download import fetch_image
@@ -132,7 +133,7 @@ class InstallerWindow(QWidget):
 
     def __init__(self, context: InstallerContext | None = None) -> None:
         super().__init__()
-        self._context = context or make_context("0.2.0", "2.38", "")
+        self._context = context or make_context(__version__, "2.38", "")
         self._thread: QThread | None = None
         self._worker: _InstallWorker | None = None
         self.setWindowTitle(WINDOW_TITLE)
