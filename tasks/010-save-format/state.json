@@ -1,5 +1,7 @@
 {
-  "context": {},
+  "context": {
+    "last_layer": "unit"
+  },
   "current_actor": "тестописатель",
   "pending_actions": [],
   "schema_version": 1,
