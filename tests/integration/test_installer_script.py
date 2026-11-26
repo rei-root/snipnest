@@ -37,9 +37,16 @@ def _os_release(path: Path, distro_id: str, id_like: str = "") -> Path:
     return path
 
 
-def _run(installer: Path, os_release: Path, *args: str) -> subprocess.CompletedProcess[str]:
+def _run(
+    installer: Path,
+    os_release: Path,
+    *args: str,
+    env_extra: dict[str, str] | None = None,
+) -> subprocess.CompletedProcess[str]:
     """Запустить установщик с подставленным os-release."""
     env = {**os.environ, "SNIPNEST_OS_RELEASE": str(os_release)}
+    if env_extra:
+        env.update(env_extra)
     return subprocess.run(
         [str(installer), *args],
         env=env,
@@ -47,6 +54,13 @@ def _run(installer: Path, os_release: Path, *args: str) -> subprocess.CompletedP
         text=True,
         check=False,
     )
+
+
+def _package(tmp_path: Path) -> Path:
+    """Написать файл пакета: установщику всё равно, что внутри."""
+    package = tmp_path / "snipnest_0.2.0_amd64.deb"
+    package.write_text("подделка пакета\n", encoding="utf-8")
+    return package
 
 
 def test_установщик_собирается_одним_исполняемым_файлом(tmp_path) -> None:
@@ -158,3 +172,156 @@ def test_неизвестный_ключ_останавливает_устано
 
     assert result.returncode != 0
     assert "неизвестный ключ" in result.stderr
+
+
+def test_apt_получает_абсолютный_путь_к_пакету(tmp_path, fake_commands) -> None:
+    """apt не берёт путь «.//tmp/…» — установщик отдаёт абсолютный путь."""
+    installer = _build(tmp_path)
+    release = _os_release(tmp_path / "os-release", "debian")
+    package = _package(tmp_path)
+
+    result = _run(
+        installer,
+        release,
+        "--local",
+        str(package),
+        "--yes",
+        env_extra=fake_commands.env(),
+    )
+
+    assert result.returncode == 0, result.stderr
+    arguments = fake_commands.arguments("apt-get")
+    assert arguments[:2] == ["install", "-y"]
+    path = arguments[-1]
+    assert not path.startswith(".//")
+    assert Path(path).is_absolute()
+    assert Path(path).suffix == ".deb"
+
+
+def test_файл_пакета_доступен_служебному_пользователю_apt(tmp_path, fake_commands) -> None:
+    """Песочница apt читает файл служебным пользователем: права должны позволять."""
+    installer = _build(tmp_path)
+    release = _os_release(tmp_path / "os-release", "debian")
+    package = _package(tmp_path)
+
+    result = _run(
+        installer,
+        release,
+        "--local",
+        str(package),
+        "--yes",
+        env_extra=fake_commands.env(),
+    )
+
+    assert result.returncode == 0, result.stderr
+    meta = fake_commands.meta("apt-get")
+    assert meta.get("file-mode") == "644"
+    assert meta.get("dir-mode") == "755"
+
+
+def test_при_отказе_apt_пакет_ставится_через_dpkg(tmp_path, fake_commands) -> None:
+    """Не справился apt-get — справляется dpkg."""
+    installer = _build(tmp_path)
+    release = _os_release(tmp_path / "os-release", "debian")
+    package = _package(tmp_path)
+    fake_commands.fail("apt-get")
+
+    result = _run(
+        installer,
+        release,
+        "--local",
+        str(package),
+        "--yes",
+        env_extra=fake_commands.env(),
+    )
+
+    assert result.returncode == 0, result.stderr
+    assert fake_commands.arguments("dpkg")[:1] == ["-i"]
+    assert "через dpkg" in result.stdout
+
+
+def test_установщик_печатает_чем_поставил(tmp_path, fake_commands) -> None:
+    """Человек должен видеть итог: что поставлено и чем."""
+    installer = _build(tmp_path)
+    release = _os_release(tmp_path / "os-release", "debian")
+    package = _package(tmp_path)
+
+    result = _run(
+        installer,
+        release,
+        "--local",
+        str(package),
+        "--yes",
+        env_extra=fake_commands.env(),
+    )
+
+    assert result.returncode == 0, result.stderr
+    assert "через apt-get" in result.stdout
+    assert "snipnest" in result.stdout
+
+
+def test_установщик_ставит_только_свой_пакет(tmp_path, fake_commands) -> None:
+    """Пакетным менеджером ставится только пакет Snipnest."""
+    installer = _build(tmp_path)
+    release = _os_release(tmp_path / "os-release", "debian")
+    package = _package(tmp_path)
+
+    result = _run(
+        installer,
+        release,
+        "--local",
+        str(package),
+        "--yes",
+        env_extra=fake_commands.env(),
+    )
+
+    assert result.returncode == 0, result.stderr
+    arguments = fake_commands.arguments("apt-get")
+    assert arguments[:2] == ["install", "-y"]
+    assert len(arguments) == 3
+    assert Path(arguments[2]).name == "snipnest_0.2.0_amd64.deb"
+
+
+def test_на_старой_glibc_установщик_не_ставит(tmp_path, fake_commands) -> None:
+    """Слишком старая glibc — установщик говорит об этом и ничего не ставит."""
+    installer = _build(tmp_path)
+    release = _os_release(tmp_path / "os-release", "debian")
+    package = _package(tmp_path)
+    fake_commands.write("getconf", "#!/bin/sh\necho 'glibc 2.5'\n")
+
+    result = _run(
+        installer,
+        release,
+        "--local",
+        str(package),
+        "--yes",
+        env_extra=fake_commands.env(),
+    )
+
+    assert result.returncode != 0
+    assert "glibc" in result.stderr
+    assert fake_commands.arguments("apt-get") == []
+
+
+def test_в_режиме_пользователя_права_не_нужны(tmp_path, fake_commands) -> None:
+    """Человеку без прав администратора установщик должен обойтись без sudo."""
+    installer = _build(tmp_path)
+    release = _os_release(tmp_path / "os-release", "debian")
+    image = tmp_path / "snipnest.AppImage"
+    image.write_text("подделка образа\n", encoding="utf-8")
+    home = tmp_path / "home"
+    home.mkdir()
+
+    result = _run(
+        installer,
+        release,
+        "--user",
+        "--local",
+        str(image),
+        "--yes",
+        env_extra={**fake_commands.env(), "HOME": str(home)},
+    )
+
+    assert result.returncode == 0, result.stderr
+    assert fake_commands.arguments("sudo") == []
+    assert (home / ".local" / "bin" / "snipnest").is_file()

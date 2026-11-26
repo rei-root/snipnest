@@ -1,0 +1,147 @@
+entries:
+- id: SRC-1
+  phase: интервью
+  kind: api
+  title: 'apt-get(8) — установка пакетов: имя пакета или путь к файлу'
+  findings: apt-get install принимает имя пакета; локальный файл .deb передаётся путём
+    к файлу. Само правило разбора пути в манипуляции не описано — оно живёт в исходниках
+    apt (см. SRC-2). Код возврата 100 при ошибке — на него опирается запасной путь
+    через dpkg.
+  url: https://manpages.debian.org/trixie/apt/apt-get.8.en.html
+  version: apt 3.0.4 (trixie)
+  currency_evidence: 'manpages.debian.org/trixie: apt-get.8.en.gz из apt 3.0.4, Source
+    last updated 2026-11-02'
+  topics:
+  - 'install: аргумент — имя пакета, а не имя файла'
+  - 'диагностика: apt-get возвращает 100 при ошибке'
+  deprecated_apis: []
+  applies_to:
+  - package: apt
+    version: 3.0.4
+  recorded_at: '2026-11-26T14:02:11+00:00'
+- id: SRC-2
+  phase: интервью
+  kind: api
+  title: apt 3.0.4, apt-private/private-install.cc — разбор пути к локальному файлу
+  findings: 'Функция AddIfVolatile принимает путь к локальному файлу только если он
+    начинается с «/» либо с «.», «..», «./», «../» (условие I[0]==''/'' || (I[0]==''.''
+    && …)). Путь «.//tmp/…» начинается с «./», поэтому первый фильтр проходит, но
+    разбор файла падает с «Unsupported file %s given on commandline» — ровно та ошибка,
+    которую увидел пользователь. Значит: apt-get install принимает абсолютный путь
+    к .deb как есть, и префикс «./» к абсолютному пути добавлять нельзя.'
+  url: https://deb.debian.org/debian/pool/main/a/apt/apt_3.0.4.tar.xz
+  version: apt 3.0.4
+  currency_evidence: исходники apt 3.0.4 из архива Debian (pool/main/a/apt), та же
+    версия, что в trixie
+  topics:
+  - 'AddIfVolatile: условие принятия пути к файлу'
+  - ошибка «Unsupported file %s given on commandline»
+  deprecated_apis: []
+  applies_to:
+  - package: apt
+    version: 3.0.4
+  recorded_at: '2026-11-26T14:02:11+00:00'
+- id: SRC-3
+  phase: интервью
+  kind: api
+  title: apt 3.0.4, apt-pkg/acquire.cc — песочница загрузки и служебный пользователь
+    _apt
+  findings: 'Перед загрузкой apt проверяет, читается ли файл служебным пользователем
+    песочницы (_apt): IsAccessibleBySandboxUser делает open() от его имени и при EACCES
+    печатает «Download is performed unsandboxed as root as file ''%s'' couldn''t be
+    accessed by user ''%s''» и отключает песочницу. На машине пользователя /home/sato
+    закрыт для «others» (ACL: other::---), поэтому _apt не может пройти в ~/Загрузки
+    — отсюда «Отказано в доступе» при ручной установке. Вывод для установщика: файл
+    пакета должен быть читаем служебным пользователем apt (каталог 0755, файл 0644)
+    — тогда apt работает в песочнице и сообщения нет.'
+  url: https://deb.debian.org/debian/pool/main/a/apt/apt_3.0.4.tar.xz
+  version: apt 3.0.4
+  currency_evidence: исходники apt 3.0.4 из архива Debian (pool/main/a/apt)
+  topics:
+  - CheckDropPrivsMustBeDisabled
+  - 'IsAccessibleBySandboxUser: проверка open() от имени служебного пользователя'
+  - уведомление «Download is performed unsandboxed as root»
+  deprecated_apis: []
+  applies_to:
+  - package: apt
+    version: 3.0.4
+  recorded_at: '2026-11-26T14:02:11+00:00'
+- id: SRC-4
+  phase: интервью
+  kind: api
+  title: 'dpkg(1) — dpkg -i: установка пакета из файла'
+  findings: 'dpkg -i <файл.deb> распаковывает и настраивает пакет. Это запасной путь,
+    когда apt-get недоступен или отказался: dpkg не использует песочницу apt и не
+    требует, чтобы файл читал служебный пользователь _apt.'
+  url: https://manpages.debian.org/trixie/dpkg/dpkg.1.en.html
+  version: dpkg 1.22.22 (trixie)
+  currency_evidence: 'manpages.debian.org/trixie: dpkg.1.en.gz из dpkg 1.22.22'
+  topics:
+  - '-i, --install: Install the package'
+  - распаковка и настройка пакета
+  deprecated_apis: []
+  applies_to:
+  - package: dpkg
+    version: 1.22.22
+  recorded_at: '2026-11-26T14:02:11+00:00'
+- id: SRC-5
+  phase: интервью
+  kind: api
+  title: 'GitHub REST API — ассеты релиза: бинарные вложения без прав файловой системы'
+  findings: 'Ассет релиза — непрозрачное бинарное вложение; в API у него нет прав
+    файловой системы Unix. Поэтому скачанный браузером файл сохраняется без исполняемого
+    бита: проверено на v0.2.0 — файл snipnest-installer-linux-amd64.bin приходит с
+    правами -rw-rw-r-- и не запускается («Отказано в доступе»), пока не выставлен
+    chmod +x. Значит, про chmod +x надо говорить в README и в тексте установщика.'
+  url: https://docs.github.com/en/rest/releases/assets?apiVersion=2022-11-28
+  version: GitHub REST API, X-GitHub-Api-Version 2026-03-10
+  currency_evidence: 'документация GitHub REST API: заголовок X-GitHub-Api-Version
+    2026-03-10 в примерах'
+  topics:
+  - 'Get a release asset: содержимое отдаётся как application/octet-stream'
+  - 'Upload a release asset: raw binary content, без прав файловой системы'
+  deprecated_apis: []
+  applies_to: []
+  recorded_at: '2026-11-26T14:02:11+00:00'
+- id: SRC-6
+  phase: код
+  kind: api
+  title: POSIX.1-2017 Shell Command Language — конструкции установщика
+  findings: 'Установщик остаётся POSIX shell: конструкции set -eu, case, printf, read,
+    trap и подстановка команды взяты из этого стандарта, поэтому установщик работает
+    там, где есть /bin/sh. Всё новое — функция apt_path (case по началу пути), stage_dir
+    (mktemp -d с шаблоном) и запасной путь через dpkg — написано в этих конструкциях.'
+  url: https://pubs.opengroup.org/onlinepubs/9699919799/utilities/V3_chap02.html
+  version: IEEE Std 1003.1-2017 (The Open Group Base Specifications Issue 7, 2018
+    edition)
+  currency_evidence: 'онлайн-издание The Open Group Base Specifications: 9699919799,
+    действующая редакция'
+  topics:
+  - case, printf, read, trap, set -eu
+  - функции и подстановка команд
+  deprecated_apis: []
+  applies_to:
+  - package: POSIX.1-2017
+    version: '2017'
+  recorded_at: '2026-11-26T14:12:35+00:00'
+- id: SRC-7
+  phase: код
+  kind: api
+  title: 'coreutils 9.7: chmod и mktemp — права каталога и безопасное создание'
+  findings: mktemp -d создаёт каталог атомарно и с правами 0700 — это защищает от
+    гонки и от чужого доступа; расширить права до 0755 (chmod) нужно явно, иначе служебный
+    пользователь apt (_apt) не пройдёт в каталог. Файл пакета кладётся с правами 0644
+    — этого хватает, чтобы apt прочитал его под своим служебным пользователем и работал
+    в песочнице.
+  url: https://manpages.debian.org/trixie/coreutils/mktemp.1.en.html
+  version: coreutils 9.7-3 (trixie), локально coreutils 9.12
+  currency_evidence: 'manpages.debian.org/trixie: mktemp.1.en.gz из coreutils 9.7-3;
+    на машине сборщика coreutils 9.12'
+  topics:
+  - 'mktemp -d ШАБЛОН: атомарное создание каталога с правами 0700'
+  - 'chmod: права каталога 0755 и файла 0644'
+  deprecated_apis: []
+  applies_to:
+  - package: coreutils
+    version: '9.7'
+  recorded_at: '2026-11-26T14:12:35+00:00'

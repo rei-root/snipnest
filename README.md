@@ -175,6 +175,8 @@ chmod +x snipnest-installer-linux-amd64.bin
 ./snipnest-installer-linux-amd64.bin
 ```
 
+Файл из Releases хранится без исполняемого бита — поэтому сначала `chmod +x`.
+
 Установщик сам разберётся, что перед ним:
 
 - на debian-based (Debian, Ubuntu, Mint, Kali) поставит пакет `.deb`
@@ -200,6 +202,15 @@ chmod +x snipnest-installer-linux-amd64.bin
 
 ```bash
 sudo apt install ./snipnest_0.2.0_amd64.deb
+```
+
+Если apt напечатал «Отказано в доступе» от служебного пользователя `_apt` —
+пакет при этом ставится: apt просто не смог прочитать файл своим служебным
+пользователем (домашний каталог закрыт для других) и отработал без песочницы.
+Поставить пакет можно и совсем без apt:
+
+```bash
+sudo dpkg -i snipnest_0.2.0_amd64.deb
 ```
 
 Пакет самодостаточный: внутри программа, Qt, переносимый Python и все пять

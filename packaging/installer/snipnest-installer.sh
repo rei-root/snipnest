@@ -61,6 +61,9 @@ usage() {
   * на остальных кладёт переносимый образ в /opt/snipnest, делает лаунчер
     в /usr/local/bin, ярлык в /usr/share/applications и иконки;
   * с ключом --user всё это делается в домашнем каталоге.
+
+Файл установщика из релиза хранится без исполняемого бита: перед запуском
+сделайте его исполняемым — chmod +x snipnest-installer-linux-amd64.bin
 EOF
 }
 
@@ -210,11 +213,8 @@ plan_deb() {
     file="$1"
     log "семейство: debian (пакет .deb)"
     log "файл: $file"
-    if command -v apt-get >/dev/null 2>&1; then
-        log "команда: apt-get install -y ./$file"
-    else
-        log "команда: dpkg -i $file"
-    fi
+    log "команда: apt-get install -y <абсолютный путь к $file>"
+    log "запасной путь: dpkg -i <абсолютный путь к $file>"
 }
 
 plan_image() {
@@ -229,16 +229,53 @@ plan_image() {
 
 # --- установка -------------------------------------------------------------
 
+# Путь к файлу для apt: абсолютный — как есть, относительный — с «./».
+# Смесь вида «.//tmp/…» apt не берёт: «E: В командной строке указан
+# неподдерживаемый файл».
+apt_path() {
+    case "$1" in
+        /*) printf '%s\n' "$1" ;;
+        *) printf './%s\n' "$1" ;;
+    esac
+}
+
+# Каталог для копии пакета, которую прочтёт служебный пользователь apt
+# (_apt). apt не работает в песочнице, если файл этому пользователю
+# недоступен, и печатает «Отказано в доступе». Поэтому каталог доступен
+# всем на чтение и обход (0755), а файл — на чтение (0644).
+stage_dir() {
+    for base in /var/tmp /tmp; do
+        [ -d "$base" ] || continue
+        dir="$(mktemp -d "$base/snipnest.XXXXXX" 2>/dev/null)" || continue
+        chmod 755 "$dir"
+        printf '%s\n' "$dir"
+        return 0
+    done
+    return 1
+}
+
 install_deb() {
     file="$1"
-    log "Ставлю пакет $file"
+    dir="$(stage_dir)" || fail "негде создать временный каталог для пакета"
+    stage="$dir/$DEB_NAME"
+    cp "$file" "$stage" || fail "не удалось подготовить пакет $DEB_NAME"
+    chmod 644 "$stage"
+
+    log "Ставлю пакет $DEB_NAME"
     if command -v apt-get >/dev/null 2>&1; then
-        run_priv apt-get install -y "./$file"
-    elif command -v dpkg >/dev/null 2>&1; then
-        run_priv dpkg -i "$file"
-    else
-        fail "нет ни apt-get, ни dpkg"
+        if run_priv apt-get install -y "$(apt_path "$stage")"; then
+            log "Пакет $DEB_NAME поставлен через apt-get."
+            return 0
+        fi
+        warn "apt-get не справился — ставлю через dpkg"
     fi
+    if command -v dpkg >/dev/null 2>&1; then
+        if run_priv dpkg -i "$stage"; then
+            log "Пакет $DEB_NAME поставлен через dpkg."
+            return 0
+        fi
+    fi
+    fail "не удалось поставить пакет $DEB_NAME"
 }
 
 install_image() {
@@ -287,7 +324,8 @@ if [ -n "$GLIBC" ] && ! version_ge "$GLIBC" "$MIN_GLIBC"; then
 fi
 
 work="$(mktemp -d)"
-trap 'rm -rf "$work"' EXIT
+stage=""
+trap 'rm -rf "$work" || true; [ -n "$stage" ] && rm -rf "$stage" || true' EXIT
 
 if [ "$FAMILY" = "debian" ] && [ "$MODE" = "system" ]; then
     name="$DEB_NAME"

@@ -84,3 +84,31 @@ def test_установщик_не_трогает_систему_без_подт
 
     assert completed.returncode != 0
     assert not (home / ".local" / "bin" / "snipnest").exists()
+
+
+def test_установка_пакета_на_debian_проходит_целиком(tmp_path, fake_commands) -> None:
+    """Человек запускает установщик на debian — и пакет ставится."""
+    installer = _installer(tmp_path)
+    release = tmp_path / "os-release"
+    release.write_text('ID=debian\nID_LIKE=""\n', encoding="utf-8")
+    package = tmp_path / "snipnest_0.2.0_amd64.deb"
+    package.write_text("подделка пакета\n", encoding="utf-8")
+
+    completed = subprocess.run(
+        [str(installer), "--local", str(package), "--yes"],
+        cwd=tmp_path,
+        env={
+            **fake_commands.env(),
+            "SNIPNEST_OS_RELEASE": str(release),
+        },
+        capture_output=True,
+        text=True,
+        check=False,
+    )
+
+    assert completed.returncode == 0, completed.stderr
+    assert "через apt-get" in completed.stdout
+    arguments = fake_commands.arguments("apt-get")
+    assert arguments[:2] == ["install", "-y"]
+    assert Path(arguments[-1]).is_absolute()
+    assert not arguments[-1].startswith(".//")
