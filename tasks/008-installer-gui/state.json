@@ -15,8 +15,8 @@
       "SRC-C3"
     ]
   },
-  "current_actor": "кодер",
+  "current_actor": "оркестратор",
   "pending_actions": [],
   "schema_version": 1,
-  "state": "код"
+  "state": "финальная_проверка"
 }
