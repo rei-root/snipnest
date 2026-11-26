@@ -1,0 +1,109 @@
+task_id: 008-installer-gui
+ts: '2026-11-26T14:57:35+00:00'
+layer1:
+  status: pass
+  items:
+  - id: AC1
+    verified: true
+layer2:
+  status: pass
+  uncovered: []
+  covered_by_layer_test:
+  - AC1
+  - R1
+  - R2
+  - R3
+  - R4
+  - R5
+  - R6
+  covered_by_oracle_only: []
+layer3:
+  status: pass
+  e2e_test_ids:
+  - T-installer-installer-gui-e2e-test_установка_через_polkit_кладёт_приложение
+  - T-installer-installer-gui-e2e-test_polkit_вызывается_с_командой_работника
+  - T-installer-installer-gui-e2e-test_без_polkit_установщик_объясняет_это
+  - T-installer-installer-gui-e2e-test_отчёт_работника_разбирается
+pytest_result:
+  exit_code: 0
+  argv:
+  - /home/sato/Документы/snipnest/.delta/worktrees/anhvqv7y83qa/snipnest/.venv/bin/python
+  - -m
+  - pytest
+  - -q
+  - --tb=no
+  - --no-header
+  - -p
+  - no:cacheprovider
+  - tests/unit/test_installer_detect.py::test_debian_опознаётся_по_id
+  - tests/unit/test_installer_detect.py::test_ubuntu_опознаётся_по_id_like
+  - tests/unit/test_installer_detect.py::test_fedora_опознаётся_как_rhel
+  - tests/unit/test_installer_detect.py::test_arch_опознаётся
+  - tests/unit/test_installer_detect.py::test_suse_опознаётся
+  - tests/unit/test_installer_detect.py::test_alpine_опознаётся
+  - tests/unit/test_installer_detect.py::test_gentoo_опознаётся
+  - tests/unit/test_installer_detect.py::test_неизвестная_система_не_ломает_определение
+  - tests/unit/test_installer_detect.py::test_без_файла_система_неизвестна
+  - tests/unit/test_installer_detect.py::test_os_release_читается_в_словарь
+  - tests/unit/test_installer_detect.py::test_glibc_сравнивается_с_минимальной
+  - tests/unit/test_installer_detect.py::test_пустая_glibc_не_проходит_проверку
+  - tests/unit/test_installer_dependencies.py::test_зависимости_есть_в_каждом_семействе
+  - tests/unit/test_installer_dependencies.py::test_зависимости_это_gallery_dl_yt_dlp_и_ffmpeg
+  - tests/unit/test_installer_dependencies.py::test_имена_пакетов_для_debian
+  - tests/unit/test_installer_dependencies.py::test_имена_пакетов_для_gentoo_с_категориями
+  - tests/unit/test_installer_dependencies.py::test_невыбранные_зависимости_в_команду_не_попадают
+  - tests/unit/test_installer_dependencies.py::test_команда_для_debian_через_apt_get
+  - tests/unit/test_installer_dependencies.py::test_команда_для_fedora_через_dnf
+  - tests/unit/test_installer_dependencies.py::test_команда_для_arch_через_pacman
+  - tests/unit/test_installer_dependencies.py::test_команда_для_suse_через_zypper
+  - tests/unit/test_installer_dependencies.py::test_команда_для_alpine_через_apk
+  - tests/unit/test_installer_dependencies.py::test_команда_для_gentoo_через_emerge
+  - tests/unit/test_installer_dependencies.py::test_в_неизвестной_системе_команды_нет
+  - tests/unit/test_installer_plan.py::test_системная_установка_идёт_в_opt
+  - tests/unit/test_installer_plan.py::test_домашняя_установка_идёт_в_local
+  - tests/unit/test_installer_plan.py::test_имя_образа_содержит_версию_glibc_и_архитектуру
+  - tests/unit/test_installer_plan.py::test_адрес_релиза_ведёт_на_тег_версии
+  - tests/unit/test_installer_plan.py::test_план_показывает_куда_что_кладётся
+  - tests/unit/test_installer_worker.py::test_образ_кладётся_и_становится_исполняемым
+  - tests/unit/test_installer_worker.py::test_лаунчер_создаётся_и_указывает_на_образ
+  - tests/unit/test_installer_worker.py::test_ярлык_указывает_на_лаунчер
+  - tests/unit/test_installer_worker.py::test_иконки_кладутся_в_стандартные_размеры
+  - tests/unit/test_installer_worker.py::test_без_образа_установка_не_проходит
+  - tests/unit/test_installer_worker.py::test_пакеты_ставятся_своей_командой
+  - tests/unit/test_installer_worker.py::test_отказ_пакетного_менеджера_виден_в_отчёте
+  - tests/unit/test_installer_worker.py::test_запрос_и_отчёт_идут_через_json
+  - tests/unit/test_installer_resources.py::test_ярлык_читается
+  - tests/unit/test_installer_resources.py::test_иконка_читается
+  - tests/unit/test_installer_resources.py::test_размеры_иконок_на_месте
+  - tests/unit/test_installer_resources.py::test_сведения_о_сборке_читаются_из_файла
+  - tests/unit/test_installer_resources.py::test_без_сведений_о_сборке_пусто
+  - tests/ui/test_installer_window.py::test_в_окне_видно_семейство_системы
+  - tests/ui/test_installer_window.py::test_в_окне_видно_версию_glibc
+  - tests/ui/test_installer_window.py::test_на_старой_glibc_кнопка_установки_выключена
+  - tests/ui/test_installer_window.py::test_в_плане_видно_куда_кладётся
+  - tests/ui/test_installer_window.py::test_в_домашнем_режиме_план_меняется
+  - tests/ui/test_installer_window.py::test_список_зависимостей_с_галочками
+  - tests/ui/test_installer_window.py::test_зависимости_отмечены_по_умолчанию
+  - tests/ui/test_installer_window.py::test_снятие_галочки_убирает_зависимость
+  - tests/ui/test_installer_window.py::test_в_неизвестной_системе_зависимостей_нет
+  - tests/ui/test_installer_window.py::test_работа_идёт_в_отдельном_потоке
+  - tests/unit/test_packaging_scope.py::test_версия_приложения_соответствует_выпуску
+  - tests/unit/test_packaging_scope.py::test_есть_сборщики_всех_трёх_артефактов
+  - tests/unit/test_packaging_scope.py::test_приложение_не_ходит_в_сеть_само
+  - tests/unit/test_packaging_scope.py::test_приложение_остаётся_локальным_инструментом
+  - tests/unit/test_packaging_scope.py::test_сборка_рассчитана_только_на_amd64
+  - tests/unit/test_packaging_scope.py::test_другие_платформы_не_входят
+  - tests/integration/test_installer_gui.py::test_есть_точка_входа_установщика
+  - tests/integration/test_installer_gui.py::test_сборщик_собирает_установщик_через_pyinstaller
+  - tests/integration/test_installer_gui.py::test_спека_умеет_собирать_установщик
+  - tests/integration/test_installer_gui.py::test_старого_shell_установщика_больше_нет
+  - tests/integration/test_installer_gui.py::test_работник_с_правами_выполняет_установку
+  - tests/integration/test_installer_gui.py::test_работник_без_запроса_не_падает
+  - tests/e2e/test_installer_gui_e2e.py::test_установка_через_polkit_кладёт_приложение
+  - tests/e2e/test_installer_gui_e2e.py::test_polkit_вызывается_с_командой_работника
+  - tests/e2e/test_installer_gui_e2e.py::test_без_polkit_установщик_объясняет_это
+  - tests/e2e/test_installer_gui_e2e.py::test_отчёт_работника_разбирается
+  stdout_tail: '....................................................................     [100%]
+
+    '
+combined: accepted
