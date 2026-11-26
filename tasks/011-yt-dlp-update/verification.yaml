@@ -1,0 +1,46 @@
+task_id: 011-yt-dlp-update
+ts: '2026-11-26T17:18:34+00:00'
+layer1:
+  status: pass
+  items:
+  - id: AC1
+    verified: true
+layer2:
+  status: pass
+  uncovered: []
+  covered_by_layer_test:
+  - AC1
+  - R1
+  - R2
+  - R3
+  - R4
+  - R5
+  - R6
+  covered_by_oracle_only: []
+layer3:
+  status: pass
+  e2e_test_ids:
+  - T-e2e-install-pinned
+pytest_result:
+  exit_code: 0
+  argv:
+  - /home/sato/Документы/snipnest/.delta/worktrees/zst5dfdadpj6/snipnest/.venv/bin/python
+  - -m
+  - pytest
+  - -q
+  - --tb=no
+  - --no-header
+  - -p
+  - no:cacheprovider
+  - tests/unit/test_components_catalog.py::test_закреплённая_версия_yt_dlp_не_ниже_исправленной
+  - tests/unit/test_components_catalog.py::test_версия_скриптов_задачи_остаётся_прежней
+  - tests/integration/test_components_version.py::test_yt_dlp_приложения_не_старше_закреплённого
+  - tests/e2e/test_components_install_scenario.py::test_мастер_ставит_закреплённую_версию_yt_dlp
+  - tests/unit/test_components_versions.py::test_закреплена_версия_с_исправлением_n_challenge
+  - tests/unit/test_components_versions.py::test_версия_gallery_dl_осталась_прежней
+  - tests/unit/test_scope.py::test_приложение_локальное_и_однопользовательское
+  - tests/unit/test_components_catalog.py::test_в_каталоге_пять_компонентов
+  stdout_tail: '........                                                                 [100%]
+
+    '
+combined: accepted

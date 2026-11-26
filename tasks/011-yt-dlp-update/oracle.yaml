@@ -1,0 +1,67 @@
+task_id: 011-yt-dlp-update
+oracle:
+  path: tests/unit/test_components_catalog.py
+  command: uv run pytest tests/unit/test_components_catalog.py tests/e2e/test_components_install_scenario.py
+    -q --tb=line
+  sha256: ab9d10c2bb34b64d84b17542f584eafd767b48fbbbc49db181b8258838b92f72
+  recorded_at: '2026-11-26T17:15:17+00:00'
+red_output: "........F.F                                                         \
+  \     [100%]\n=================================== FAILURES ===================================\n\
+  E   AssertionError: assert (2026, 10, 26) >= (2026, 11, 23)\n     +  where (2026,\
+  \ 10, 26) = _version_parts('2026.10.26')\n     +    where '2026.10.26' = _pinned_version(ComponentSpec(id='yt-dlp',\
+  \ title='yt-dlp', description='Скачивание видео с YouTube', kind=<ComponentKind.PIP:\
+  \ 'pip'>, ...p', packages=('yt-dlp==2026.10.26',), url='', sha256='', size_hint=4194304,\
+  \ extra_paths=('yt-dlp-ejs',), companions=()))\n/home/sato/Документы/snipnest/.delta/worktrees/zst5dfdadpj6/snipnest/tests/unit/test_components_catalog.py:84:\
+  \ AssertionError: assert (2026, 10, 26) >= (2026, 11, 23)\nE   AssertionError: assert\
+  \ 'yt-dlp==2026.11.23' in '-m pip install --no-cache-dir --disable-pip-version-check\
+  \ --target /tmp/delta-terminal-.delta-fs-zY9KVk/pytest-of-sato/pytest-0/test_мастер_ставит_закреплённу0/components/yt-dlp\
+  \ yt-dlp==2026.10.26\\n'\n     +  where '-m pip install --no-cache-dir --disable-pip-version-check\
+  \ --target /tmp/delta-terminal-.delta-fs-zY9KVk/pytest-of-sato/pytest-0/test_мастер_ставит_закреплённу0/components/yt-dlp\
+  \ yt-dlp==2026.10.26\\n' = read_text(encoding='utf-8')\n     +    where read_text\
+  \ = PosixPath('/tmp/delta-terminal-.delta-fs-zY9KVk/pytest-of-sato/pytest-0/test_мастер_ставит_закреплённу0/pip-args.txt').read_text\n\
+  /home/sato/Документы/snipnest/.delta/worktrees/zst5dfdadpj6/snipnest/tests/e2e/test_components_install_scenario.py:38:\
+  \ AssertionError: assert 'yt-dlp==2026.11.23' in '-m pip install --no-cache-dir\
+  \ --disable-pip-version-check --target /tmp/delta-terminal-.delta-fs-zY9KVk/pytest-of-sato/pytest-0/test_мастер_ставит_закреплённу0/components/yt-dlp\
+  \ yt-dlp==2026.10.26\\n'\n=========================== short test summary info ============================\n\
+  FAILED tests/unit/test_components_catalog.py::test_закреплённая_версия_yt_dlp_не_ниже_исправленной\n\
+  FAILED tests/e2e/test_components_install_scenario.py::test_мастер_ставит_закреплённую_версию_yt_dlp"
+passability: 'Тот же оракул на ветке с обновлённым каталогом печатает «4 passed» и
+  возвращает 0. Проверяется: в каталоге компонентов yt-dlp закреплён версией 2026.11.23,
+  версия yt-dlp-ejs остаётся 0.8.0, а мастер установки просит у pip именно пакет «yt-dlp==2026.11.23»
+  (сценарий с заглушкой вместо pip записывает аргументы). Тот же оракул на чистой
+  основной ветке даёт красный вывод выше: закреплена сломанная версия 2026.10.26,
+  на которой YouTube отдаёт только картинки и ролик не скачивается. Дополнительно
+  проверено вживую на машине владельца: с yt-dlp 2026.11.23 (поставлен мастером) ролик
+  отдаёт полный список форматов и скачивается целиком — и как mp4 со звуком, и как
+  только звук, и раздельными файлами.'
+records:
+- id: O-yt-dlp-version
+  red_output: "........F.F                                                       \
+    \       [100%]\n=================================== FAILURES ===================================\n\
+    E   AssertionError: assert (2026, 10, 26) >= (2026, 11, 23)\n     +  where (2026,\
+    \ 10, 26) = _version_parts('2026.10.26')\n     +    where '2026.10.26' = _pinned_version(ComponentSpec(id='yt-dlp',\
+    \ title='yt-dlp', description='Скачивание видео с YouTube', kind=<ComponentKind.PIP:\
+    \ 'pip'>, ...p', packages=('yt-dlp==2026.10.26',), url='', sha256='', size_hint=4194304,\
+    \ extra_paths=('yt-dlp-ejs',), companions=()))\n/home/sato/Документы/snipnest/.delta/worktrees/zst5dfdadpj6/snipnest/tests/unit/test_components_catalog.py:84:\
+    \ AssertionError: assert (2026, 10, 26) >= (2026, 11, 23)\nE   AssertionError:\
+    \ assert 'yt-dlp==2026.11.23' in '-m pip install --no-cache-dir --disable-pip-version-check\
+    \ --target /tmp/delta-terminal-.delta-fs-zY9KVk/pytest-of-sato/pytest-0/test_мастер_ставит_закреплённу0/components/yt-dlp\
+    \ yt-dlp==2026.10.26\\n'\n     +  where '-m pip install --no-cache-dir --disable-pip-version-check\
+    \ --target /tmp/delta-terminal-.delta-fs-zY9KVk/pytest-of-sato/pytest-0/test_мастер_ставит_закреплённу0/components/yt-dlp\
+    \ yt-dlp==2026.10.26\\n' = read_text(encoding='utf-8')\n     +    where read_text\
+    \ = PosixPath('/tmp/delta-terminal-.delta-fs-zY9KVk/pytest-of-sato/pytest-0/test_мастер_ставит_закреплённу0/pip-args.txt').read_text\n\
+    /home/sato/Документы/snipnest/.delta/worktrees/zst5dfdadpj6/snipnest/tests/e2e/test_components_install_scenario.py:38:\
+    \ AssertionError: assert 'yt-dlp==2026.11.23' in '-m pip install --no-cache-dir\
+    \ --disable-pip-version-check --target /tmp/delta-terminal-.delta-fs-zY9KVk/pytest-of-sato/pytest-0/test_мастер_ставит_закреплённу0/components/yt-dlp\
+    \ yt-dlp==2026.10.26\\n'\n=========================== short test summary info\
+    \ ============================\nFAILED tests/unit/test_components_catalog.py::test_закреплённая_версия_yt_dlp_не_ниже_исправленной\n\
+    FAILED tests/e2e/test_components_install_scenario.py::test_мастер_ставит_закреплённую_версию_yt_dlp"
+  passability: 'Тот же оракул на ветке с обновлённым каталогом печатает «4 passed»
+    и возвращает 0. Проверяется: в каталоге компонентов yt-dlp закреплён версией 2026.11.23,
+    версия yt-dlp-ejs остаётся 0.8.0, а мастер установки просит у pip именно пакет
+    «yt-dlp==2026.11.23» (сценарий с заглушкой вместо pip записывает аргументы). Тот
+    же оракул на чистой основной ветке даёт красный вывод выше: закреплена сломанная
+    версия 2026.10.26, на которой YouTube отдаёт только картинки и ролик не скачивается.
+    Дополнительно проверено вживую на машине владельца: с yt-dlp 2026.11.23 (поставлен
+    мастером) ролик отдаёт полный список форматов и скачивается целиком — и как mp4
+    со звуком, и как только звук, и раздельными файлами.'

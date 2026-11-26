@@ -61,7 +61,9 @@ YT_DLP = ComponentSpec(
     kind=ComponentKind.PIP,
     binary="yt-dlp",
     module="yt_dlp",
-    packages=("yt-dlp==2026.10.26",),
+    # 2026.11.23 — первая версия, где решён n challenge: на прежней YouTube
+    # отдаёт ролику только картинки, и видео не скачивается вовсе.
+    packages=("yt-dlp==2026.11.23",),
     size_hint=4 * 1024 * 1024,
     extra_paths=("yt-dlp-ejs",),
 )

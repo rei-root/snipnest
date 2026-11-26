@@ -1,0 +1,57 @@
+tests:
+- id: T-catalog-ytdlp-version
+  layer: unit
+  covers:
+  - R3
+  - R4
+  - AC1
+  file: tests/unit/test_components_catalog.py
+  fn: test_закреплённая_версия_yt_dlp_не_ниже_исправленной
+- id: T-catalog-ejs-version
+  layer: unit
+  covers:
+  - R3
+  - AC1
+  file: tests/unit/test_components_catalog.py
+  fn: test_версия_скриптов_задачи_остаётся_прежней
+- id: T-real-ytdlp-fresh
+  layer: integration
+  covers:
+  - R3
+  - AC1
+  file: tests/integration/test_components_version.py
+  fn: test_yt_dlp_приложения_не_старше_закреплённого
+- id: T-e2e-install-pinned
+  layer: e2e
+  covers:
+  - R3
+  - AC1
+  file: tests/e2e/test_components_install_scenario.py
+  fn: test_мастер_ставит_закреплённую_версию_yt_dlp
+- id: T-catalog-exact-version
+  layer: unit
+  covers:
+  - R1
+  - AC1
+  file: tests/unit/test_components_versions.py
+  fn: test_закреплена_версия_с_исправлением_n_challenge
+- id: T-catalog-other-versions
+  layer: unit
+  covers:
+  - R4
+  - R6
+  file: tests/unit/test_components_versions.py
+  fn: test_версия_gallery_dl_осталась_прежней
+- id: T-scope-local-011
+  layer: unit
+  covers:
+  - R2
+  - R5
+  file: tests/unit/test_scope.py
+  fn: test_приложение_локальное_и_однопользовательское
+- id: T-catalog-five-components-011
+  layer: unit
+  covers:
+  - R6
+  file: tests/unit/test_components_catalog.py
+  fn: test_в_каталоге_пять_компонентов

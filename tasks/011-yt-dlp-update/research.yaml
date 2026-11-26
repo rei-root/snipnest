@@ -1,0 +1,167 @@
+entries:
+- id: SRC-I1
+  phase: интервью
+  kind: api
+  title: yt-dlp 2026.11.23 — исправление n challenge, из-за которого пропадали форматы
+  findings: 'Ровно та ошибка, что в логе владельца. И-identifiers issue 18123: «[youtube]
+    n challenge solving failed: a.addOnDisposeCallback is not a function (players
+    05a4ffc0,b485e332,b17b74e6,92eef845)». Автор issue указал: yt-dlp stable@2026.10.26,
+    deno 2.9.8, node v22.23.5, yt_dlp_ejs 0.8.0 — ошибка одинакова в обоих рантаймах,
+    то есть не в рантайме. Мейнтейнер закрыл issue ответом «Fixed in stable 2026.11.23.
+    Update your yt-dlp.». Проверено на машине владельца: с yt-dlp 2026.10.26 команда
+    --list-formats для ролика даёт «Only images are available for download» и «ERROR:
+    Requested format is not available», а с 2026.11.23 — полный список форматов (1080p
+    mp4/webm и др.), и ролик скачивается.'
+  url: https://github.com/yt-dlp/yt-dlp/issues/18123
+  version: '2026.11.23 (последняя стабильная на 2026-11-26; установленный в системе:
+    2026.10.26)'
+  currency_evidence: 'Выпуск 2026.11.23 — последний на PyPI (проверено: pypi.org/pypi/yt-dlp/json,
+    поле info.version). Тред issue открыт 2026-11-23 и закрыт维护 мейнтейнером bashonly
+    с ответом «Fixed in stable 2026.11.23. Update your yt-dlp.»; страница прочитана
+    в этой сессии через api.github.com.'
+  topics:
+  - 'n challenge: solver падает с «a.addOnDisposeCallback is not a function»'
+  - 'следствие: «Only images are available for download» и «Requested format is not
+    available»'
+  - ошибка одинакова в deno 2.9.8 и node v22/v24 — дело не в рантайме
+  - исправление в стабильном релизе 2026.11.23
+  deprecated_apis: []
+  applies_to:
+  - package: yt-dlp
+    version: 2026.10.26
+  recorded_at: '2026-11-26T17:12:42+00:00'
+- id: SRC-I2
+  phase: интервью
+  kind: api
+  title: 'yt-dlp-ejs 0.8.0 — скрипты задачи YouTube: версия не меняется вместе с yt-dlp'
+  findings: 'Скрипты задачи YouTube лежат в отдельном пакете yt-dlp-ejs; его последняя
+    версия — 0.8.0 (март 2026), и она совместима с yt-dlp 2026.11.23: установленный
+    yt-dlp 2026.11.23 с этим пакетом успешно решает n challenge и отдаёт полный список
+    форматов. Значит при обновлении yt-dlp менять версию yt-dlp-ejs не нужно — она
+    остаётся 0.8.0.'
+  url: https://pypi.org/pypi/yt-dlp-ejs/json
+  version: 0.8.0 (последняя на PyPI; установлена в системе)
+  currency_evidence: 'PyPI: info.version = 0.8.0, других релизов после 0.8.0 нет (проверено
+    2026-11-26). Проверено на машине: yt-dlp 2026.11.23 видит пакет и берёт из него
+    скрипты solver v0.8.0 (в выводе --verbose: «Using challenge solver lib script
+    v0.8.0 (source: python package, variant: minified)»).'
+  topics:
+  - yt-dlp-ejs — отдельный пакет со скриптами, версия 0.8.0 — последняя
+  - yt-dlp 2026.11.23 работает с yt-dlp-ejs 0.8.0
+  deprecated_apis: []
+  applies_to:
+  - package: yt-dlp-ejs
+    version: 0.8.0
+  recorded_at: '2026-11-26T17:12:42+00:00'
+- id: SRC-I3
+  phase: интервью
+  kind: capabilities
+  title: Возможности починки загрузки видео с YouTube и решения по ним
+  findings: 'Найдено четыре способа починить загрузку видео. Обновление закреплённой
+    версии yt-dlp — единственное, которое чинит причину: без него n challenge не решается
+    и форматов нет вообще. Закрепить минимальную версию тестом — страховка от отката
+    на сломанную версию. Провайдер PO-токена нужен уже для другого случая (см. SRC-I4):
+    часть роликов YouTube отдаёт только первые два мегабайта, и без PO-токена их не
+    скачать; это отдельная возможность со своим составом (Node.js, отдельный сервис)
+    и отдельным решением владельца. Автоматическое обновление компонентов — большая
+    отдельная работа, в задачу не входит.'
+  url: https://github.com/yt-dlp/yt-dlp/wiki/PO-Token-Guide
+  version: вики yt-dlp, прочитана в этой сессии (2026-11-26)
+  currency_evidence: 'Вики прочитана в этой сессии: raw.githubusercontent.com/yt-dlp/yt-dlp-wiki/master/PO
+    Token Guide.md. Таблица «Current PO Token enforcement» и список провайдеров PO-токенов
+    — оттуда.'
+  topics:
+  - обновить закреплённую версию yt-dlp
+  - закрепить минимальную версию тестом, чтобы откат не повторился
+  - поставить провайдер PO-токена (bgutil) отдельным компонентом
+  - автоматически обновлять компоненты при появлении новых версий
+  deprecated_apis: []
+  applies_to:
+  - package: yt-dlp
+    version: 2026.11.23
+  capabilities:
+  - id: C-1
+    name: Обновить закреплённую в каталоге компонентов версию yt-dlp до 2026.11.23
+    decision: нужно
+    rationale: 'Причина сбоя найдена и подтверждена: закреплённая 2026.10.26 не решает
+      n challenge на текущем плеере YouTube (yt-dlp#18123), форматов нет вообще, ролик
+      не скачивается. Исправление в стабильном релизе 2026.11.23.'
+  - id: C-2
+    name: Закрепить тестом, что версия yt-dlp в каталоге не ниже исправленной
+    decision: нужно
+    rationale: 'Откат на сломанную версию вернул бы сбой молча: компонент поставится,
+      а ролики качать перестанут. Тест на минимальную версию делает откат видимым.'
+  - id: C-3
+    name: Поставить провайдер PO-токена (bgutil) отдельным компонентом приложения
+    decision: отложено
+    rationale: 'Нужен для другого случая: часть роликов YouTube отдаёт только первые
+      два мегабайта потока, и без PO-токена их не скачать вовсе. Это отдельный компонент
+      с Node.js и собственным сервисом — решение владельца, в эту задачу он не входит.'
+  - id: C-4
+    name: Автоматически обновлять компоненты при выходе новых версий
+    decision: не_нужно
+    rationale: Отдельная большая работа со своим циклом проверок; в этой задаче версии
+      закрепляются вручную и защищаются тестом.
+  recorded_at: '2026-11-26T17:12:42+00:00'
+- id: SRC-I4
+  phase: код
+  kind: api
+  title: 'Контракт, на который опирается код: каталог компонентов и мастер установки'
+  findings: 'Что код делает с этими контрактами. 1) Версия компонента закреплена в
+    ComponentSpec.packages точной строкой «пакет==версия» (так сейчас: gallery-dl==1.32.20,
+    yt-dlp==2026.10.26, yt-dlp-ejs==0.8.0). 2) Мастер установки ставит пакеты через
+    pip --target в каталог компонента и пишет запускающий файл, который добавляет
+    каталог компонента в PYTHONPATH и запускает модуль пакета. 3) Приложение ищет
+    бинарь сначала в каталогах установленных компонентов, потом в PATH: поставленный
+    компонент важнее системного пакета. Значит правка версии в каталоге — это ровно
+    то, что нужно, чтобы мастер поставил рабочую версию, и обновление уже установленного
+    компонента делается переустановкой через мастер. 4) Версия yt-dlp-ejs остаётся
+    прежней: yt-dlp 2026.11.23 работает с ней (проверено живьём).'
+  url: https://github.com/mikf/gallery-dl
+  version: 'каталог компонентов приложения (ветка orch/010-save-format), компоненты
+    в системе: yt-dlp 2026.11.23, yt-dlp-ejs 0.8.0'
+  currency_evidence: 'Контракт сверен с кодом проекта в этой сессии (src/snipnest/components/catalog.py,
+    installer.py) и с установленными компонентами: мастер поставил yt-dlp 2026.11.23
+    и yt-dlp-ejs 0.8.0 тем же кодом (ComponentInstaller), после чего приложение находит
+    бинарь компонента и скачивает ролик.'
+  topics:
+  - 'ComponentSpec.packages: точный список пакетов с версией'
+  - 'ComponentInstaller: pip install --target в каталог компонента, запуск через запускающий
+    файл'
+  - 'find_yt_dlp: сначала компоненты, потом PATH'
+  deprecated_apis: []
+  applies_to:
+  - package: yt-dlp
+    version: 2026.11.23
+  recorded_at: '2026-11-26T17:12:42+00:00'
+- id: SRC-I5
+  phase: интервью
+  kind: api
+  title: yt-dlp 2026.11.23 — исправление n challenge (исправленная запись SRC-I1)
+  findings: 'Ровно та ошибка, что в логе владельца: issue 18123 «[youtube] n challenge
+    solving failed: a.addOnDisposeCallback is not a function (players 05a4ffc0,b485e332,b17b74e6,92eef845)».
+    Автор issue указал: yt-dlp stable@2026.10.26, deno 2.9.8, node v22.23.5, yt_dlp_ejs
+    0.8.0 — ошибка одинакова в обоих рантаймах, то есть не в рантайме. Мейнтейнер
+    закрыл issue ответом «Fixed in stable 2026.11.23. Update your yt-dlp.». Проверено
+    на машине владельца: с yt-dlp 2026.10.26 команда --list-formats для ролика даёт
+    «Only images are available for download» и «ERROR: Requested format is not available»,
+    а с 2026.11.23 — полный список форматов (1080p mp4/webm и др.), и ролик скачивается.'
+  url: https://github.com/yt-dlp/yt-dlp/issues/18123
+  version: '2026.11.23 (последняя стабильная на 2026-11-26; установленный в системе:
+    2026.10.26)'
+  currency_evidence: 'Выпуск 2026.11.23 — последний на PyPI (проверено: pypi.org/pypi/yt-dlp/json,
+    поле info.version). Тред issue открыт 2026-11-23 и закрыт мейнтейнером bashonly
+    с ответом «Fixed in stable 2026.11.23. Update your yt-dlp.»; страница прочитана
+    в этой сессии через api.github.com. В тексте SRC-I1 это место было набрано посторонними
+    иероглифами — здесь формулировка исправлена, содержание прежнее.'
+  topics:
+  - 'n challenge: solver падает с «a.addOnDisposeCallback is not a function»'
+  - 'следствие: «Only images are available for download» и «Requested format is not
+    available»'
+  - ошибка одинакова в deno 2.9.8 и node v22/v24 — дело не в рантайме
+  - исправление в стабильном релизе 2026.11.23
+  deprecated_apis: []
+  applies_to:
+  - package: yt-dlp
+    version: 2026.10.26
+  recorded_at: '2026-11-26T17:13:06+00:00'
