@@ -1,6 +1,6 @@
 {
   "context": {
-    "last_layer": "e2e",
+    "last_layer": "integration",
     "research_ids": [
       "SRC-I1",
       "SRC-I2",
