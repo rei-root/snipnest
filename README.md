@@ -235,7 +235,7 @@ rhel-based, `pacman` на arch-based, `zypper` на suse-based, `apk` на Alpin
 **Пакет .deb** (если хочется поставить пакетом вручную):
 
 ```bash
-sudo apt install ./snipnest_0.2.1_amd64.deb
+sudo apt install ./snipnest_0.2.2_amd64.deb
 ```
 
 Если apt напечатал «Отказано в доступе» от служебного пользователя `_apt` —
@@ -244,7 +244,7 @@ sudo apt install ./snipnest_0.2.1_amd64.deb
 Поставить пакет можно и совсем без apt:
 
 ```bash
-sudo dpkg -i snipnest_0.2.1_amd64.deb
+sudo dpkg -i snipnest_0.2.2_amd64.deb
 ```
 
 Пакет самодостаточный: внутри программа, Qt, переносимый Python и все пять

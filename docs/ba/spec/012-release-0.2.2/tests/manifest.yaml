@@ -1,0 +1,50 @@
+tests:
+- id: T-release-version
+  layer: unit
+  covers:
+  - R1
+  - R3
+  - R4
+  - AC1
+  file: tests/unit/test_packaging_scope.py
+  fn: test_версия_приложения_соответствует_выпуску
+- id: T-release-scope
+  layer: unit
+  covers:
+  - R2
+  - R5
+  file: tests/unit/test_scope.py
+  fn: test_приложение_локальное_и_однопользовательское
+- id: T-release-components-untouched
+  layer: unit
+  covers:
+  - R6
+  file: tests/unit/test_components_versions.py
+  fn: test_версия_gallery_dl_осталась_прежней
+- id: T-e2e-release-check
+  layer: e2e
+  covers:
+  - R3
+  - AC1
+  file: tests/e2e/test_release_scenario.py
+  fn: test_проверка_релиза_проходит
+- id: T-release-artifact-names
+  layer: integration
+  covers:
+  - R3
+  - AC1
+  file: tests/integration/test_release_build.py
+  fn: test_имя_пакета_собрано_из_версии
+- id: T-release-image-name
+  layer: integration
+  covers:
+  - R3
+  file: tests/integration/test_release_build.py
+  fn: test_имя_образа_собрано_из_версии
+- id: T-release-url
+  layer: integration
+  covers:
+  - R3
+  - AC1
+  file: tests/integration/test_release_build.py
+  fn: test_адрес_релиза_ведёт_на_тег_версии

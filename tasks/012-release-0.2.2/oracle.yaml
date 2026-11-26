@@ -1,0 +1,56 @@
+task_id: 012-release-0.2.2
+oracle:
+  path: bin/check-release-version.sh
+  command: bash bin/check-release-version.sh
+  sha256: bf553ed7dac9ce903ae786bfc69a2a367716d38f3a50d41f6fcc3c593937dcf6
+  recorded_at: '2026-11-26T17:58:32+00:00'
+red_output: 'КРИТЕРИЙ НЕ ВЫПОЛНЕН: версия пакета — 0.2.2 — в пакете 0.2.1
+
+  КРИТЕРИЙ НЕ ВЫПОЛНЕН: имя пакета содержит версию — snipnest_0.2.1_amd64.deb
+
+  КРИТЕРИЙ НЕ ВЫПОЛНЕН: имя образа содержит версию — snipnest-0.2.1-linux-glibc-2.38-x86_64.AppImage
+
+  КРИТЕРИЙ НЕ ВЫПОЛНЕН: адрес релиза ведёт на тег версии — https://github.com/rei-root/snipnest/releases/download/v0.2.1
+
+  КРИТЕРИЙ НЕ ВЫПОЛНЕН: прежней версии нигде не осталось — /home/sato/Документы/snipnest/.delta/worktrees/zst5dfdadpj6/snipnest/src/snipnest/__init__.py:11:__version__
+  = "0.2.1"
+
+  /home/sato/Документы/snipnest/.delta/worktrees/zst5dfdadpj6/snipnest/tests/unit/test_packaging_scope.py:8:*
+  R5 — нефункциональные требования: версия 0.2.1, архитектура только amd64;
+
+  /home/sato/Документы/snipnest/.delta/worktrees/zst5dfdadpj6/snipnest/tests/unit/test_packaging_scope.py:37:    assert
+  snipnest.__version__ == "0.2.1"
+
+  Установщик не собран — четвёртый критерий пропущен.'
+passability: 'Тот же оракул после правки печатает «OK: релиз 0.2.2 собран из версии
+  пакета» и возвращает 0. Проверяется: версия пакета — 0.2.2; имя пакета, имя образа
+  и адрес релиза собраны из 0.2.2; прежней версии 0.2.1 не осталось ни в коде, ни
+  в тестах, ни в README; внутри собранного установщика (если он собран) лежат версия
+  0.2.2 и адрес релиза v0.2.2 — установщик качает именно эту версию. Тот же оракул
+  на прежней версии даёт красный вывод выше.'
+records:
+- id: O-release-0.2.2
+  red_output: 'КРИТЕРИЙ НЕ ВЫПОЛНЕН: версия пакета — 0.2.2 — в пакете 0.2.1
+
+    КРИТЕРИЙ НЕ ВЫПОЛНЕН: имя пакета содержит версию — snipnest_0.2.1_amd64.deb
+
+    КРИТЕРИЙ НЕ ВЫПОЛНЕН: имя образа содержит версию — snipnest-0.2.1-linux-glibc-2.38-x86_64.AppImage
+
+    КРИТЕРИЙ НЕ ВЫПОЛНЕН: адрес релиза ведёт на тег версии — https://github.com/rei-root/snipnest/releases/download/v0.2.1
+
+    КРИТЕРИЙ НЕ ВЫПОЛНЕН: прежней версии нигде не осталось — /home/sato/Документы/snipnest/.delta/worktrees/zst5dfdadpj6/snipnest/src/snipnest/__init__.py:11:__version__
+    = "0.2.1"
+
+    /home/sato/Документы/snipnest/.delta/worktrees/zst5dfdadpj6/snipnest/tests/unit/test_packaging_scope.py:8:*
+    R5 — нефункциональные требования: версия 0.2.1, архитектура только amd64;
+
+    /home/sato/Документы/snipnest/.delta/worktrees/zst5dfdadpj6/snipnest/tests/unit/test_packaging_scope.py:37:    assert
+    snipnest.__version__ == "0.2.1"
+
+    Установщик не собран — четвёртый критерий пропущен.'
+  passability: 'Тот же оракул после правки печатает «OK: релиз 0.2.2 собран из версии
+    пакета» и возвращает 0. Проверяется: версия пакета — 0.2.2; имя пакета, имя образа
+    и адрес релиза собраны из 0.2.2; прежней версии 0.2.1 не осталось ни в коде, ни
+    в тестах, ни в README; внутри собранного установщика (если он собран) лежат версия
+    0.2.2 и адрес релиза v0.2.2 — установщик качает именно эту версию. Тот же оракул
+    на прежней версии даёт красный вывод выше.'
