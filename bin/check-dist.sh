@@ -27,30 +27,39 @@ fail() {
     FAILED=1
 }
 
-# 1. Установщик: один исполняемый файл, внутри которого нет приложения.
+# 1. Установщик: один исполняемый файл — графическая программа с Qt внутри.
 check_installer() {
     if [[ ! -x "$INSTALLER" ]]; then
         fail "установщик собран" "нет исполняемого файла $INSTALLER"
         return
     fi
-    head_line="$(head -1 "$INSTALLER")"
-    if [[ "$head_line" != "#!/bin/sh" ]]; then
-        fail "установщик написан на POSIX shell" "первая строка: '$head_line'"
+    if [[ "$(head -c 4 "$INSTALLER")" != $'\x7fELF' ]]; then
+        fail "установщик собран" "это не исполняемый файл ELF"
     fi
-    if ! grep -q "snipnest-installer" "$INSTALLER"; then
-        fail "установщик называет себя" "внутри нет строки snipnest-installer"
+    if [[ "$(strings "$INSTALLER" | grep -c "PySide6" || true)" -lt 1 ]]; then
+        fail "в установщике есть Qt" "внутри нет PySide6"
     fi
-    for payload in "_internal" "PySide6" "usr/lib/snipnest/app"; do
-        if grep -q "$payload" "$INSTALLER"; then
-            fail "в установщике нет приложения" "внутри есть '$payload'"
-        fi
-    done
-    if ! "$INSTALLER" --help >/dev/null 2>&1; then
-        fail "установщик печатает справку" "--help не отработал"
+    if [[ "$(strings "$INSTALLER" | grep -c "usr/lib/snipnest/app" || true)" -ge 1 ]]; then
+        fail "в установщике нет приложения" "внутри есть файлы приложения"
     fi
-    if ! "$INSTALLER" --version >/dev/null 2>&1; then
-        fail "установщик печатает версию" "--version не отработал"
+    work="$(mktemp -d)"
+    printf 'подделка образа\n' > "$work/snipnest.AppImage"
+    cat > "$work/request.json" <<EOF
+{
+  "image_path": "$work/snipnest.AppImage",
+  "image_name": "snipnest.AppImage",
+  "app_dir": "$work/opt",
+  "bin_dir": "$work/bin",
+  "desktop_dir": "$work/share",
+  "icons_dir": "$work/icons",
+  "packages": [],
+  "package_command": []
+}
+EOF
+    if ! "$INSTALLER" --root-worker "$work/request.json" >/dev/null 2>&1; then
+        fail "установщик выполняет установку" "работник с правами не отработал"
     fi
+    rm -rf "$work"
 }
 
 # 2. AppImage: образ с приложением, без установщика. В имени — платформа,

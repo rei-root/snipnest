@@ -5,6 +5,11 @@
     SNIPNEST_LAYOUT=onefile uv run pyinstaller packaging/snipnest.spec
     SNIPNEST_LAYOUT=onedir  uv run pyinstaller packaging/snipnest.spec
 
+Тот же spec собирает и установщик — другой точкой входа и своим именем:
+
+    SNIPNEST_ENTRY=packaging/installer_entry.py SNIPNEST_NAME=snipnest-installer \\
+        SNIPNEST_INSTALLER=1 uv run pyinstaller packaging/snipnest.spec
+
 Переносимый Python (нужный Python-компонентам) берётся из
 ``build/runtime/python`` — его кладёт ``packaging/build-runtime.sh``.
 """
@@ -19,15 +24,29 @@ SRC = ROOT / "src"
 RUNTIME = ROOT / "build" / "runtime" / "python"
 LAYOUT = os.environ.get("SNIPNEST_LAYOUT", "onefile")
 
+#: Точка входа и имя собираемой программы.
+ENTRY = Path(os.environ.get("SNIPNEST_ENTRY", str(ROOT / "packaging" / "entry.py")))
+NAME = os.environ.get("SNIPNEST_NAME", "snipnest")
+
+#: Установщик — отдельная программа: ей нужны ярлык, иконка и сведения о сборке.
+IS_INSTALLER = os.environ.get("SNIPNEST_INSTALLER") == "1"
+
 datas: list[tuple[str, str]] = []
 # В один файл переносимый Python входит внутрь: больше некуда его положить.
 # В каталоговой сборке его копирует скрипт сборки — рядом с программой,
 # иначе он оказался бы внутри _internal и путь к нему был бы неугадаемым.
-if LAYOUT == "onefile":
+if LAYOUT == "onefile" and not IS_INSTALLER:
     if RUNTIME.is_dir():
         datas.append((str(RUNTIME), "runtime/python"))
     else:
         print("ПРЕДУПРЕЖДЕНИЕ: нет build/runtime/python — Python-компоненты нельзя будет поставить")
+
+if IS_INSTALLER:
+    build_info = os.environ.get("SNIPNEST_BUILD_INFO", "")
+    if build_info and Path(build_info).is_file():
+        datas.append((build_info, "."))
+    datas.append((str(ROOT / "packaging" / "snipnest.desktop"), "."))
+    datas.append((str(ROOT / "logo" / "snipnest.png"), "."))
 
 hiddenimports = [
     "keyring.backends.SecretService",
@@ -68,7 +87,7 @@ excludes = [
 ]
 
 analysis = Analysis(
-    [str(ROOT / "packaging" / "entry.py")],
+    [str(ENTRY)],
     pathex=[str(SRC)],
     binaries=[],
     datas=datas,
@@ -87,7 +106,7 @@ if LAYOUT == "onefile":
         analysis.binaries,
         analysis.datas,
         [],
-        name="snipnest",
+        name=NAME,
         debug=False,
         bootloader_ignore_signals=False,
         strip=False,
@@ -106,7 +125,7 @@ else:
         analysis.scripts,
         [],
         exclude_binaries=True,
-        name="snipnest",
+        name=NAME,
         debug=False,
         bootloader_ignore_signals=False,
         strip=False,
@@ -125,5 +144,5 @@ else:
         analysis.datas,
         strip=False,
         upx=False,
-        name="snipnest",
+        name=NAME,
     )

@@ -1,0 +1,487 @@
+tests:
+- id: T-installer-installer-detect-test_debian_опознаётся_по_id
+  layer: unit
+  covers:
+  - R1
+  - R3
+  file: tests/unit/test_installer_detect.py
+  fn: test_debian_опознаётся_по_id
+- id: T-installer-installer-detect-test_ubuntu_опознаётся_по_id_like
+  layer: unit
+  covers:
+  - R1
+  - R3
+  file: tests/unit/test_installer_detect.py
+  fn: test_ubuntu_опознаётся_по_id_like
+- id: T-installer-installer-detect-test_fedora_опознаётся_как_rhel
+  layer: unit
+  covers:
+  - R1
+  - R3
+  file: tests/unit/test_installer_detect.py
+  fn: test_fedora_опознаётся_как_rhel
+- id: T-installer-installer-detect-test_arch_опознаётся
+  layer: unit
+  covers:
+  - R1
+  - R3
+  file: tests/unit/test_installer_detect.py
+  fn: test_arch_опознаётся
+- id: T-installer-installer-detect-test_suse_опознаётся
+  layer: unit
+  covers:
+  - R1
+  - R3
+  file: tests/unit/test_installer_detect.py
+  fn: test_suse_опознаётся
+- id: T-installer-installer-detect-test_alpine_опознаётся
+  layer: unit
+  covers:
+  - R1
+  - R3
+  file: tests/unit/test_installer_detect.py
+  fn: test_alpine_опознаётся
+- id: T-installer-installer-detect-test_gentoo_опознаётся
+  layer: unit
+  covers:
+  - R1
+  - R3
+  file: tests/unit/test_installer_detect.py
+  fn: test_gentoo_опознаётся
+- id: T-installer-installer-detect-test_неизвестная_система_не_ломает_определение
+  layer: unit
+  covers:
+  - R1
+  - R3
+  file: tests/unit/test_installer_detect.py
+  fn: test_неизвестная_система_не_ломает_определение
+- id: T-installer-installer-detect-test_без_файла_система_неизвестна
+  layer: unit
+  covers:
+  - R1
+  - R3
+  file: tests/unit/test_installer_detect.py
+  fn: test_без_файла_система_неизвестна
+- id: T-installer-installer-detect-test_os_release_читается_в_словарь
+  layer: unit
+  covers:
+  - R1
+  - R3
+  file: tests/unit/test_installer_detect.py
+  fn: test_os_release_читается_в_словарь
+- id: T-installer-installer-detect-test_glibc_сравнивается_с_минимальной
+  layer: unit
+  covers:
+  - R1
+  - R3
+  file: tests/unit/test_installer_detect.py
+  fn: test_glibc_сравнивается_с_минимальной
+- id: T-installer-installer-detect-test_пустая_glibc_не_проходит_проверку
+  layer: unit
+  covers:
+  - R1
+  - R3
+  file: tests/unit/test_installer_detect.py
+  fn: test_пустая_glibc_не_проходит_проверку
+- id: T-installer-installer-dependencies-test_зависимости_есть_в_каждом_семействе
+  layer: unit
+  covers:
+  - R3
+  - R4
+  file: tests/unit/test_installer_dependencies.py
+  fn: test_зависимости_есть_в_каждом_семействе
+- id: T-installer-installer-dependencies-test_зависимости_это_gallery_dl_yt_dlp_и_ffmpeg
+  layer: unit
+  covers:
+  - R3
+  - R4
+  file: tests/unit/test_installer_dependencies.py
+  fn: test_зависимости_это_gallery_dl_yt_dlp_и_ffmpeg
+- id: T-installer-installer-dependencies-test_имена_пакетов_для_debian
+  layer: unit
+  covers:
+  - R3
+  - R4
+  file: tests/unit/test_installer_dependencies.py
+  fn: test_имена_пакетов_для_debian
+- id: T-installer-installer-dependencies-test_имена_пакетов_для_gentoo_с_категориями
+  layer: unit
+  covers:
+  - R3
+  - R4
+  file: tests/unit/test_installer_dependencies.py
+  fn: test_имена_пакетов_для_gentoo_с_категориями
+- id: T-installer-installer-dependencies-test_невыбранные_зависимости_в_команду_не_попадают
+  layer: unit
+  covers:
+  - R3
+  - R4
+  file: tests/unit/test_installer_dependencies.py
+  fn: test_невыбранные_зависимости_в_команду_не_попадают
+- id: T-installer-installer-dependencies-test_команда_для_debian_через_apt_get
+  layer: unit
+  covers:
+  - R3
+  - R4
+  file: tests/unit/test_installer_dependencies.py
+  fn: test_команда_для_debian_через_apt_get
+- id: T-installer-installer-dependencies-test_команда_для_fedora_через_dnf
+  layer: unit
+  covers:
+  - R3
+  - R4
+  file: tests/unit/test_installer_dependencies.py
+  fn: test_команда_для_fedora_через_dnf
+- id: T-installer-installer-dependencies-test_команда_для_arch_через_pacman
+  layer: unit
+  covers:
+  - R3
+  - R4
+  file: tests/unit/test_installer_dependencies.py
+  fn: test_команда_для_arch_через_pacman
+- id: T-installer-installer-dependencies-test_команда_для_suse_через_zypper
+  layer: unit
+  covers:
+  - R3
+  - R4
+  file: tests/unit/test_installer_dependencies.py
+  fn: test_команда_для_suse_через_zypper
+- id: T-installer-installer-dependencies-test_команда_для_alpine_через_apk
+  layer: unit
+  covers:
+  - R3
+  - R4
+  file: tests/unit/test_installer_dependencies.py
+  fn: test_команда_для_alpine_через_apk
+- id: T-installer-installer-dependencies-test_команда_для_gentoo_через_emerge
+  layer: unit
+  covers:
+  - R3
+  - R4
+  file: tests/unit/test_installer_dependencies.py
+  fn: test_команда_для_gentoo_через_emerge
+- id: T-installer-installer-dependencies-test_в_неизвестной_системе_команды_нет
+  layer: unit
+  covers:
+  - R3
+  - R4
+  file: tests/unit/test_installer_dependencies.py
+  fn: test_в_неизвестной_системе_команды_нет
+- id: T-installer-installer-plan-test_системная_установка_идёт_в_opt
+  layer: unit
+  covers:
+  - R3
+  file: tests/unit/test_installer_plan.py
+  fn: test_системная_установка_идёт_в_opt
+- id: T-installer-installer-plan-test_домашняя_установка_идёт_в_local
+  layer: unit
+  covers:
+  - R3
+  file: tests/unit/test_installer_plan.py
+  fn: test_домашняя_установка_идёт_в_local
+- id: T-installer-installer-plan-test_имя_образа_содержит_версию_glibc_и_архитектуру
+  layer: unit
+  covers:
+  - R3
+  file: tests/unit/test_installer_plan.py
+  fn: test_имя_образа_содержит_версию_glibc_и_архитектуру
+- id: T-installer-installer-plan-test_адрес_релиза_ведёт_на_тег_версии
+  layer: unit
+  covers:
+  - R3
+  file: tests/unit/test_installer_plan.py
+  fn: test_адрес_релиза_ведёт_на_тег_версии
+- id: T-installer-installer-plan-test_план_показывает_куда_что_кладётся
+  layer: unit
+  covers:
+  - R3
+  file: tests/unit/test_installer_plan.py
+  fn: test_план_показывает_куда_что_кладётся
+- id: T-installer-installer-worker-test_образ_кладётся_и_становится_исполняемым
+  layer: unit
+  covers:
+  - R3
+  - R4
+  file: tests/unit/test_installer_worker.py
+  fn: test_образ_кладётся_и_становится_исполняемым
+- id: T-installer-installer-worker-test_лаунчер_создаётся_и_указывает_на_образ
+  layer: unit
+  covers:
+  - R3
+  - R4
+  file: tests/unit/test_installer_worker.py
+  fn: test_лаунчер_создаётся_и_указывает_на_образ
+- id: T-installer-installer-worker-test_ярлык_указывает_на_лаунчер
+  layer: unit
+  covers:
+  - R3
+  - R4
+  file: tests/unit/test_installer_worker.py
+  fn: test_ярлык_указывает_на_лаунчер
+- id: T-installer-installer-worker-test_иконки_кладутся_в_стандартные_размеры
+  layer: unit
+  covers:
+  - R3
+  - R4
+  file: tests/unit/test_installer_worker.py
+  fn: test_иконки_кладутся_в_стандартные_размеры
+- id: T-installer-installer-worker-test_без_образа_установка_не_проходит
+  layer: unit
+  covers:
+  - R3
+  - R4
+  file: tests/unit/test_installer_worker.py
+  fn: test_без_образа_установка_не_проходит
+- id: T-installer-installer-worker-test_пакеты_ставятся_своей_командой
+  layer: unit
+  covers:
+  - R3
+  - R4
+  file: tests/unit/test_installer_worker.py
+  fn: test_пакеты_ставятся_своей_командой
+- id: T-installer-installer-worker-test_отказ_пакетного_менеджера_виден_в_отчёте
+  layer: unit
+  covers:
+  - R3
+  - R4
+  file: tests/unit/test_installer_worker.py
+  fn: test_отказ_пакетного_менеджера_виден_в_отчёте
+- id: T-installer-installer-worker-test_запрос_и_отчёт_идут_через_json
+  layer: unit
+  covers:
+  - R3
+  - R4
+  file: tests/unit/test_installer_worker.py
+  fn: test_запрос_и_отчёт_идут_через_json
+- id: T-installer-installer-resources-test_ярлык_читается
+  layer: unit
+  covers:
+  - R3
+  file: tests/unit/test_installer_resources.py
+  fn: test_ярлык_читается
+- id: T-installer-installer-resources-test_иконка_читается
+  layer: unit
+  covers:
+  - R3
+  file: tests/unit/test_installer_resources.py
+  fn: test_иконка_читается
+- id: T-installer-installer-resources-test_размеры_иконок_на_месте
+  layer: unit
+  covers:
+  - R3
+  file: tests/unit/test_installer_resources.py
+  fn: test_размеры_иконок_на_месте
+- id: T-installer-installer-resources-test_сведения_о_сборке_читаются_из_файла
+  layer: unit
+  covers:
+  - R3
+  file: tests/unit/test_installer_resources.py
+  fn: test_сведения_о_сборке_читаются_из_файла
+- id: T-installer-installer-resources-test_без_сведений_о_сборке_пусто
+  layer: unit
+  covers:
+  - R3
+  file: tests/unit/test_installer_resources.py
+  fn: test_без_сведений_о_сборке_пусто
+- id: T-installer-installer-window-test_в_окне_видно_семейство_системы
+  layer: unit
+  covers:
+  - AC1
+  - R3
+  - R4
+  file: tests/ui/test_installer_window.py
+  fn: test_в_окне_видно_семейство_системы
+- id: T-installer-installer-window-test_в_окне_видно_версию_glibc
+  layer: unit
+  covers:
+  - AC1
+  - R3
+  - R4
+  file: tests/ui/test_installer_window.py
+  fn: test_в_окне_видно_версию_glibc
+- id: T-installer-installer-window-test_на_старой_glibc_кнопка_установки_выключена
+  layer: unit
+  covers:
+  - AC1
+  - R3
+  - R4
+  file: tests/ui/test_installer_window.py
+  fn: test_на_старой_glibc_кнопка_установки_выключена
+- id: T-installer-installer-window-test_в_плане_видно_куда_кладётся
+  layer: unit
+  covers:
+  - AC1
+  - R3
+  - R4
+  file: tests/ui/test_installer_window.py
+  fn: test_в_плане_видно_куда_кладётся
+- id: T-installer-installer-window-test_в_домашнем_режиме_план_меняется
+  layer: unit
+  covers:
+  - AC1
+  - R2
+  - R3
+  - R4
+  file: tests/ui/test_installer_window.py
+  fn: test_в_домашнем_режиме_план_меняется
+- id: T-installer-installer-window-test_список_зависимостей_с_галочками
+  layer: unit
+  covers:
+  - AC1
+  - R3
+  - R4
+  file: tests/ui/test_installer_window.py
+  fn: test_список_зависимостей_с_галочками
+- id: T-installer-installer-window-test_зависимости_отмечены_по_умолчанию
+  layer: unit
+  covers:
+  - AC1
+  - R3
+  - R4
+  file: tests/ui/test_installer_window.py
+  fn: test_зависимости_отмечены_по_умолчанию
+- id: T-installer-installer-window-test_снятие_галочки_убирает_зависимость
+  layer: unit
+  covers:
+  - AC1
+  - R3
+  - R4
+  file: tests/ui/test_installer_window.py
+  fn: test_снятие_галочки_убирает_зависимость
+- id: T-installer-installer-window-test_в_неизвестной_системе_зависимостей_нет
+  layer: unit
+  covers:
+  - AC1
+  - R3
+  - R4
+  file: tests/ui/test_installer_window.py
+  fn: test_в_неизвестной_системе_зависимостей_нет
+- id: T-installer-installer-window-test_работа_идёт_в_отдельном_потоке
+  layer: unit
+  covers:
+  - AC1
+  - R3
+  - R4
+  - R5
+  file: tests/ui/test_installer_window.py
+  fn: test_работа_идёт_в_отдельном_потоке
+- id: T-installer-packaging-scope-test_версия_приложения_соответствует_выпуску
+  layer: unit
+  covers:
+  - R5
+  - R6
+  file: tests/unit/test_packaging_scope.py
+  fn: test_версия_приложения_соответствует_выпуску
+- id: T-installer-packaging-scope-test_есть_сборщики_всех_трёх_артефактов
+  layer: unit
+  covers:
+  - R5
+  - R6
+  file: tests/unit/test_packaging_scope.py
+  fn: test_есть_сборщики_всех_трёх_артефактов
+- id: T-installer-packaging-scope-test_приложение_не_ходит_в_сеть_само
+  layer: unit
+  covers:
+  - R5
+  - R6
+  file: tests/unit/test_packaging_scope.py
+  fn: test_приложение_не_ходит_в_сеть_само
+- id: T-installer-packaging-scope-test_приложение_остаётся_локальным_инструментом
+  layer: unit
+  covers:
+  - R5
+  - R6
+  file: tests/unit/test_packaging_scope.py
+  fn: test_приложение_остаётся_локальным_инструментом
+- id: T-installer-packaging-scope-test_сборка_рассчитана_только_на_amd64
+  layer: unit
+  covers:
+  - R5
+  - R6
+  file: tests/unit/test_packaging_scope.py
+  fn: test_сборка_рассчитана_только_на_amd64
+- id: T-installer-packaging-scope-test_другие_платформы_не_входят
+  layer: unit
+  covers:
+  - R5
+  - R6
+  file: tests/unit/test_packaging_scope.py
+  fn: test_другие_платформы_не_входят
+- id: T-installer-installer-gui-test_есть_точка_входа_установщика
+  layer: integration
+  covers:
+  - R3
+  - R5
+  file: tests/integration/test_installer_gui.py
+  fn: test_есть_точка_входа_установщика
+- id: T-installer-installer-gui-test_сборщик_собирает_установщик_через_pyinstaller
+  layer: integration
+  covers:
+  - R3
+  - R5
+  file: tests/integration/test_installer_gui.py
+  fn: test_сборщик_собирает_установщик_через_pyinstaller
+- id: T-installer-installer-gui-test_спека_умеет_собирать_установщик
+  layer: integration
+  covers:
+  - R3
+  - R5
+  file: tests/integration/test_installer_gui.py
+  fn: test_спека_умеет_собирать_установщик
+- id: T-installer-installer-gui-test_старого_shell_установщика_больше_нет
+  layer: integration
+  covers:
+  - R3
+  - R5
+  file: tests/integration/test_installer_gui.py
+  fn: test_старого_shell_установщика_больше_нет
+- id: T-installer-installer-gui-test_работник_с_правами_выполняет_установку
+  layer: integration
+  covers:
+  - R3
+  - R5
+  file: tests/integration/test_installer_gui.py
+  fn: test_работник_с_правами_выполняет_установку
+- id: T-installer-installer-gui-test_работник_без_запроса_не_падает
+  layer: integration
+  covers:
+  - R3
+  - R5
+  file: tests/integration/test_installer_gui.py
+  fn: test_работник_без_запроса_не_падает
+- id: T-installer-installer-gui-e2e-test_установка_через_polkit_кладёт_приложение
+  layer: e2e
+  covers:
+  - AC1
+  - R1
+  - R3
+  - R4
+  file: tests/e2e/test_installer_gui_e2e.py
+  fn: test_установка_через_polkit_кладёт_приложение
+- id: T-installer-installer-gui-e2e-test_polkit_вызывается_с_командой_работника
+  layer: e2e
+  covers:
+  - AC1
+  - R1
+  - R3
+  - R4
+  file: tests/e2e/test_installer_gui_e2e.py
+  fn: test_polkit_вызывается_с_командой_работника
+- id: T-installer-installer-gui-e2e-test_без_polkit_установщик_объясняет_это
+  layer: e2e
+  covers:
+  - AC1
+  - R1
+  - R3
+  - R4
+  file: tests/e2e/test_installer_gui_e2e.py
+  fn: test_без_polkit_установщик_объясняет_это
+- id: T-installer-installer-gui-e2e-test_отчёт_работника_разбирается
+  layer: e2e
+  covers:
+  - AC1
+  - R1
+  - R3
+  - R4
+  file: tests/e2e/test_installer_gui_e2e.py
+  fn: test_отчёт_работника_разбирается

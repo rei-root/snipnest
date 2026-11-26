@@ -1,0 +1,209 @@
+entries:
+- id: SRC-I1
+  phase: интервью
+  kind: api
+  title: pkexec(1) — права администратора через polkit
+  findings: 'Права администратора берутся через pkexec: пароль спрашивает polkit-агент
+    системы (на KDE — свой), программа выполняется от root. Программу надо указывать
+    абсолютным путём — по нему polkit выбирает действие. Окружение программы намеренно
+    пустое (нет PATH, DISPLAY), поэтому работнику с правами PATH нужно задать самому.
+    Коды возврата различают два отказа: 126 — человек закрыл окно, 127 — разрешения
+    нет; установщик говорит о них по-разному.'
+  url: https://manpages.debian.org/trixie/pkexec/pkexec.1.en.html
+  version: pkexec 126-2 (trixie)
+  currency_evidence: 'manpages.debian.org/trixie: pkexec.1.en.gz из pkexec 126-2,
+    Source last updated 2025-01-17'
+  topics:
+  - pkexec PROGRAM [ARGUMENTS...] — выполнить программу от root
+  - 'коды возврата: 127 — не разрешено, 126 — человек закрыл диалог'
+  - окружение программы минимальное и безопасное
+  - действие по умолчанию — org.freedesktop.policykit.exec
+  deprecated_apis: []
+  applies_to:
+  - package: pkexec
+    version: 126-2
+  recorded_at: '2026-11-26T14:55:06+00:00'
+- id: SRC-I2
+  phase: интервью
+  kind: api
+  title: 'PyInstaller — Using Spec Files: данные внутри бандла'
+  findings: 'Один spec собирает и приложение, и установщик: точка входа, имя и содержимое
+    бандла задаются переменными окружения, которые читает spec (это обычный Python).
+    Файлы данных (ярлык, иконка, сведения о сборке) кладутся в бандл через datas и
+    в onefile-режиме распаковываются во временный каталог _MEIxxxxxx при запуске.'
+  url: https://pyinstaller.org/en/stable/spec-files.html
+  version: PyInstaller 6.x (актуальная документация)
+  currency_evidence: 'актуальная онлайн-документация PyInstaller: раздел Using Spec
+    Files'
+  topics:
+  - 'datas: список пар (файл, каталог внутри бандла)'
+  - 'spec — исполняемый Python: в нём можно ветвиться по переменным окружения'
+  - 'глобальные переменные spec: SPECPATH, DISTPATH'
+  deprecated_apis: []
+  applies_to:
+  - package: pyinstaller
+    version: '6.10'
+  recorded_at: '2026-11-26T14:55:06+00:00'
+- id: SRC-I3
+  phase: интервью
+  kind: api
+  title: 'PyInstaller — Operating Mode: как работает один файл'
+  findings: 'В один файл программа собирается целиком: Qt, Python и код установщика.
+    При запуске загрузчик распаковывает содержимое во временный каталог и удаляет
+    его при выходе — поэтому установщик стартует чуть медленнее и оставляет каталог,
+    если его убили. Внутри нет ни Python в системе, ни Qt в системе: системный Python
+    и Qt пользователю не нужны.'
+  url: https://pyinstaller.org/en/stable/operating-mode.html
+  version: PyInstaller 6.x (актуальная документация)
+  currency_evidence: 'актуальная онлайн-документация PyInstaller: раздел Operating
+    Mode'
+  topics:
+  - 'onefile: загрузчик распаковывает бандл в _MEIxxxxxx'
+  - в бандле нет исходников, только скомпилированные модули
+  deprecated_apis: []
+  applies_to:
+  - package: pyinstaller
+    version: '6.10'
+  recorded_at: '2026-11-26T14:55:06+00:00'
+- id: SRC-I4
+  phase: интервью
+  kind: api
+  title: dnf — установка пакетов из командной строки
+  findings: 'Команда установки на rhel-based и fedora: dnf install -y <пакеты>.'
+  url: https://dnf.readthedocs.io/en/latest/command_ref.html
+  version: документация dnf 4.x
+  currency_evidence: актуальная документация dnf на dnf.readthedocs.io
+  topics:
+  - 'install: установка пакетов из репозитория'
+  - 'non-interactive: без вопросов'
+  deprecated_apis: []
+  applies_to:
+  - package: dnf
+    version: '4'
+  recorded_at: '2026-11-26T14:55:06+00:00'
+- id: SRC-I5
+  phase: интервью
+  kind: api
+  title: pacman(8) — установка пакетов на arch-based
+  findings: 'Команда установки на arch-based: pacman -S --noconfirm <пакеты>.'
+  url: https://man.archlinux.org/man/pacman.8
+  version: pacman 7.x (Arch Linux)
+  currency_evidence: актуальная страница man.archlinux.org/man/pacman.8
+  topics:
+  - '-S, --sync: синхронизация и установка пакетов из репозиториев'
+  - '--noconfirm: без вопросов'
+  deprecated_apis: []
+  applies_to:
+  - package: pacman
+    version: '7'
+  recorded_at: '2026-11-26T14:55:06+00:00'
+- id: SRC-I6
+  phase: интервью
+  kind: api
+  title: zypper — установка пакетов на suse-based
+  findings: 'Команда установки на suse-based: zypper --non-interactive install <пакеты>.'
+  url: https://documentation.suse.com/sles/15-SP7/html/SLES-all/cha-sw-cl.html
+  version: SUSE Linux Enterprise Server 15 SP7
+  currency_evidence: 'актуальная документация SUSE: zypper --non-interactive install
+    PACKAGE_NAME'
+  topics:
+  - '--non-interactive: без вопросов, ключ идёт перед командой'
+  - 'install: установка пакета'
+  deprecated_apis: []
+  applies_to:
+  - package: zypper
+    version: 15-SP7
+  recorded_at: '2026-11-26T14:55:06+00:00'
+- id: SRC-I7
+  phase: интервью
+  kind: api
+  title: apk — добавление пакетов на Alpine
+  findings: 'Команда установки на alpine: apk add <пакеты>.'
+  url: https://wiki.alpinelinux.org/wiki/Alpine_Package_Keeper
+  version: Alpine Linux Wiki (текущая редакция)
+  currency_evidence: актуальная страница wiki.alpinelinux.org/wiki/Alpine_Package_Keeper
+  topics:
+  - 'add: добавление пакета из репозитория вместе с зависимостями'
+  deprecated_apis: []
+  applies_to:
+  - package: apk-tools
+    version: '2.14'
+  recorded_at: '2026-11-26T14:55:06+00:00'
+- id: SRC-I8
+  phase: интервью
+  kind: api
+  title: emerge — установка пакетов на Gentoo
+  findings: 'Команда установки на gentoo: emerge <пакеты>. Без --ask emerge ставит
+    пакеты сразу, не спрашивая — это и нужно установщику, который работает без терминала.'
+  url: https://wiki.gentoo.org/wiki/Emerge
+  version: Gentoo Wiki (текущая редакция)
+  currency_evidence: актуальная страница wiki.gentoo.org/wiki/Emerge
+  topics:
+  - 'emerge ПАКЕТ: установка без запроса подтверждения'
+  - '--ask: показать изменения и спросить (нам не нужно)'
+  deprecated_apis: []
+  applies_to:
+  - package: portage
+    version: '3'
+  recorded_at: '2026-11-26T14:55:06+00:00'
+- id: SRC-C1
+  phase: код
+  kind: api
+  title: 'Qt 6 — QThread: работа в отдельном потоке через moveToThread'
+  findings: 'Установщик качает образ и ставит приложение в отдельном потоке: рабочий
+    объект переносится в QThread через moveToThread, а события приходят в GUI-поток
+    через сигналы (queued connections) — так окно не подвисает. Поток без своего event
+    loop заканчивается, когда run() вернулся, поэтому после установки поток останавливается
+    явно.'
+  url: https://doc.qt.io/qt-6/qthread.html
+  version: Qt 6 (документация Qt; тот же API в PySide6)
+  currency_evidence: 'актуальная документация Qt 6: qthread.html'
+  topics:
+  - 'moveToThread: перенос рабочего объекта в поток'
+  - 'queued connections: сигналы между потоками безопасны'
+  - поток без event loop заканчивается, когда run() вернулся
+  deprecated_apis: []
+  applies_to:
+  - package: PySide6
+    version: '6.12'
+  recorded_at: '2026-11-26T14:55:07+00:00'
+- id: SRC-C2
+  phase: код
+  kind: api
+  title: 'Python 3 — subprocess: запуск программы с нужным окружением'
+  findings: 'Пакетный менеджер запускается через subprocess.run с env: у polkit окружение
+    пустое, поэтому работник задаёт PATH сам. Вывод программы забирается через capture_output,
+    а код возврата проверяет вызывающий — так в отчёт попадает настоящая причина отказа
+    пакета.'
+  url: https://docs.python.org/3/library/subprocess.html
+  version: Python 3.12 (документация Python 3)
+  currency_evidence: 'актуальная документация Python 3: library/subprocess.html'
+  topics:
+  - 'subprocess.run с env: своё окружение для программы'
+  - 'capture_output: вывод программы без терминала'
+  - 'check=False: код возврата проверяет вызывающий'
+  deprecated_apis: []
+  applies_to:
+  - package: python
+    version: '3.12'
+  recorded_at: '2026-11-26T14:55:07+00:00'
+- id: SRC-C3
+  phase: код
+  kind: api
+  title: 'PyInstaller — Run-time Information: где в бандле лежат файлы'
+  findings: Внутри собранной программы файлы бандла лежат во временном каталоге, путь
+    к которому даёт sys._MEIPASS (в onefile — _MEIxxxxxx). Установщик читает оттуда
+    ярлык, иконку и сведения о сборке; в исходниках те же файлы берутся из packaging/
+    и logo/.
+  url: https://pyinstaller.org/en/stable/runtime-information.html
+  version: PyInstaller 6.x (актуальная документация)
+  currency_evidence: 'актуальная онлайн-документация PyInstaller: раздел Run-time
+    Information'
+  topics:
+  - 'sys._MEIPASS: временный каталог с содержимым бандла'
+  - 'sys.frozen: программа собрана, а не запущена из исходников'
+  deprecated_apis: []
+  applies_to:
+  - package: pyinstaller
+    version: '6.10'
+  recorded_at: '2026-11-26T14:55:07+00:00'
