@@ -2,8 +2,8 @@
   "context": {
     "last_layer": "e2e"
   },
-  "current_actor": "тестописатель",
+  "current_actor": "кодер",
   "pending_actions": [],
   "schema_version": 1,
-  "state": "тесты"
+  "state": "код"
 }
