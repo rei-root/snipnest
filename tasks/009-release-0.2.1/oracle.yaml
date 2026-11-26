@@ -1,0 +1,51 @@
+task_id: 009-release-0.2.1
+oracle:
+  path: bin/check-release-version.sh
+  command: bash bin/check-release-version.sh
+  sha256: 00f8ab4ed1549ea9ac6e5821b06566541251088a779c4320cf80138c39039316
+  recorded_at: '2026-11-26T15:17:40+00:00'
+red_output: 'КРИТЕРИЙ НЕ ВЫПОЛНЕН: версия пакета — 0.2.1 — в пакете 0.2.0
+
+  КРИТЕРИЙ НЕ ВЫПОЛНЕН: имя пакета содержит версию — snipnest_0.2.0_amd64.deb
+
+  КРИТЕРИЙ НЕ ВЫПОЛНЕН: имя образа содержит версию — snipnest-0.2.0-linux-glibc-2.38-x86_64.AppImage
+
+  КРИТЕРИЙ НЕ ВЫПОЛНЕН: адрес релиза ведёт на тег версии — https://github.com/rei-root/snipnest/releases/download/v0.2.0
+
+  КРИТЕРИЙ НЕ ВЫПОЛНЕН: прежней версии нигде не осталось — /tmp/snipnest-old2/src/snipnest/installer/window.py:135:        self._context
+  = context or make_context("0.2.0", "2.38", "")
+
+  /tmp/snipnest-old2/src/snipnest/installer/__init__.py:12:__version__ = "0.2.0"
+
+  /tmp/snipnest-old2/src/snipnest/__init__.py:11:__version__ = "0.2.0"
+
+  Установщик не собран — четвёртый критерий пропущен.'
+passability: 'Тот же оракул на ветке orch/009-release-0.2.1 печатает «OK: релиз 0.2.1
+  собран из версии пакета» и возвращает 0. Проверяется: версия в пакете равна 0.2.1,
+  имена пакета и образа и адрес релиза собираются из неё, прежней версии 0.2.0 не
+  осталось в коде, тестах и README, а внутри собранного установщика лежат версия и
+  адрес релиза. Тот же оракул на чистой основной ветке даёт красный вывод выше.'
+records:
+- id: O-release-version
+  red_output: 'КРИТЕРИЙ НЕ ВЫПОЛНЕН: версия пакета — 0.2.1 — в пакете 0.2.0
+
+    КРИТЕРИЙ НЕ ВЫПОЛНЕН: имя пакета содержит версию — snipnest_0.2.0_amd64.deb
+
+    КРИТЕРИЙ НЕ ВЫПОЛНЕН: имя образа содержит версию — snipnest-0.2.0-linux-glibc-2.38-x86_64.AppImage
+
+    КРИТЕРИЙ НЕ ВЫПОЛНЕН: адрес релиза ведёт на тег версии — https://github.com/rei-root/snipnest/releases/download/v0.2.0
+
+    КРИТЕРИЙ НЕ ВЫПОЛНЕН: прежней версии нигде не осталось — /tmp/snipnest-old2/src/snipnest/installer/window.py:135:        self._context
+    = context or make_context("0.2.0", "2.38", "")
+
+    /tmp/snipnest-old2/src/snipnest/installer/__init__.py:12:__version__ = "0.2.0"
+
+    /tmp/snipnest-old2/src/snipnest/__init__.py:11:__version__ = "0.2.0"
+
+    Установщик не собран — четвёртый критерий пропущен.'
+  passability: 'Тот же оракул на ветке orch/009-release-0.2.1 печатает «OK: релиз
+    0.2.1 собран из версии пакета» и возвращает 0. Проверяется: версия в пакете равна
+    0.2.1, имена пакета и образа и адрес релиза собираются из неё, прежней версии
+    0.2.0 не осталось в коде, тестах и README, а внутри собранного установщика лежат
+    версия и адрес релиза. Тот же оракул на чистой основной ветке даёт красный вывод
+    выше.'
