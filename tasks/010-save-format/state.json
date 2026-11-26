@@ -1,15 +1,7 @@
 {
-  "context": {
-    "research_ids": [
-      "SRC-I1",
-      "SRC-I2",
-      "SRC-I3",
-      "SRC-I4",
-      "SRC-I5"
-    ]
-  },
-  "current_actor": "тестописатель",
+  "context": {},
+  "current_actor": "человек",
   "pending_actions": [],
   "schema_version": 1,
-  "state": "тесты"
+  "state": "отменена_пользователем"
 }
