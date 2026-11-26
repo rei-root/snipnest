@@ -2,7 +2,9 @@
   "context": {
     "research_ids": [
       "SRC-I1",
-      "SRC-I2"
+      "SRC-I2",
+      "SRC-C1",
+      "SRC-C2"
     ]
   },
   "current_actor": "ba",
