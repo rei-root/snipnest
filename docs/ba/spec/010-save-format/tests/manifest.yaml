@@ -275,3 +275,40 @@ tests:
   - AC1
   file: tests/e2e/test_format_scenario.py
   fn: test_видео_и_звук_раздельными_файлами
+- id: T-selector-audio-separate
+  layer: unit
+  covers:
+  - R3
+  file: tests/ui/test_format_selector.py
+  fn: test_формат_звука_доступен_и_для_раздельных_файлов
+- id: T-cmd-separate-audio-format
+  layer: unit
+  covers:
+  - R3
+  file: tests/unit/test_ytdlp.py
+  fn: test_раздельные_файлы_переводят_звук_в_выбранный_формат
+- id: T-window-no-link-no-format
+  layer: unit
+  covers:
+  - R3
+  file: tests/ui/test_window_format.py
+  fn: test_без_ссылки_выбор_формата_недоступен
+- id: T-window-link-format-available
+  layer: unit
+  covers:
+  - R3
+  file: tests/ui/test_window_format.py
+  fn: test_по_вставленной_ссылке_выбор_формата_доступен
+- id: T-window-foreign-link-no-format
+  layer: unit
+  covers:
+  - R3
+  - R6
+  file: tests/ui/test_window_format.py
+  fn: test_для_нераспознанной_ссылки_выбор_формата_недоступен
+- id: T-window-cleared-link-no-format
+  layer: unit
+  covers:
+  - R3
+  file: tests/ui/test_window_format.py
+  fn: test_после_очистки_поля_выбор_формата_снова_недоступен

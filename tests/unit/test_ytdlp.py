@@ -278,3 +278,18 @@ def test_счётчик_файлов_у_обычного_видео_один() -
     runner = YtDlpRunner(destination=Path("/tmp/out"))
 
     assert runner.count_files(URL) == 1
+
+
+def test_раздельные_файлы_переводят_звук_в_выбранный_формат() -> None:
+    """R3: звук в раздельных файлах сохраняется в выбранном формате."""
+    runner = YtDlpRunner(
+        destination=Path("/tmp/out"),
+        video_format=_video_format("separate"),
+        audio_format=_audio_format("flac"),
+    )
+
+    steps = runner.build_steps(URL)
+    audio = steps[1].command
+
+    assert "-x" in audio
+    assert audio[audio.index("--audio-format") + 1] == "flac"

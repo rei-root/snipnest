@@ -29,8 +29,9 @@ from ..formats import (
 
 __all__ = ["FormatSelector"]
 
-#: Идентификатор варианта видео, для которого нужен формат звука.
-AUDIO_ONLY_ID = "audio"
+#: Варианты видео, для которых владелец выбирает формат звука: «только звук»
+#: и «видео и звук отдельными файлами».
+AUDIO_NEEDED_IDS = ("audio", "separate")
 
 
 class FormatSelector(QWidget):
@@ -137,8 +138,11 @@ class FormatSelector(QWidget):
         ]
 
     def audio_enabled(self) -> bool:
-        """Доступен ли выбор формата звука."""
-        return self._audio_combo.isEnabled()
+        """Нужен ли владельцу формат звука для выбранного варианта."""
+        return (
+            self._kind is FormatKind.VIDEO
+            and str(self._format_combo.currentData()) in AUDIO_NEEDED_IDS
+        )
 
     def selected_format(self) -> SaveFormat:
         """Выбор владельца — объектом."""
@@ -178,11 +182,8 @@ class FormatSelector(QWidget):
         self._update_audio_enabled()
 
     def _update_audio_enabled(self) -> None:
-        """Формат звука нужен только варианту «только звук»."""
-        needs_audio = (
-            self._kind is FormatKind.VIDEO
-            and str(self._format_combo.currentData()) == AUDIO_ONLY_ID
-        )
+        """Формат звука нужен вариантам «только звук» и «видео и звук отдельно»."""
+        needs_audio = self.audio_enabled()
         self._audio_combo.setEnabled(needs_audio)
         self._audio_label.setEnabled(needs_audio)
 

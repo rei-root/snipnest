@@ -103,3 +103,31 @@ def test_выбранный_формат_картинки_доходит_до_и
     window._on_download_clicked()
 
     assert captured["image_extension"] == "png"
+
+
+def test_без_ссылки_выбор_формата_недоступен(window: MainWindow) -> None:
+    """R3: формат выбирают после того, как вставили ссылку."""
+    assert window.link_text == ""
+    assert window.format_selector.isEnabled() is False
+
+
+def test_по_вставленной_ссылке_выбор_формата_доступен(window: MainWindow) -> None:
+    """R3: распознанная ссылка открывает список форматов."""
+    window.link_text = "https://pin.it/abc"
+
+    assert window.format_selector.isEnabled() is True
+
+
+def test_для_нераспознанной_ссылки_выбор_формата_недоступен(window: MainWindow) -> None:
+    """R3: чужой ссылке формат не предлагают — приложение не знает, что за неё."""
+    window.link_text = "https://example.com/not-pinterest"
+
+    assert window.format_selector.isEnabled() is False
+
+
+def test_после_очистки_поля_выбор_формата_снова_недоступен(window: MainWindow) -> None:
+    """R3: поле очистили — список форматов снова неактивен."""
+    window.link_text = "https://pin.it/abc"
+    window.link_text = ""
+
+    assert window.format_selector.isEnabled() is False

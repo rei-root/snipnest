@@ -100,3 +100,14 @@ def test_смена_выбора_сообщает_об_этом(qtbot) -> None:
 
     with qtbot.waitSignal(selector.changed):
         selector.select_format("png")
+
+
+def test_формат_звука_доступен_и_для_раздельных_файлов(qtbot) -> None:
+    """R3: в режиме «видео и звук отдельно» формат звука тоже выбирается."""
+    selector = FormatSelector()
+    qtbot.addWidget(selector)
+    selector.set_kind(FormatKind.VIDEO)
+
+    selector.select_format("separate")
+
+    assert selector.audio_enabled() is True

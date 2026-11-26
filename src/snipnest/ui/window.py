@@ -78,6 +78,7 @@ class MainWindow(DropTargetMixin, QMainWindow):
             video_id=self._settings.video_format,
             audio_id=self._settings.audio_format,
         )
+        self._update_format_choices("")
 
     # -- построение интерфейса --------------------------------------------
 
@@ -240,11 +241,16 @@ class MainWindow(DropTargetMixin, QMainWindow):
         self._update_format_choices(text)
 
     def _update_format_choices(self, text: str) -> None:
-        """Показать форматы для того, что в поле ссылки."""
+        """Показать форматы для того, что в поле ссылки.
+
+        Формат выбирают после того, как вставили и распознали ссылку: до
+        этого список неактивен.
+        """
         url = text.strip()
         source = self._registry.find(url) if url else None
         is_video = source is not None and source.kind is SourceKind.YOUTUBE
         self._controls.format_selector.set_kind(FormatKind.VIDEO if is_video else FormatKind.IMAGE)
+        self._controls.format_selector.setEnabled(source is not None)
 
     def _on_format_changed(self) -> None:
         """Владелец сменил формат: запомним выбор."""

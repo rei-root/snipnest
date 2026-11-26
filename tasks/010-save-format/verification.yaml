@@ -1,5 +1,5 @@
 task_id: 010-save-format
-ts: '2026-11-26T16:26:29+00:00'
+ts: '2026-11-26T17:46:32+00:00'
 layer1:
   status: pass
   items:
@@ -79,7 +79,13 @@ pytest_result:
   - tests/e2e/test_format_scenario.py::test_фото_остаётся_фотом_без_перекодировки
   - tests/e2e/test_format_scenario.py::test_фото_сохраняется_в_выбранном_формате
   - tests/e2e/test_format_scenario.py::test_видео_и_звук_раздельными_файлами
-  stdout_tail: '.............................................                            [100%]
+  - tests/ui/test_format_selector.py::test_формат_звука_доступен_и_для_раздельных_файлов
+  - tests/unit/test_ytdlp.py::test_раздельные_файлы_переводят_звук_в_выбранный_формат
+  - tests/ui/test_window_format.py::test_без_ссылки_выбор_формата_недоступен
+  - tests/ui/test_window_format.py::test_по_вставленной_ссылке_выбор_формата_доступен
+  - tests/ui/test_window_format.py::test_для_нераспознанной_ссылки_выбор_формата_недоступен
+  - tests/ui/test_window_format.py::test_после_очистки_поля_выбор_формата_снова_недоступен
+  stdout_tail: '...................................................                      [100%]
 
     '
 combined: accepted

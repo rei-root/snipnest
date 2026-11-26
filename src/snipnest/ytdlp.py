@@ -273,7 +273,18 @@ class YtDlpRunner:
         if fmt.separate:
             return [
                 (["-f", fmt.selector], SEPARATE_VIDEO_TEMPLATE),
-                (["-f", fmt.audio_selector or "ba"], SEPARATE_AUDIO_TEMPLATE),
+                (
+                    [
+                        "-f",
+                        fmt.audio_selector or "ba",
+                        "-x",
+                        "--audio-format",
+                        self._audio_format.extension,
+                        "--audio-quality",
+                        AUDIO_QUALITY,
+                    ],
+                    SEPARATE_AUDIO_TEMPLATE,
+                ),
             ]
         if fmt.extract_audio:
             return [

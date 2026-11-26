@@ -65,7 +65,10 @@ if "--version" in args:
 destination = pathlib.Path(args[args.index("--paths") + 1])
 template = args[args.index("-o") + 1]
 selector = args[args.index("-f") + 1] if "-f" in args else ""
-extension = "m4a" if selector.startswith("ba") else "mp4"
+if "--audio-format" in args:
+    extension = args[args.index("--audio-format") + 1]
+else:
+    extension = "m4a" if selector.startswith("ba") else "mp4"
 name = template.replace("%(title)s", "Test Video").replace("%(id)s", "abc123")
 name = name.replace("%(ext)s", extension)
 final = destination / name
@@ -152,9 +155,9 @@ def test_видео_и_звук_раздельными_файлами(window: Ma
     entries = sorted(Path(settings.destination).iterdir())
     assert [entry.name for entry in entries] == [
         "Test Video [abc123] (видео).mp4",
-        "Test Video [abc123] (звук).m4a",
+        "Test Video [abc123] (звук).mp3",
     ]
     assert window.row_for(job_id).file_names == [
         "Test Video [abc123] (видео).mp4",
-        "Test Video [abc123] (звук).m4a",
+        "Test Video [abc123] (звук).mp3",
     ]
