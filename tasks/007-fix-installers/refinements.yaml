@@ -1,0 +1,6 @@
+task_id: 007-fix-installers
+entries:
+- ts: '2026-11-26T14:20:31+00:00'
+  scope: behavioral
+  text: 'trap убирал только файл пакета, а каталог с ним оставался в /var/tmp: stage
+    должен указывать на каталог, файл — на package'

@@ -1,0 +1,6 @@
+task_id: 007-fix-installers
+accepted_decisions:
+- id: AD1
+  decision: каталог с пакетом убирается целиком
+  rationale: пустой каталог в /var/tmp остаётся после каждой установки
+  refines: 1

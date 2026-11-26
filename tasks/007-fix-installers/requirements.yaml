@@ -76,3 +76,4 @@ acceptance_criteria:
     как раньше: раскладка и состав файлов не меняются; 6) полный прогон тестов, типов
     и линтеров зелёный, знаменатель 89/89.'
   source: /tmp/delta-scratch-.delta-fs-XtzfnD/interview-007.yaml
+set_id: null
