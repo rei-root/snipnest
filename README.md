@@ -245,7 +245,7 @@ rhel-based, `pacman` на arch-based, `zypper` на suse-based, `apk` на Alpin
 **Пакет .deb** (если хочется поставить пакетом вручную):
 
 ```bash
-sudo apt install ./snipnest_0.2.2_amd64.deb
+sudo apt install ./snipnest_0.2.3_amd64.deb
 ```
 
 Если apt напечатал «Отказано в доступе» от служебного пользователя `_apt` —
@@ -254,7 +254,7 @@ sudo apt install ./snipnest_0.2.2_amd64.deb
 Поставить пакет можно и совсем без apt:
 
 ```bash
-sudo dpkg -i snipnest_0.2.2_amd64.deb
+sudo dpkg -i snipnest_0.2.3_amd64.deb
 ```
 
 Пакет самодостаточный: внутри программа, Qt, переносимый Python и все пять
@@ -264,8 +264,8 @@ sudo dpkg -i snipnest_0.2.2_amd64.deb
 **AppImage** — приложение целиком, без установки:
 
 ```bash
-chmod +x snipnest-0.2.0-linux-glibc-2.38-x86_64.AppImage
-./snipnest-0.2.0-linux-glibc-2.38-x86_64.AppImage
+chmod +x snipnest-0.2.3-linux-glibc-2.38-x86_64.AppImage
+./snipnest-0.2.3-linux-glibc-2.38-x86_64.AppImage
 ```
 
 Имя образа говорит, под что он собран: платформа (`linux`), версия glibc
