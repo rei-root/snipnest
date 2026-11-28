@@ -1,0 +1,301 @@
+task_id: 014-ui-redesign
+oracle:
+  path: bin/check-ui-redesign.sh
+  command: bash bin/check-ui-redesign.sh
+  sha256: 1bc5a4a4338cc26276c7cf0a7b43b727c9221b7427726264d083f9e0df48d3aa
+  recorded_at: '2026-11-28T08:35:32+00:00'
+red_output: "КРИТЕРИЙ НЕ ВЫПОЛНЕН: логотип приложения на месте — нет файла logo/snipnest.svg\n\
+  КРИТЕРИЙ НЕ ВЫПОЛНЕН: символ приложения на месте — нет файла logo/snipnest-symbolic.svg\n\
+  КРИТЕРИЙ НЕ ВЫПОЛНЕН: иконка приложения одна — в репозитории остался logo/snipnest.png\n\
+  Using CPython 3.12.15\nCreating virtual environment at: .venv\n   Building snipnest\
+  \ @ file:///tmp/snipnest-red\n      Built snipnest @ file:///tmp/snipnest-red\n\
+  warning: Failed to hardlink files; falling back to full copy. This may lead to degraded\
+  \ performance.\n         If the cache and target directories are on different filesystems,\
+  \ hardlinking may not be supported.\n         If this is intentional, set `export\
+  \ UV_LINK_MODE=copy` or use `--link-mode=copy` to suppress this warning.\nInstalled\
+  \ 34 packages in 1.19s\n\n==================================== ERRORS ====================================\n\
+  _________________ ERROR collecting tests/unit/test_branding.py _________________\n\
+  ImportError while importing test module '/tmp/snipnest-red/tests/unit/test_branding.py'.\n\
+  Hint: make sure your test modules/packages have valid Python names.\nTraceback:\n\
+  tests/unit/test_branding.py:14: in <module>\n    from snipnest.branding import (\n\
+  E   ModuleNotFoundError: No module named 'snipnest.branding'\n_________________\
+  \ ERROR collecting tests/unit/test_settings.py _________________\nImportError while\
+  \ importing test module '/tmp/snipnest-red/tests/unit/test_settings.py'.\nHint:\
+  \ make sure your test modules/packages have valid Python names.\nTraceback:\ntests/unit/test_settings.py:9:\
+  \ in <module>\n    from snipnest.settings import (\nE   ImportError: cannot import\
+  \ name 'DEFAULT_THEME' from 'snipnest.settings' (/tmp/snipnest-red/src/snipnest/settings.py)\n\
+  ___________________ ERROR collecting tests/ui/test_theme.py ____________________\n\
+  ImportError while importing test module '/tmp/snipnest-red/tests/ui/test_theme.py'.\n\
+  Hint: make sure your test modules/packages have valid Python names.\nTraceback:\n\
+  tests/ui/test_theme.py:20: in <module>\n    from snipnest.branding import symbolic_icon\n\
+  E   ModuleNotFoundError: No module named 'snipnest.branding'\n______________ ERROR\
+  \ collecting tests/ui/test_settings_dialog.py _______________\nImportError while\
+  \ importing test module '/tmp/snipnest-red/tests/ui/test_settings_dialog.py'.\n\
+  Hint: make sure your test modules/packages have valid Python names.\nTraceback:\n\
+  tests/ui/test_settings_dialog.py:18: in <module>\n    from snipnest.ui.settings_dialog\
+  \ import SettingsDialog\nE   ModuleNotFoundError: No module named 'snipnest.ui.settings_dialog'\n\
+  ___________ ERROR collecting tests/integration/test_desktop_entry.py ___________\n\
+  ImportError while importing test module '/tmp/snipnest-red/tests/integration/test_desktop_entry.py'.\n\
+  Hint: make sure your test modules/packages have valid Python names.\nTraceback:\n\
+  tests/integration/test_desktop_entry.py:20: in <module>\n    from snipnest.branding\
+  \ import ICON_SIZES\nE   ModuleNotFoundError: No module named 'snipnest.branding'\n\
+  ________________ ERROR collecting tests/e2e/test_ui_scenario.py ________________\n\
+  ImportError while importing test module '/tmp/snipnest-red/tests/e2e/test_ui_scenario.py'.\n\
+  Hint: make sure your test modules/packages have valid Python names.\nTraceback:\n\
+  tests/e2e/test_ui_scenario.py:20: in <module>\n    from snipnest.ui.settings_dialog\
+  \ import SettingsDialog\nE   ModuleNotFoundError: No module named 'snipnest.ui.settings_dialog'\n\
+  =========================== short test summary info ============================\n\
+  ERROR tests/unit/test_branding.py\nERROR tests/unit/test_settings.py\nERROR tests/ui/test_theme.py\n\
+  ERROR tests/ui/test_settings_dialog.py\nERROR tests/integration/test_desktop_entry.py\n\
+  ERROR tests/e2e/test_ui_scenario.py\n!!!!!!!!!!!!!!!!!!! Interrupted: 6 errors during\
+  \ collection !!!!!!!!!!!!!!!!!!!!\nКРИТЕРИЙ НЕ ВЫПОЛНЕН: меню, тема, настройки и\
+  \ анимации работают — тесты задачи не зелёные\n\n====================================\
+  \ ERRORS ====================================\n________________ ERROR collecting\
+  \ tests/e2e/test_ui_scenario.py ________________\nImportError while importing test\
+  \ module '/tmp/snipnest-red/tests/e2e/test_ui_scenario.py'.\nHint: make sure your\
+  \ test modules/packages have valid Python names.\nTraceback:\ntests/e2e/test_ui_scenario.py:20:\
+  \ in <module>\n    from snipnest.ui.settings_dialog import SettingsDialog\nE   ModuleNotFoundError:\
+  \ No module named 'snipnest.ui.settings_dialog'\n___________ ERROR collecting tests/integration/test_desktop_entry.py\
+  \ ___________\nImportError while importing test module '/tmp/snipnest-red/tests/integration/test_desktop_entry.py'.\n\
+  Hint: make sure your test modules/packages have valid Python names.\nTraceback:\n\
+  tests/integration/test_desktop_entry.py:20: in <module>\n    from snipnest.branding\
+  \ import ICON_SIZES\nE   ModuleNotFoundError: No module named 'snipnest.branding'\n\
+  ______________ ERROR collecting tests/ui/test_settings_dialog.py _______________\n\
+  ImportError while importing test module '/tmp/snipnest-red/tests/ui/test_settings_dialog.py'.\n\
+  Hint: make sure your test modules/packages have valid Python names.\nTraceback:\n\
+  tests/ui/test_settings_dialog.py:18: in <module>\n    from snipnest.ui.settings_dialog\
+  \ import SettingsDialog\nE   ModuleNotFoundError: No module named 'snipnest.ui.settings_dialog'\n\
+  ___________________ ERROR collecting tests/ui/test_theme.py ____________________\n\
+  ImportError while importing test module '/tmp/snipnest-red/tests/ui/test_theme.py'.\n\
+  Hint: make sure your test modules/packages have valid Python names.\nTraceback:\n\
+  tests/ui/test_theme.py:20: in <module>\n    from snipnest.branding import symbolic_icon\n\
+  E   ModuleNotFoundError: No module named 'snipnest.branding'\n_________________\
+  \ ERROR collecting tests/unit/test_branding.py _________________\nImportError while\
+  \ importing test module '/tmp/snipnest-red/tests/unit/test_branding.py'.\nHint:\
+  \ make sure your test modules/packages have valid Python names.\nTraceback:\ntests/unit/test_branding.py:14:\
+  \ in <module>\n    from snipnest.branding import (\nE   ModuleNotFoundError: No\
+  \ module named 'snipnest.branding'\n_________________ ERROR collecting tests/unit/test_settings.py\
+  \ _________________\nImportError while importing test module '/tmp/snipnest-red/tests/unit/test_settings.py'.\n\
+  Hint: make sure your test modules/packages have valid Python names.\nTraceback:\n\
+  tests/unit/test_settings.py:9: in <module>\n    from snipnest.settings import (\n\
+  E   ImportError: cannot import name 'DEFAULT_THEME' from 'snipnest.settings' (/tmp/snipnest-red/src/snipnest/settings.py)\n\
+  =========================== short test summary info ============================\n\
+  ERROR tests/e2e/test_ui_scenario.py\nERROR tests/integration/test_desktop_entry.py\n\
+  ERROR tests/ui/test_settings_dialog.py\nERROR tests/ui/test_theme.py\nERROR tests/unit/test_branding.py\n\
+  ERROR tests/unit/test_settings.py\n!!!!!!!!!!!!!!!!!!! Interrupted: 6 errors during\
+  \ collection !!!!!!!!!!!!!!!!!!!!\nКРИТЕРИЙ НЕ ВЫПОЛНЕН: весь набор тестов зелёный\
+  \ — падают тесты вне задачи\nI001 [*] Import block is un-sorted or un-formatted\n\
+  \  --> tests/e2e/test_ui_scenario.py:11:1\n   |\n 9 |   \"\"\"\n10 |\n11 | / from\
+  \ __future__ import annotations\n12 | |\n13 | | from pathlib import Path\n14 | |\n\
+  15 | | import pytest\n16 | | from PySide6.QtGui import QAction\n17 | |\n18 | | from\
+  \ snipnest.settings import FileSecretStore, Settings\n19 | | from snipnest.ui.app\
+  \ import make_application\n20 | | from snipnest.ui.settings_dialog import SettingsDialog\n\
+  21 | | from snipnest.ui.theme import Theme, apply_theme\n   | |________________________________________________^\n\
+  help: Organize imports\n   |\n16 | from PySide6.QtGui import QAction\n17 + from\
+  \ snipnest.ui.settings_dialog import SettingsDialog\n18 + from snipnest.ui.theme\
+  \ import Theme, apply_theme\n19 |\n20 | from snipnest.settings import FileSecretStore,\
+  \ Settings\n21 | from snipnest.ui.app import make_application\n   - from snipnest.ui.settings_dialog\
+  \ import SettingsDialog\n   - from snipnest.ui.theme import Theme, apply_theme\n\
+  22 |\n   |\n\nI001 [*] Import block is un-sorted or un-formatted\n  --> tests/integration/test_desktop_entry.py:14:1\n\
+  \   |\n12 |   \"\"\"\n13 |\n14 | / from __future__ import annotations\n15 | |\n\
+  16 | | import re\n17 | | import subprocess\n18 | | from pathlib import Path\n19\
+  \ | |\n20 | | from snipnest.branding import ICON_SIZES\n21 | | from snipnest.installer.worker\
+  \ import InstallRequest, install_icons\n   | |___________________________________________________________________^\n\
+  22 |\n23 |   ROOT = Path(__file__).resolve().parents[2]\n   |\nhelp: Organize imports\n\
+  \   |\n20 | from snipnest.branding import ICON_SIZES\n21 +\n22 | from snipnest.installer.worker\
+  \ import InstallRequest, install_icons\n   |\n\nI001 [*] Import block is un-sorted\
+  \ or un-formatted\n  --> tests/ui/test_settings_dialog.py:10:1\n   |\n 8 |   \"\"\
+  \"\n 9 |\n10 | / from __future__ import annotations\n11 | |\n12 | | from pathlib\
+  \ import Path\n13 | |\n14 | | import pytest\n15 | |\n16 | | from snipnest.settings\
+  \ import FileSecretStore, Settings\n17 | | from snipnest.ui.settings_actions import\
+  \ SettingsActions\n18 | | from snipnest.ui.settings_dialog import SettingsDialog\n\
+  19 | | from snipnest.ui.theme import THEME_LABELS, Theme\n   | |_________________________________________________^\n\
+  help: Organize imports\n   |\n14 | import pytest\n15 + from snipnest.ui.settings_dialog\
+  \ import SettingsDialog\n16 + from snipnest.ui.theme import THEME_LABELS, Theme\n\
+  17 |\n18 | from snipnest.settings import FileSecretStore, Settings\n19 | from snipnest.ui.settings_actions\
+  \ import SettingsActions\n   - from snipnest.ui.settings_dialog import SettingsDialog\n\
+  \   - from snipnest.ui.theme import THEME_LABELS, Theme\n20 |\n   |\n\nI001 [*]\
+  \ Import block is un-sorted or un-formatted\n  --> tests/ui/test_theme.py:11:1\n\
+  \   |\n 9 |   \"\"\"\n10 |\n11 | / from __future__ import annotations\n12 | |\n\
+  13 | | from pathlib import Path\n14 | |\n15 | | import pytest\n16 | | from PySide6.QtCore\
+  \ import Qt\n17 | | from PySide6.QtGui import QColor, QGuiApplication, QImage, QPalette\n\
+  18 | | from PySide6.QtWidgets import QApplication\n19 | |\n20 | | from snipnest.branding\
+  \ import symbolic_icon\n21 | | from snipnest.settings import FileSecretStore, Settings\n\
+  22 | | from snipnest.ui.theme import Theme, apply_theme\n23 | | from snipnest.ui.window\
+  \ import MainWindow\n   | |_________________________________________^\nhelp: Organize\
+  \ imports\n   |\n18 | from PySide6.QtWidgets import QApplication\n19 + from snipnest.branding\
+  \ import symbolic_icon\n20 + from snipnest.ui.theme import Theme, apply_theme\n\
+  21 |\n   - from snipnest.branding import symbolic_icon\n22 | from snipnest.settings\
+  \ import FileSecretStore, Settings\n   - from snipnest.ui.theme import Theme, apply_theme\n\
+  23 | from snipnest.ui.window import MainWindow\n   |\n\nFound 4 errors.\n[*] 4 fixable\
+  \ with `--fix`.\nКРИТЕРИЙ НЕ ВЫПОЛНЕН: линтер — ruff нашёл ошибки\n110 files already\
+  \ formatted\nSuccess: no issues found in 47 source files\nзнаменатель: 89\nпроверено:\
+  \ 89\nпропущено: 0\nдуг пройдено: 8"
+passability: 'Тот же оракул на ветке orch/014-ui-redesign с реализацией печатает «OK:
+  аватарка, меню, тема и оформление на месте» и возвращает 0. Проверяется: логотип
+  logo/snipnest.svg и символ logo/snipnest-symbolic.svg на месте, старый растр logo/snipnest.png
+  из репозитория убран; тесты задачи зелёные — иконка приложения рисуется из SVG,
+  у окна своя иконка, в шапке окна символ; строка меню «Файл», «Вид», «Справка» с
+  указанным составом пунктов, кнопок настроек в верхней части окна не осталось, кнопки
+  «Скачать» и «Выбрать папку» на месте, «Открыть Pinterest» удалена из приложения
+  насовсем; окно настроек открывается из меню «Файл» и собирает папку сохранения,
+  токен, cookies, пути к бинарникам и тему; тема переключается мгновенно (тёмная и
+  светлая дают разные цвета окна), «Как в системе» следует системной схеме, выбор
+  сохраняется в настройках, символ перекрашивается по теме; новая строка загрузки
+  и лог появляются плавно; установщик кладёт PNG всех стандартных размеров и векторную
+  иконку в scalable, а установка иконок не требует ImageMagick. Полный набор тестов
+  зелёный, ruff и mypy — без замечаний, знаменатель обязательств 89/89. Тот же оракул
+  на чистой основной ветке (реализация убрана, тесты и сам оракул на месте) даёт красный
+  вывод выше: модулей snipnest.branding, snipnest.ui.theme, snipnest.ui.menus и snipnest.ui.settings_dialog
+  ещё нет, логотипа и символа в репозитории нет.'
+records:
+- id: O-ui-redesign
+  red_output: "КРИТЕРИЙ НЕ ВЫПОЛНЕН: логотип приложения на месте — нет файла logo/snipnest.svg\n\
+    КРИТЕРИЙ НЕ ВЫПОЛНЕН: символ приложения на месте — нет файла logo/snipnest-symbolic.svg\n\
+    КРИТЕРИЙ НЕ ВЫПОЛНЕН: иконка приложения одна — в репозитории остался logo/snipnest.png\n\
+    Using CPython 3.12.15\nCreating virtual environment at: .venv\n   Building snipnest\
+    \ @ file:///tmp/snipnest-red\n      Built snipnest @ file:///tmp/snipnest-red\n\
+    warning: Failed to hardlink files; falling back to full copy. This may lead to\
+    \ degraded performance.\n         If the cache and target directories are on different\
+    \ filesystems, hardlinking may not be supported.\n         If this is intentional,\
+    \ set `export UV_LINK_MODE=copy` or use `--link-mode=copy` to suppress this warning.\n\
+    Installed 34 packages in 1.19s\n\n==================================== ERRORS\
+    \ ====================================\n_________________ ERROR collecting tests/unit/test_branding.py\
+    \ _________________\nImportError while importing test module '/tmp/snipnest-red/tests/unit/test_branding.py'.\n\
+    Hint: make sure your test modules/packages have valid Python names.\nTraceback:\n\
+    tests/unit/test_branding.py:14: in <module>\n    from snipnest.branding import\
+    \ (\nE   ModuleNotFoundError: No module named 'snipnest.branding'\n_________________\
+    \ ERROR collecting tests/unit/test_settings.py _________________\nImportError\
+    \ while importing test module '/tmp/snipnest-red/tests/unit/test_settings.py'.\n\
+    Hint: make sure your test modules/packages have valid Python names.\nTraceback:\n\
+    tests/unit/test_settings.py:9: in <module>\n    from snipnest.settings import\
+    \ (\nE   ImportError: cannot import name 'DEFAULT_THEME' from 'snipnest.settings'\
+    \ (/tmp/snipnest-red/src/snipnest/settings.py)\n___________________ ERROR collecting\
+    \ tests/ui/test_theme.py ____________________\nImportError while importing test\
+    \ module '/tmp/snipnest-red/tests/ui/test_theme.py'.\nHint: make sure your test\
+    \ modules/packages have valid Python names.\nTraceback:\ntests/ui/test_theme.py:20:\
+    \ in <module>\n    from snipnest.branding import symbolic_icon\nE   ModuleNotFoundError:\
+    \ No module named 'snipnest.branding'\n______________ ERROR collecting tests/ui/test_settings_dialog.py\
+    \ _______________\nImportError while importing test module '/tmp/snipnest-red/tests/ui/test_settings_dialog.py'.\n\
+    Hint: make sure your test modules/packages have valid Python names.\nTraceback:\n\
+    tests/ui/test_settings_dialog.py:18: in <module>\n    from snipnest.ui.settings_dialog\
+    \ import SettingsDialog\nE   ModuleNotFoundError: No module named 'snipnest.ui.settings_dialog'\n\
+    ___________ ERROR collecting tests/integration/test_desktop_entry.py ___________\n\
+    ImportError while importing test module '/tmp/snipnest-red/tests/integration/test_desktop_entry.py'.\n\
+    Hint: make sure your test modules/packages have valid Python names.\nTraceback:\n\
+    tests/integration/test_desktop_entry.py:20: in <module>\n    from snipnest.branding\
+    \ import ICON_SIZES\nE   ModuleNotFoundError: No module named 'snipnest.branding'\n\
+    ________________ ERROR collecting tests/e2e/test_ui_scenario.py ________________\n\
+    ImportError while importing test module '/tmp/snipnest-red/tests/e2e/test_ui_scenario.py'.\n\
+    Hint: make sure your test modules/packages have valid Python names.\nTraceback:\n\
+    tests/e2e/test_ui_scenario.py:20: in <module>\n    from snipnest.ui.settings_dialog\
+    \ import SettingsDialog\nE   ModuleNotFoundError: No module named 'snipnest.ui.settings_dialog'\n\
+    =========================== short test summary info ============================\n\
+    ERROR tests/unit/test_branding.py\nERROR tests/unit/test_settings.py\nERROR tests/ui/test_theme.py\n\
+    ERROR tests/ui/test_settings_dialog.py\nERROR tests/integration/test_desktop_entry.py\n\
+    ERROR tests/e2e/test_ui_scenario.py\n!!!!!!!!!!!!!!!!!!! Interrupted: 6 errors\
+    \ during collection !!!!!!!!!!!!!!!!!!!!\nКРИТЕРИЙ НЕ ВЫПОЛНЕН: меню, тема, настройки\
+    \ и анимации работают — тесты задачи не зелёные\n\n====================================\
+    \ ERRORS ====================================\n________________ ERROR collecting\
+    \ tests/e2e/test_ui_scenario.py ________________\nImportError while importing\
+    \ test module '/tmp/snipnest-red/tests/e2e/test_ui_scenario.py'.\nHint: make sure\
+    \ your test modules/packages have valid Python names.\nTraceback:\ntests/e2e/test_ui_scenario.py:20:\
+    \ in <module>\n    from snipnest.ui.settings_dialog import SettingsDialog\nE \
+    \  ModuleNotFoundError: No module named 'snipnest.ui.settings_dialog'\n___________\
+    \ ERROR collecting tests/integration/test_desktop_entry.py ___________\nImportError\
+    \ while importing test module '/tmp/snipnest-red/tests/integration/test_desktop_entry.py'.\n\
+    Hint: make sure your test modules/packages have valid Python names.\nTraceback:\n\
+    tests/integration/test_desktop_entry.py:20: in <module>\n    from snipnest.branding\
+    \ import ICON_SIZES\nE   ModuleNotFoundError: No module named 'snipnest.branding'\n\
+    ______________ ERROR collecting tests/ui/test_settings_dialog.py _______________\n\
+    ImportError while importing test module '/tmp/snipnest-red/tests/ui/test_settings_dialog.py'.\n\
+    Hint: make sure your test modules/packages have valid Python names.\nTraceback:\n\
+    tests/ui/test_settings_dialog.py:18: in <module>\n    from snipnest.ui.settings_dialog\
+    \ import SettingsDialog\nE   ModuleNotFoundError: No module named 'snipnest.ui.settings_dialog'\n\
+    ___________________ ERROR collecting tests/ui/test_theme.py ____________________\n\
+    ImportError while importing test module '/tmp/snipnest-red/tests/ui/test_theme.py'.\n\
+    Hint: make sure your test modules/packages have valid Python names.\nTraceback:\n\
+    tests/ui/test_theme.py:20: in <module>\n    from snipnest.branding import symbolic_icon\n\
+    E   ModuleNotFoundError: No module named 'snipnest.branding'\n_________________\
+    \ ERROR collecting tests/unit/test_branding.py _________________\nImportError\
+    \ while importing test module '/tmp/snipnest-red/tests/unit/test_branding.py'.\n\
+    Hint: make sure your test modules/packages have valid Python names.\nTraceback:\n\
+    tests/unit/test_branding.py:14: in <module>\n    from snipnest.branding import\
+    \ (\nE   ModuleNotFoundError: No module named 'snipnest.branding'\n_________________\
+    \ ERROR collecting tests/unit/test_settings.py _________________\nImportError\
+    \ while importing test module '/tmp/snipnest-red/tests/unit/test_settings.py'.\n\
+    Hint: make sure your test modules/packages have valid Python names.\nTraceback:\n\
+    tests/unit/test_settings.py:9: in <module>\n    from snipnest.settings import\
+    \ (\nE   ImportError: cannot import name 'DEFAULT_THEME' from 'snipnest.settings'\
+    \ (/tmp/snipnest-red/src/snipnest/settings.py)\n=========================== short\
+    \ test summary info ============================\nERROR tests/e2e/test_ui_scenario.py\n\
+    ERROR tests/integration/test_desktop_entry.py\nERROR tests/ui/test_settings_dialog.py\n\
+    ERROR tests/ui/test_theme.py\nERROR tests/unit/test_branding.py\nERROR tests/unit/test_settings.py\n\
+    !!!!!!!!!!!!!!!!!!! Interrupted: 6 errors during collection !!!!!!!!!!!!!!!!!!!!\n\
+    КРИТЕРИЙ НЕ ВЫПОЛНЕН: весь набор тестов зелёный — падают тесты вне задачи\nI001\
+    \ [*] Import block is un-sorted or un-formatted\n  --> tests/e2e/test_ui_scenario.py:11:1\n\
+    \   |\n 9 |   \"\"\"\n10 |\n11 | / from __future__ import annotations\n12 | |\n\
+    13 | | from pathlib import Path\n14 | |\n15 | | import pytest\n16 | | from PySide6.QtGui\
+    \ import QAction\n17 | |\n18 | | from snipnest.settings import FileSecretStore,\
+    \ Settings\n19 | | from snipnest.ui.app import make_application\n20 | | from snipnest.ui.settings_dialog\
+    \ import SettingsDialog\n21 | | from snipnest.ui.theme import Theme, apply_theme\n\
+    \   | |________________________________________________^\nhelp: Organize imports\n\
+    \   |\n16 | from PySide6.QtGui import QAction\n17 + from snipnest.ui.settings_dialog\
+    \ import SettingsDialog\n18 + from snipnest.ui.theme import Theme, apply_theme\n\
+    19 |\n20 | from snipnest.settings import FileSecretStore, Settings\n21 | from\
+    \ snipnest.ui.app import make_application\n   - from snipnest.ui.settings_dialog\
+    \ import SettingsDialog\n   - from snipnest.ui.theme import Theme, apply_theme\n\
+    22 |\n   |\n\nI001 [*] Import block is un-sorted or un-formatted\n  --> tests/integration/test_desktop_entry.py:14:1\n\
+    \   |\n12 |   \"\"\"\n13 |\n14 | / from __future__ import annotations\n15 | |\n\
+    16 | | import re\n17 | | import subprocess\n18 | | from pathlib import Path\n\
+    19 | |\n20 | | from snipnest.branding import ICON_SIZES\n21 | | from snipnest.installer.worker\
+    \ import InstallRequest, install_icons\n   | |___________________________________________________________________^\n\
+    22 |\n23 |   ROOT = Path(__file__).resolve().parents[2]\n   |\nhelp: Organize\
+    \ imports\n   |\n20 | from snipnest.branding import ICON_SIZES\n21 +\n22 | from\
+    \ snipnest.installer.worker import InstallRequest, install_icons\n   |\n\nI001\
+    \ [*] Import block is un-sorted or un-formatted\n  --> tests/ui/test_settings_dialog.py:10:1\n\
+    \   |\n 8 |   \"\"\"\n 9 |\n10 | / from __future__ import annotations\n11 | |\n\
+    12 | | from pathlib import Path\n13 | |\n14 | | import pytest\n15 | |\n16 | |\
+    \ from snipnest.settings import FileSecretStore, Settings\n17 | | from snipnest.ui.settings_actions\
+    \ import SettingsActions\n18 | | from snipnest.ui.settings_dialog import SettingsDialog\n\
+    19 | | from snipnest.ui.theme import THEME_LABELS, Theme\n   | |_________________________________________________^\n\
+    help: Organize imports\n   |\n14 | import pytest\n15 + from snipnest.ui.settings_dialog\
+    \ import SettingsDialog\n16 + from snipnest.ui.theme import THEME_LABELS, Theme\n\
+    17 |\n18 | from snipnest.settings import FileSecretStore, Settings\n19 | from\
+    \ snipnest.ui.settings_actions import SettingsActions\n   - from snipnest.ui.settings_dialog\
+    \ import SettingsDialog\n   - from snipnest.ui.theme import THEME_LABELS, Theme\n\
+    20 |\n   |\n\nI001 [*] Import block is un-sorted or un-formatted\n  --> tests/ui/test_theme.py:11:1\n\
+    \   |\n 9 |   \"\"\"\n10 |\n11 | / from __future__ import annotations\n12 | |\n\
+    13 | | from pathlib import Path\n14 | |\n15 | | import pytest\n16 | | from PySide6.QtCore\
+    \ import Qt\n17 | | from PySide6.QtGui import QColor, QGuiApplication, QImage,\
+    \ QPalette\n18 | | from PySide6.QtWidgets import QApplication\n19 | |\n20 | |\
+    \ from snipnest.branding import symbolic_icon\n21 | | from snipnest.settings import\
+    \ FileSecretStore, Settings\n22 | | from snipnest.ui.theme import Theme, apply_theme\n\
+    23 | | from snipnest.ui.window import MainWindow\n   | |_________________________________________^\n\
+    help: Organize imports\n   |\n18 | from PySide6.QtWidgets import QApplication\n\
+    19 + from snipnest.branding import symbolic_icon\n20 + from snipnest.ui.theme\
+    \ import Theme, apply_theme\n21 |\n   - from snipnest.branding import symbolic_icon\n\
+    22 | from snipnest.settings import FileSecretStore, Settings\n   - from snipnest.ui.theme\
+    \ import Theme, apply_theme\n23 | from snipnest.ui.window import MainWindow\n\
+    \   |\n\nFound 4 errors.\n[*] 4 fixable with `--fix`.\nКРИТЕРИЙ НЕ ВЫПОЛНЕН: линтер\
+    \ — ruff нашёл ошибки\n110 files already formatted\nSuccess: no issues found in\
+    \ 47 source files\nзнаменатель: 89\nпроверено: 89\nпропущено: 0\nдуг пройдено:\
+    \ 8"
+  passability: 'Тот же оракул на ветке orch/014-ui-redesign с реализацией печатает
+    «OK: аватарка, меню, тема и оформление на месте» и возвращает 0. Проверяется:
+    логотип logo/snipnest.svg и символ logo/snipnest-symbolic.svg на месте, старый
+    растр logo/snipnest.png из репозитория убран; тесты задачи зелёные — иконка приложения
+    рисуется из SVG, у окна своя иконка, в шапке окна символ; строка меню «Файл»,
+    «Вид», «Справка» с указанным составом пунктов, кнопок настроек в верхней части
+    окна не осталось, кнопки «Скачать» и «Выбрать папку» на месте, «Открыть Pinterest»
+    удалена из приложения насовсем; окно настроек открывается из меню «Файл» и собирает
+    папку сохранения, токен, cookies, пути к бинарникам и тему; тема переключается
+    мгновенно (тёмная и светлая дают разные цвета окна), «Как в системе» следует системной
+    схеме, выбор сохраняется в настройках, символ перекрашивается по теме; новая строка
+    загрузки и лог появляются плавно; установщик кладёт PNG всех стандартных размеров
+    и векторную иконку в scalable, а установка иконок не требует ImageMagick. Полный
+    набор тестов зелёный, ruff и mypy — без замечаний, знаменатель обязательств 89/89.
+    Тот же оракул на чистой основной ветке (реализация убрана, тесты и сам оракул
+    на месте) даёт красный вывод выше: модулей snipnest.branding, snipnest.ui.theme,
+    snipnest.ui.menus и snipnest.ui.settings_dialog ещё нет, логотипа и символа в
+    репозитории нет.'

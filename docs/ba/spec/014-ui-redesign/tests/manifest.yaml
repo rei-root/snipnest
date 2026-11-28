@@ -1,151 +1,208 @@
 tests:
 - id: T-brand-assets
   layer: unit
-  covers: [R3, AC1]
+  covers:
+  - R3
+  - AC1
   file: tests/unit/test_branding.py
   fn: test_логотип_и_символ_приложения_на_месте
 - id: T-brand-icon-render
   layer: unit
-  covers: [R3, AC1]
+  covers:
+  - R3
+  - AC1
   file: tests/unit/test_branding.py
   fn: test_иконка_приложения_рендерится_из_svg
 - id: T-brand-icon-sizes
   layer: unit
-  covers: [R4]
+  covers:
+  - R4
   file: tests/unit/test_branding.py
   fn: test_размеры_иконок_стандартные
 - id: T-brand-single-source
   layer: unit
-  covers: [R4]
+  covers:
+  - R4
   file: tests/unit/test_branding.py
   fn: test_старый_растр_логотипа_не_хранится
 - id: T-brand-render-sizes
   layer: unit
-  covers: [R4]
+  covers:
+  - R4
   file: tests/unit/test_branding.py
   fn: test_размеры_рендерятся_из_логотипа
 - id: T-theme-default
   layer: unit
-  covers: [R4]
+  covers:
+  - R4
   file: tests/unit/test_settings.py
   fn: test_тема_по_умолчанию_как_в_системе
 - id: T-theme-persist
   layer: unit
-  covers: [R3, R4, AC1]
+  covers:
+  - R3
+  - R4
+  - AC1
   file: tests/unit/test_settings.py
   fn: test_тема_сохраняется_и_читается
 - id: T-scope-local
   layer: unit
-  covers: [R1, R2]
+  covers:
+  - R1
+  - R2
   file: tests/unit/test_scope.py
   fn: test_приложение_локальное_и_однопользовательское
 - id: T-menu-bar
-  layer: ui
-  covers: [R3, AC1]
+  layer: unit
+  covers:
+  - R3
+  - AC1
   file: tests/ui/test_window_menu.py
   fn: test_в_окне_есть_строка_меню
 - id: T-menu-file
-  layer: ui
-  covers: [R3, AC1]
+  layer: unit
+  covers:
+  - R3
+  - AC1
   file: tests/ui/test_window_menu.py
   fn: test_меню_файл_содержит_пункты
 - id: T-menu-view
-  layer: ui
-  covers: [R3, AC1]
+  layer: unit
+  covers:
+  - R3
+  - AC1
   file: tests/ui/test_window_menu.py
   fn: test_меню_вид_содержит_тему_и_лог
 - id: T-menu-help
-  layer: ui
-  covers: [R3, AC1]
+  layer: unit
+  covers:
+  - R3
+  - AC1
   file: tests/ui/test_window_menu.py
   fn: test_меню_справка_содержит_о_программе
 - id: T-toolbar-cleared
-  layer: ui
-  covers: [R3, AC1]
+  layer: unit
+  covers:
+  - R3
+  - AC1
   file: tests/ui/test_window_menu.py
   fn: test_кнопок_настроек_в_верхней_части_окна_не_осталось
 - id: T-main-buttons-kept
-  layer: ui
-  covers: [R3]
+  layer: unit
+  covers:
+  - R3
   file: tests/ui/test_window_menu.py
   fn: test_кнопки_скачать_и_выбрать_папку_остались
 - id: T-pinterest-removed
-  layer: ui
-  covers: [R3, R6, AC1]
+  layer: unit
+  covers:
+  - R3
+  - R6
+  - AC1
   file: tests/ui/test_window_menu.py
   fn: test_открыть_pinterest_удалена_насовсем
 - id: T-window-icon
-  layer: ui
-  covers: [R3, AC1]
+  layer: unit
+  covers:
+  - R3
+  - AC1
   file: tests/ui/test_window_menu.py
   fn: test_у_окна_есть_иконка_приложения
 - id: T-header-symbol
-  layer: ui
-  covers: [R3, AC1]
+  layer: unit
+  covers:
+  - R3
+  - AC1
   file: tests/ui/test_window_menu.py
   fn: test_в_шапке_окна_есть_символ_приложения
 - id: T-theme-apply
-  layer: ui
-  covers: [R3, R4, AC1]
+  layer: unit
+  covers:
+  - R3
+  - R4
+  - AC1
   file: tests/ui/test_theme.py
   fn: test_тема_применяется_мгновенно
 - id: T-theme-system
-  layer: ui
-  covers: [R4]
+  layer: unit
+  covers:
+  - R4
   file: tests/ui/test_theme.py
   fn: test_тема_как_в_системе_следует_системе
 - id: T-theme-save
-  layer: ui
-  covers: [R3, AC1]
+  layer: unit
+  covers:
+  - R3
+  - AC1
   file: tests/ui/test_theme.py
   fn: test_выбор_темы_сохраняется_в_настройках
 - id: T-symbol-tint
-  layer: ui
-  covers: [R4]
+  layer: unit
+  covers:
+  - R4
   file: tests/ui/test_theme.py
   fn: test_символ_перекрашивается_по_теме
 - id: T-settings-dialog
-  layer: ui
-  covers: [R3, AC1]
+  layer: unit
+  covers:
+  - R3
+  - AC1
   file: tests/ui/test_settings_dialog.py
   fn: test_окно_настроек_содержит_все_настройки
 - id: T-settings-theme
-  layer: ui
-  covers: [R3, AC1]
+  layer: unit
+  covers:
+  - R3
+  - AC1
   file: tests/ui/test_settings_dialog.py
   fn: test_в_окне_настроек_меняется_тема
 - id: T-row-fade
-  layer: ui
-  covers: [R3, R5, AC1]
+  layer: unit
+  covers:
+  - R3
+  - R5
+  - AC1
   file: tests/ui/test_animations.py
   fn: test_строка_загрузки_появляется_плавно
 - id: T-log-anim
-  layer: ui
-  covers: [R3, R5, AC1]
+  layer: unit
+  covers:
+  - R3
+  - R5
+  - AC1
   file: tests/ui/test_animations.py
   fn: test_лог_разворачивается_плавно
 - id: T-log-collapse
-  layer: ui
-  covers: [R3, AC1]
+  layer: unit
+  covers:
+  - R3
+  - AC1
   file: tests/ui/test_window.py
   fn: test_лог_сворачивается
 - id: T-install-icons-svg
   layer: integration
-  covers: [R3, R4, AC1]
+  covers:
+  - R3
+  - R4
+  - AC1
   file: tests/integration/test_desktop_entry.py
   fn: test_установщик_ставит_иконки_из_svg
 - id: T-install-icons-scalable
   layer: integration
-  covers: [R4]
+  covers:
+  - R4
   file: tests/integration/test_desktop_entry.py
   fn: test_векторная_иконка_ставится_в_scalable
 - id: T-no-imagemagick
   layer: integration
-  covers: [R4]
+  covers:
+  - R4
   file: tests/integration/test_desktop_entry.py
   fn: test_установка_иконок_не_нужен_imagemagick
 - id: T-ui-scenario
   layer: e2e
-  covers: [R3, AC1]
+  covers:
+  - R3
+  - AC1
   file: tests/e2e/test_ui_scenario.py
   fn: test_сценарий_окна_меню_темы_и_настроек

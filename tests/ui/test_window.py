@@ -16,8 +16,6 @@ from snipnest.ui.app import make_application
 from snipnest.ui.models import JobRow, format_speed
 from snipnest.ui.window import MainWindow
 
-pytest.importorskip("PySide6")
-
 
 @pytest.fixture
 def settings(tmp_path: Path) -> Settings:
