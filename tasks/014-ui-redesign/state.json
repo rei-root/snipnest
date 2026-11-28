@@ -1,5 +1,17 @@
 {
-  "context": {},
+  "context": {
+    "research_ids": [
+      "SRC-1",
+      "SRC-2",
+      "SRC-3",
+      "SRC-4",
+      "SRC-5",
+      "SRC-6",
+      "SRC-7",
+      "SRC-8",
+      "SRC-9"
+    ]
+  },
   "current_actor": "ba",
   "pending_actions": [],
   "schema_version": 1,
