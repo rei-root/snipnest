@@ -8,9 +8,31 @@ import stat
 
 from snipnest.settings import (
     DEFAULT_DESTINATION,
+    DEFAULT_THEME,
     FileSecretStore,
     Settings,
 )
+
+
+def test_тема_по_умолчанию_как_в_системе(tmp_path) -> None:
+    """Пока владелец не выбрал тему, приложение следует системной."""
+    settings = Settings(
+        config_path=tmp_path / "settings.json",
+        secret_store=FileSecretStore(tmp_path / "secret"),
+    )
+    assert settings.theme == DEFAULT_THEME
+    assert settings.theme == "system"
+
+
+def test_тема_сохраняется_и_читается(tmp_path) -> None:
+    """Выбранная тема помнится между запусками приложения."""
+    config = tmp_path / "settings.json"
+    first = Settings(config_path=config, secret_store=FileSecretStore(tmp_path / "secret"))
+    first.theme = "dark"
+    first.save()
+
+    second = Settings(config_path=config, secret_store=FileSecretStore(tmp_path / "secret"))
+    assert second.theme == "dark"
 
 
 def test_путь_по_умолчанию_указывает_на_изображения_pinterest() -> None:

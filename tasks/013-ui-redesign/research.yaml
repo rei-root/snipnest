@@ -1,0 +1,291 @@
+entries:
+- id: SRC-1
+  phase: код
+  kind: api
+  title: Qt Style Sheets — Qt 6.12
+  findings: 'стиль задаётся на всё приложение одним QApplication::setStyleSheet; документация
+    прямо предупреждает, что смена таблицы стилей во время работы даёт непоследовательный
+    результат — часть правил старой темы остаётся. Значит тему переключаем целиком:
+    новая полная таблица стилей плюс палитра, а не точечная правка'
+  url: https://doc.qt.io/qt-6.12/stylesheet.html
+  version: '6.12'
+  currency_evidence: страница помечена Qt 6.12.1; установленная в проекте версия PySide6
+    — 6.12.0
+  topics:
+  - setStyleSheet
+  - смена темы во время работы
+  - QPalette против таблиц стилей
+  deprecated_apis: []
+  applies_to:
+  - package: PySide6
+    version: 6.12.0
+  recorded_at: '2026-11-28T07:25:13+00:00'
+- id: SRC-2
+  phase: код
+  kind: api
+  title: QStyleHints — Qt 6.12 (colorScheme, setColorScheme)
+  findings: 'Qt 6.8+ умеет насильно задавать схему окраски: QGuiApplication.styleHints().setColorScheme(Qt.ColorScheme.Dark/Light)
+    — тогда Fusion сам собирает подходящую палитру; Qt::ColorScheme.Unknown означает
+    «следовать системе»'
+  url: https://doc.qt.io/qt-6.12/qstylehints.html
+  version: '6.12'
+  currency_evidence: документация Qt 6.12.1; setColorScheme помечен since 6.8, colorScheme
+    — since 6.5
+  topics:
+  - colorScheme
+  - setColorScheme
+  - Qt::ColorScheme
+  deprecated_apis: []
+  applies_to:
+  - package: PySide6
+    version: 6.12.0
+  recorded_at: '2026-11-28T07:25:13+00:00'
+- id: SRC-3
+  phase: код
+  kind: api
+  title: PySide6.QtGui.QStyleHints — Qt for Python
+  findings: в Python QStyleHints не создаётся — берётся через QGuiApplication.styleHints();
+    есть слот setColorScheme и сигнал colorSchemeChanged — на него можно вешаться,
+    чтобы перекрашивать свои виджеты при смене темы
+  url: https://doc.qt.io/qtforpython-6/PySide6/QtGui/QStyleHints.html
+  version: 6.6+
+  currency_evidence: актуальная документация Qt for Python; в установленной сборке
+    6.12.0
+  topics:
+  - styleHints()
+  - setColorScheme
+  - colorSchemeChanged
+  deprecated_apis: []
+  applies_to:
+  - package: PySide6
+    version: 6.12.0
+  recorded_at: '2026-11-28T07:25:13+00:00'
+- id: SRC-4
+  phase: код
+  kind: api
+  title: QSvgRenderer и QIcon с SVG — Qt 6.12 / Qt for Python
+  findings: 'PySide6 читает SVG сам, поэтому QIcon можно собрать прямо из файла .svg
+    без промежуточного растра, и Qt масштабирует картинку под нужный размер. Монохромная
+    иконка с currentColor сама по себе не перекрасится: нужен свой QIconEngine, красящий
+    по активной палитре'
+  url: https://doc.qt.io/qtforpython-6/PySide6/QtSvg/QSvgRenderer.html
+  version: '6.12'
+  currency_evidence: документация Qt 6.12; в установленной сборке формат svg есть
+    в списке QImageReader.supportedImageFormats()
+  topics:
+  - QSvgRenderer
+  - QIcon из .svg
+  - currentColor
+  deprecated_apis: []
+  applies_to:
+  - package: PySide6
+    version: 6.12.0
+  recorded_at: '2026-11-28T07:25:13+00:00'
+- id: SRC-5
+  phase: код
+  kind: api
+  title: Icon Theme Specification (freedesktop)
+  findings: 'тема hicolor обязана быть у всех; векторная иконка кладётся в scalable/apps/<имя>.svg,
+    растровая — в <размер>x<размер>/apps/<имя>.png; порядок поиска: $HOME/.icons,
+    $XDG_DATA_DIRS/icons, /usr/share/pixmaps — значит иконку надо ставить в hicolor,
+    а не только рядом с программой'
+  url: https://specifications.freedesktop.org/icon-theme/latest/
+  version: '0.13'
+  currency_evidence: спецификация опубликована 2 июля 2013, версия 0.13 — актуальная
+    на 2026 год
+  topics:
+  - hicolor
+  - scalable/apps
+  - PNG в <размер>x<размер>/apps
+  - порядок поиска иконки
+  deprecated_apis: []
+  applies_to:
+  - package: snipnest
+    version: 0.2.2
+  recorded_at: '2026-11-28T07:25:13+00:00'
+- id: SRC-6
+  phase: код
+  kind: api
+  title: Desktop Entry Specification
+  findings: ключ Icon задаёт имя иконки, которую оболочка ищет по теме иконок; StartupWMClass
+    связывает уже запущенное окно с ярлыком — если класс окна не совпадёт, у окна
+    будет отдельная, часто пустая иконка в панели задач. Значит окну нужна собственная
+    иконка через setWindowIcon и совпадающий StartupWMClass
+  url: https://specifications.freedesktop.org/desktop-entry/latest-single/
+  version: '1.5'
+  currency_evidence: актуальная версия спецификации 1.5 от 2020-04-27
+  topics:
+  - Icon
+  - StartupWMClass
+  - связь окна и ярлыка
+  deprecated_apis: []
+  applies_to:
+  - package: snipnest
+    version: 0.2.2
+  recorded_at: '2026-11-28T07:25:13+00:00'
+- id: SRC-7
+  phase: код
+  kind: api
+  title: The Animation Framework — Qt 6.12
+  findings: для сдержанных анимаций хватает QPropertyAnimation по свойствам виджета
+    (maximumHeight, geometry) с кривой смягчения; QGraphicsOpacityEffect гасит события
+    мыши у виджета, поэтому для текста и кнопок он не годится
+  url: https://doc.qt.io/qt-6.12/animation-overview.html
+  version: '6.12'
+  currency_evidence: документация Qt 6.12.0
+  topics:
+  - QPropertyAnimation
+  - QEasingCurve
+  - QGraphicsOpacityEffect
+  deprecated_apis: []
+  applies_to:
+  - package: PySide6
+    version: 6.12.0
+  recorded_at: '2026-11-28T07:25:13+00:00'
+- id: SRC-8
+  phase: код
+  kind: api
+  title: 'PyInstaller: spec-файл и параметр icon'
+  findings: 'в Linux иконку задаёт ярлык и тема иконок, а не сам бинарник: параметр
+    icon в EXE значим для Windows (.ico) и macOS (.icns). Значит правильный путь для
+    Linux — SVG в logo/, установка иконки в hicolor и Icon=snipnest в desktop-файле;
+    растровые размеры генерируем из SVG, а не храним один файл произвольного размера'
+  url: https://pyinstaller.org/en/stable/spec-files.html
+  version: stable (6.x)
+  currency_evidence: официальная документация PyInstaller stable; в проекте dev-зависимость
+    pyinstaller>=6.10
+  topics:
+  - icon в EXE
+  - datas
+  - сборка на Linux
+  deprecated_apis: []
+  applies_to:
+  - package: pyinstaller
+    version: '6.10'
+  recorded_at: '2026-11-28T07:25:13+00:00'
+- id: SRC-9
+  phase: код
+  kind: capabilities
+  title: 'labelme ADR 0005 — Color theme: рабочий рецепт переключения тем в Qt-приложении'
+  findings: 'рецепт: закрепить стиль Fusion, тему переключать через setColorScheme;
+    свои палитры вручную не ведут; монохромные иконки рисуют через currentColor и
+    перекрашивают QIconEngine-ом по активной палитре; сигнал colorSchemeChanged —
+    единая точка перекраски; цвета хрома задаются ролью палитры, а не литералом. Из
+    этого следуют перечисленные ниже возможности'
+  url: https://github.com/wkentaro/labelme/blob/main/docs/adr/0005-color-theme.md
+  version: решение принято в репозитории labelme
+  currency_evidence: документ основной ветки описывает работу на Qt 6.8+ (setColorScheme),
+    то есть по свежей версии API
+  topics:
+  - Fusion + setColorScheme
+  - монохромные иконки currentColor
+  - QIconEngine с перекраской
+  - цвета хрома только через палитру
+  deprecated_apis: []
+  applies_to:
+  - package: PySide6
+    version: 6.12.0
+  capabilities:
+  - id: C-1
+    name: 'Тема средствами Qt: Fusion + QStyleHints.setColorScheme'
+    decision: нужно
+    rationale: Qt сам собирает палитру под тёмную и светлую схему; свои таблицы цветов
+      вручную сопровождать не нужно
+  - id: C-2
+    name: Иконка приложения прямо из SVG, без промежуточного растра
+    decision: нужно
+    rationale: PySide6 читает SVG сам и масштабирует под размер — одна иконка вместо
+      набора PNG произвольных размеров
+  - id: C-3
+    name: Перекраска монохромной иконки (currentColor) по активной палитре через QIconEngine
+    decision: нужно
+    rationale: символический логотип должен оставаться видимым и в тёмной, и в светлой
+      теме
+  - id: C-4
+    name: Векторная иконка в hicolor/scalable/apps по Icon Theme Specification
+    decision: нужно
+    rationale: оболочка ищет иконку по теме; без установки в hicolor ярлык показывает
+      заглушку
+  - id: C-5
+    name: Сдержанные анимации на QPropertyAnimation и QEasingCurve
+    decision: нужно
+    rationale: 'оживить интерфейс без перегруза: появление строк загрузок, разворачивание
+      лога'
+  - id: C-6
+    name: Полная замена таблицы стилей при смене темы вместо точечной правки
+    decision: нужно
+    rationale: документация Qt предупреждает о рассогласовании при частичной смене
+      стилей
+  - id: C-7
+    name: Собственные палитры вручную для каждой темы
+    decision: не_нужно
+    rationale: 'избыточно: Qt 6.8+ даёт готовую палитру под заданную схему'
+  - id: C-8
+    name: Отдельные наборы иконок для светлой и тёмной темы
+    decision: не_нужно
+    rationale: перекраска одной монохромной иконки покрывает обе темы и не размножает
+      файлы
+  recorded_at: '2026-11-28T07:25:13+00:00'
+- id: SRC-10
+  phase: интервью
+  kind: capabilities
+  title: Свод найденных возможностей платформы и решений владельца по ним
+  findings: 'изучение платформы перед интервью дало восемь возможностей; владелец
+    подтвердил шесть из них прямо в ответах на вопросы интервью (аватарка, символ
+    внутри приложения, меню, тема, окно настроек, анимации), две отклонены как избыточные:
+    свои палитры вручную и отдельные наборы иконок под каждую тему. Каждая подтверждённая
+    возможность обязана стать требованием'
+  url: https://doc.qt.io/qtforpython-6/PySide6/QtGui/QStyleHints.html
+  version: '6.12'
+  currency_evidence: документация Qt for Python по установленной версии PySide6 6.12.0;
+    решения владельца зафиксированы его ответами в интервью задачи 013
+  topics:
+  - тема средствами Qt
+  - иконка из SVG
+  - перекраска currentColor
+  - иконка в теме иконок
+  - анимации
+  - смена таблицы стилей
+  deprecated_apis: []
+  applies_to:
+  - package: PySide6
+    version: 6.12.0
+  capabilities:
+  - id: C-1
+    name: 'Тема средствами Qt: Fusion + QStyleHints.setColorScheme'
+    decision: нужно
+    rationale: владелец выбрал переключение тёмная/светлая/как в системе; Qt собирает
+      палитру сам
+  - id: C-2
+    name: Иконка приложения прямо из SVG, без промежуточного растра
+    decision: нужно
+    rationale: владелец дал новый логотип SVG и просил починить аватарку
+  - id: C-3
+    name: Перекраска монохромной иконки (currentColor) по активной палитре через QIconEngine
+    decision: нужно
+    rationale: владелец велел использовать символический SVG внутри приложения — он
+      должен быть видим в обеих темах
+  - id: C-4
+    name: Векторная иконка в hicolor/scalable/apps по Icon Theme Specification
+    decision: нужно
+    rationale: без установки в тему иконок ярлык показывает заглушку — это и есть
+      «сломанная аватарка»
+  - id: C-5
+    name: Сдержанные анимации на QPropertyAnimation и QEasingCurve
+    decision: нужно
+    rationale: владелец просил «немного, но можно» анимаций
+  - id: C-6
+    name: Полная замена таблицы стилей при смене темы вместо точечной правки
+    decision: нужно
+    rationale: документация Qt предупреждает о рассогласовании при частичной смене
+      стилей
+  - id: C-7
+    name: Собственные палитры вручную для каждой темы
+    decision: не_нужно
+    rationale: 'избыточно: Qt 6.8+ даёт готовую палитру под заданную схему'
+  - id: C-8
+    name: Отдельные наборы иконок для светлой и тёмной темы
+    decision: не_нужно
+    rationale: перекраска одной монохромной иконки покрывает обе темы и не размножает
+      файлы
+  recorded_at: '2026-11-28T07:35:21+00:00'

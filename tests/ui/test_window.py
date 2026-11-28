@@ -78,19 +78,6 @@ def test_папка_сохранения_показывается(window: MainWi
     assert window.destination_text == settings.destination
 
 
-def test_в_окне_есть_кнопки_pinterest(window: MainWindow) -> None:
-    assert window._controls.token_button.text() == "Токен Pinterest"
-    assert window._controls.open_pinterest_button.text() == "Открыть Pinterest"
-
-
-def test_в_окне_есть_кнопка_путь_к_yt_dlp(window: MainWindow) -> None:
-    assert window._controls.yt_dlp_button.text() == "Путь к yt-dlp"
-
-
-def test_в_окне_есть_кнопка_cookies_youtube(window: MainWindow) -> None:
-    assert window._controls.cookies_button.text() == "Cookies YouTube"
-
-
 def test_область_лога_называется_лог(window: MainWindow) -> None:
     """В логе вывод обоих исполнителей — название не должно быть узким."""
     assert window._log.title == "Лог"
@@ -228,9 +215,10 @@ def test_событие_ошибки_пишется_в_лог(window: MainWindow
     assert "Ошибка загрузки" in window.status_text
 
 
-def test_лог_сворачивается(window: MainWindow) -> None:
-    assert window._log.view.isVisibleTo(window) or not window._log.view.isHidden()
+def test_лог_сворачивается(window: MainWindow, qtbot) -> None:
+    """Лог сворачивается анимацией — ждём конца и проверяем, что он скрыт."""
     window._log.toggle_button.setChecked(False)
+    qtbot.wait(600)
     assert window._log.view.isHidden()
 
 
