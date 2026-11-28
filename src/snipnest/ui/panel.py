@@ -4,6 +4,15 @@ from __future__ import annotations
 
 from collections.abc import Callable
 
+from PySide6.QtCore import (
+    Property,
+    QAbstractAnimation,
+    QEasingCurve,
+    QObject,
+    QPropertyAnimation,
+    Signal,
+)
+from PySide6.QtGui import QBrush, QColor, QPalette
 from PySide6.QtWidgets import (
     QAbstractItemView,
     QHBoxLayout,
@@ -24,6 +33,34 @@ __all__ = ["JobsPanel"]
 
 _COLUMNS = ("Ссылка", "Состояние", "Прогресс", "Скорость", "Файлы", "Итог")
 
+#: Длительность появления новой строки.
+ROW_FADE_DURATION_MS = 180
+
+
+class _RowFade(QObject):
+    """Прозрачность текста новой строки: растёт от нуля до единицы."""
+
+    value_changed = Signal(float)
+
+    def __init__(self, parent: QObject | None = None) -> None:
+        super().__init__(parent)
+        self._value = 0.0
+
+    def _get_value(self) -> float:
+        return self._value
+
+    def set_opacity(self, value: float) -> None:
+        """Задать прозрачность текста строки."""
+        self._value = value
+        self.value_changed.emit(value)
+
+    @property
+    def opacity(self) -> float:
+        """Текущая прозрачность текста строки."""
+        return self._value
+
+    value = Property(float, _get_value, set_opacity)
+
 
 class JobsPanel(QWidget):
     """Список загрузок с прогрессом, скоростью, файлами и итогом."""
@@ -40,6 +77,7 @@ class JobsPanel(QWidget):
         self._rows: dict[str, JobRow] = {}
         self._order: list[str] = []
         self._jobs: dict[str, DownloadJob] = {}
+        self._fades: dict[str, _RowFade] = {}
 
         layout = QVBoxLayout(self)
 
@@ -94,6 +132,39 @@ class JobsPanel(QWidget):
         self._order.append(job.job_id)
         self._table.insertRow(self._table.rowCount())
         self._render_row(job.job_id)
+        self._start_row_fade(job.job_id)
+
+    def row_opacity(self, job_id: str) -> float:
+        """Насколько проявилась строка загрузки: от нуля до единицы."""
+        fade = self._fades.get(job_id)
+        return fade.opacity if fade is not None else 1.0
+
+    def _start_row_fade(self, job_id: str) -> None:
+        """Новая строка появляется плавно: текст проявляется постепенно."""
+        fade = _RowFade(self)
+        self._fades[job_id] = fade
+        fade.value_changed.connect(lambda value: self._apply_row_opacity(job_id, value))
+        fade.set_opacity(0.0)
+
+        animation = QPropertyAnimation(fade, b"value", self)
+        animation.setDuration(ROW_FADE_DURATION_MS)
+        animation.setStartValue(0.0)
+        animation.setEndValue(1.0)
+        animation.setEasingCurve(QEasingCurve.Type.OutCubic)
+        animation.start(QAbstractAnimation.DeletionPolicy.DeleteWhenStopped)
+
+    def _apply_row_opacity(self, job_id: str, value: float) -> None:
+        """Сделать текст строки прозрачнее или плотнее."""
+        if job_id not in self._order:
+            return
+        index = self._order.index(job_id)
+        color = QColor(self.palette().color(QPalette.ColorRole.WindowText))
+        color.setAlphaF(min(1.0, max(0.0, value)))
+        brush = QBrush(color)
+        for column in range(len(_COLUMNS)):
+            item = self._table.item(index, column)
+            if item is not None:
+                item.setForeground(brush)
 
     def update_row(self, job_id: str) -> None:
         """Перерисовать строку по текущему состоянию загрузки."""

@@ -1,7 +1,8 @@
 """Главное окно приложения.
 
-Сверху — поле ссылки, папка сохранения и кнопки источников. Ниже — список
-загрузок, прогресс-бар, статус и сворачиваемый лог.
+Сверху — строка меню и шапка с символом приложения, поле ссылки, папка
+сохранения и выбор формата. Ниже — список загрузок, прогресс-бар, статус и
+сворачиваемый лог.
 """
 
 from __future__ import annotations
@@ -19,6 +20,7 @@ from PySide6.QtWidgets import (
     QWidget,
 )
 
+from ..branding import app_icon
 from ..components.catalog import GALLERY_DL, YT_DLP, ComponentKind
 from ..components.finder import find_component
 from ..components.installer import ComponentInstaller
@@ -27,6 +29,7 @@ from ..formats import FormatKind, SaveFormat
 from ..jobs import DownloadJob, JobEvent
 from ..settings import Settings
 from ..sources import SourceKind, SourceRegistry
+from .about import AboutDialog
 from .bridge import JobEventBridge
 from .components_dialog import ComponentsDialog
 from .controller import JobController
@@ -35,16 +38,19 @@ from .dnd import DropTargetMixin
 from .format_selector import FormatSelector
 from .imaging import convert_image
 from .logarea import LogArea
+from .menus import AppMenuBar
 from .models import JobRow
 from .panel import JobsPanel
 from .presenter import EventPresenter
 from .settings_actions import SettingsActions
+from .settings_dialog import SettingsDialog
+from .theme import Theme, apply_theme
 
 __all__ = ["MainWindow"]
 
 
 class MainWindow(DropTargetMixin, QMainWindow):
-    """Окно приложения: ссылка, загрузки, прогресс, статус, лог."""
+    """Окно приложения: меню, ссылка, загрузки, прогресс, статус, лог."""
 
     def __init__(
         self,
@@ -63,6 +69,9 @@ class MainWindow(DropTargetMixin, QMainWindow):
         self._counter = 0
         self._controller = JobController(self._bridge, self)
 
+        apply_theme(Theme.parse(self._settings.theme))
+        self.setWindowIcon(app_icon())
+
         self._build_ui()
         self._actions = SettingsActions(
             self,
@@ -71,6 +80,7 @@ class MainWindow(DropTargetMixin, QMainWindow):
             self._on_destination_changed,
         )
         self._presenter = EventPresenter(self._set_status, self._append_log)
+        self._build_menu()
         self._connect_signals()
         self._controls.destination_edit.setText(self._settings.destination)
         self._controls.format_selector.set_choices(
@@ -79,6 +89,7 @@ class MainWindow(DropTargetMixin, QMainWindow):
             audio_id=self._settings.audio_format,
         )
         self._update_format_choices("")
+        self._menu.set_theme(Theme.parse(self._settings.theme))
 
     # -- построение интерфейса --------------------------------------------
 
@@ -101,6 +112,24 @@ class MainWindow(DropTargetMixin, QMainWindow):
         root.addWidget(self._build_status_row())
         self.setCentralWidget(central)
 
+    def _build_menu(self) -> None:
+        """Строка меню: настройки, тема, лог и справка."""
+        self._menu = AppMenuBar(
+            self,
+            on_destination=self._actions.choose_destination,
+            on_settings=self.show_settings,
+            on_token=self._actions.edit_token,
+            on_cookies=self._actions.choose_youtube_cookies,
+            on_gallery_dl=self._actions.choose_gallery_dl,
+            on_yt_dlp=self._actions.choose_yt_dlp,
+            on_components=self.show_component_wizard,
+            on_exit=self._on_exit,
+            on_theme=self.set_theme,
+            on_log_toggled=self._on_log_toggled,
+            on_about=self.show_about,
+        )
+        self.setMenuBar(self._menu)
+
     def _build_status_row(self) -> QWidget:
         box = QWidget(self)
         layout = QHBoxLayout(box)
@@ -120,16 +149,48 @@ class MainWindow(DropTargetMixin, QMainWindow):
         self._controls.download_button.clicked.connect(self._on_download_clicked)
         self._controls.link_edit.returnPressed.connect(self._on_download_clicked)
         self._controls.choose_destination_button.clicked.connect(self._actions.choose_destination)
-        self._controls.token_button.clicked.connect(self._actions.edit_token)
-        self._controls.open_pinterest_button.clicked.connect(self._actions.open_pinterest)
-        self._controls.gallery_dl_button.clicked.connect(self._actions.choose_gallery_dl)
-        self._controls.yt_dlp_button.clicked.connect(self._actions.choose_yt_dlp)
-        self._controls.cookies_button.clicked.connect(self._actions.choose_youtube_cookies)
-        self._controls.components_button.clicked.connect(self._on_components_clicked)
-        self._log.toggle_button.toggled.connect(self._log.set_expanded)
+        self._log.toggle_button.toggled.connect(self._on_log_button_toggled)
         self._bridge.events_ready.connect(self._drain_events)
         self._controls.link_edit.textChanged.connect(self._on_link_changed)
         self._controls.format_selector.changed.connect(self._on_format_changed)
+
+    # -- тема ---------------------------------------------------------------
+
+    def set_theme(self, theme: Theme) -> None:
+        """Сменить тему окраски: применить, запомнить, обновить символ."""
+        apply_theme(theme)
+        self._settings.theme = theme.value
+        self._actions.save()
+        self._controls.refresh_header()
+        self._menu.set_theme(theme)
+
+    # -- окна ---------------------------------------------------------------
+
+    def show_settings(self) -> None:
+        """Открыть окно настроек."""
+        dialog = SettingsDialog(self._settings, self._actions, self)
+        dialog.theme_changed.connect(self.set_theme)
+        dialog.exec()
+
+    def show_about(self) -> None:
+        """Открыть окно «О программе»."""
+        AboutDialog(self).exec()
+
+    def _on_exit(self) -> None:
+        """Пункт меню «Выход»: закрыть окно."""
+        self.close()
+
+    def _on_log_toggled(self, visible: bool) -> None:
+        """Пункт меню «Показать лог»: показать или свернуть область лога."""
+        if self._log.expanded == visible:
+            return
+        self._log.set_expanded(visible)
+        self._log.toggle_button.setChecked(visible)
+
+    def _on_log_button_toggled(self, expanded: bool) -> None:
+        """Кнопка лога: показать или свернуть область лога."""
+        self._log.set_expanded(expanded)
+        self._menu.set_log_visible(expanded)
 
     # -- публичный доступ для тестов и проверок ----------------------------
 
@@ -317,10 +378,6 @@ class MainWindow(DropTargetMixin, QMainWindow):
         self._controls.destination_edit.setText(destination)
 
     # -- компоненты ---------------------------------------------------------
-
-    def _on_components_clicked(self) -> None:
-        """Кнопка «Компоненты…»: открыть мастер установки."""
-        self.show_component_wizard()
 
     def show_component_wizard(self) -> None:
         """Показать мастер установки компонентов.

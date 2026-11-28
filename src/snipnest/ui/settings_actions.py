@@ -5,19 +5,14 @@
 
 from __future__ import annotations
 
-import webbrowser
 from collections.abc import Callable
 
-from PySide6.QtCore import QUrl
-from PySide6.QtGui import QDesktopServices
 from PySide6.QtWidgets import QWidget
 
 from ..settings import Settings
 from .dialogs import CookieSourceDialog, TokenDialog, choose_directory, choose_executable
 
 __all__ = ["SettingsActions"]
-
-PINTEREST_URL = "https://www.pinterest.com/"
 
 
 class SettingsActions:
@@ -107,12 +102,6 @@ class SettingsActions:
             self._on_status(f"Cookies YouTube: файл {path}")
         else:
             self._on_status("Cookies YouTube: не использовать")
-
-    def open_pinterest(self) -> None:
-        """Открыть Pinterest в браузере."""
-        if not QDesktopServices.openUrl(QUrl(PINTEREST_URL)):
-            webbrowser.open(PINTEREST_URL)
-        self._on_status("Открыт Pinterest в браузере")
 
     def save(self) -> None:
         """Сохранить настройки, не роняя приложение при ошибке записи."""

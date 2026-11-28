@@ -17,9 +17,17 @@ def test_ярлык_читается() -> None:
 
 
 def test_иконка_читается() -> None:
+    """Иконка приложения одна — векторная."""
     data = resources.icon_bytes()
 
     assert data
+    assert data[:4] == b"<svg"
+
+
+def test_иконка_рисуется_в_png() -> None:
+    """PNG размеров получаются из того же векторного логотипа."""
+    data = resources.icon_png(48)
+
     assert data[:4] == b"\x89PNG"
 
 

@@ -46,7 +46,11 @@ if IS_INSTALLER:
     if build_info and Path(build_info).is_file():
         datas.append((build_info, "."))
     datas.append((str(ROOT / "packaging" / "snipnest.desktop"), "."))
-    datas.append((str(ROOT / "logo" / "snipnest.png"), "."))
+
+# Логотип и символ нужны и приложению (иконка окна и символ в шапке), и
+# установщику (иконки в теме иконок). Векторные: PNG собираются из них.
+datas.append((str(ROOT / "logo" / "snipnest.svg"), "logo"))
+datas.append((str(ROOT / "logo" / "snipnest-symbolic.svg"), "logo"))
 
 hiddenimports = [
     "keyring.backends.SecretService",
@@ -117,7 +121,6 @@ if LAYOUT == "onefile":
         target_arch=None,
         codesign_identity=None,
         entitlements_file=None,
-        icon=str(ROOT / "logo" / "snipnest.png"),
     )
 else:
     exe = EXE(
@@ -136,7 +139,6 @@ else:
         target_arch=None,
         codesign_identity=None,
         entitlements_file=None,
-        icon=str(ROOT / "logo" / "snipnest.png"),
     )
     coll = COLLECT(
         exe,

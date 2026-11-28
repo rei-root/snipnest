@@ -1,6 +1,7 @@
-"""Верхняя часть окна: поле ссылки, папка сохранения, кнопки.
+"""Верхняя часть окна: шапка, поле ссылки, папка сохранения, формат.
 
-Отдельный виджет, чтобы главное окно не разрасталось.
+Отдельный виджет, чтобы главное окно не разрасталось. Кнопок настроек здесь
+нет: они живут в строке меню.
 """
 
 from __future__ import annotations
@@ -14,22 +15,51 @@ from PySide6.QtWidgets import (
     QWidget,
 )
 
+from ..branding import symbolic_icon
 from .format_selector import FormatSelector
 
 __all__ = ["TopControls"]
 
+#: Размер символа приложения в шапке окна.
+SYMBOL_SIZE = 32
+
 
 class TopControls(QWidget):
-    """Поле ссылки, выбор папки сохранения, выбор формата и кнопки источника."""
+    """Шапка окна, поле ссылки, выбор папки сохранения и выбор формата."""
 
     def __init__(self, parent: QWidget | None = None) -> None:
         super().__init__(parent)
         layout = QVBoxLayout(self)
         layout.setContentsMargins(0, 0, 0, 0)
+        layout.addWidget(self._build_header())
         layout.addWidget(self._build_link_row())
         layout.addWidget(self._build_destination_row())
         layout.addWidget(self._build_format_row())
-        layout.addWidget(self._build_toolbar())
+
+    def _build_header(self) -> QWidget:
+        """Шапка окна: символ приложения и название."""
+        box = QWidget(self)
+        layout = QHBoxLayout(box)
+        layout.setContentsMargins(0, 0, 0, 0)
+
+        self.header_icon = QLabel(box)
+        self.header_icon.setFixedSize(SYMBOL_SIZE, SYMBOL_SIZE)
+        layout.addWidget(self.header_icon)
+
+        self.header_label = QLabel("Snipnest", box)
+        font = self.header_label.font()
+        font.setBold(True)
+        font.setPointSize(font.pointSize() + 2)
+        self.header_label.setFont(font)
+        layout.addWidget(self.header_label)
+        layout.addStretch(1)
+
+        self.refresh_header()
+        return box
+
+    def refresh_header(self) -> None:
+        """Перерисовать символ: он красится цветом текста темы."""
+        self.header_icon.setPixmap(symbolic_icon().pixmap(SYMBOL_SIZE, SYMBOL_SIZE))
 
     def _build_link_row(self) -> QWidget:
         box = QWidget(self)
@@ -45,6 +75,7 @@ class TopControls(QWidget):
 
         buttons = QHBoxLayout()
         self.download_button = QPushButton("Скачать", box)
+        self.download_button.setObjectName("primaryButton")
         buttons.addWidget(self.download_button)
         buttons.addStretch(1)
         layout.addLayout(buttons)
@@ -72,32 +103,6 @@ class TopControls(QWidget):
 
         self.format_selector = FormatSelector(box)
         layout.addWidget(self.format_selector)
-        layout.addStretch(1)
-        return box
-
-    def _build_toolbar(self) -> QWidget:
-        box = QWidget(self)
-        layout = QHBoxLayout(box)
-        layout.setContentsMargins(0, 0, 0, 0)
-
-        self.token_button = QPushButton("Токен Pinterest", box)
-        layout.addWidget(self.token_button)
-
-        self.open_pinterest_button = QPushButton("Открыть Pinterest", box)
-        layout.addWidget(self.open_pinterest_button)
-
-        self.components_button = QPushButton("Компоненты…", box)
-        layout.addWidget(self.components_button)
-
-        self.gallery_dl_button = QPushButton("Путь к gallery-dl", box)
-        layout.addWidget(self.gallery_dl_button)
-
-        self.yt_dlp_button = QPushButton("Путь к yt-dlp", box)
-        layout.addWidget(self.yt_dlp_button)
-
-        self.cookies_button = QPushButton("Cookies YouTube", box)
-        layout.addWidget(self.cookies_button)
-
         layout.addStretch(1)
         return box
 

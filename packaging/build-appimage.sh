@@ -34,8 +34,10 @@ EOF
 chmod +x "$APPDIR/usr/bin/snipnest"
 
 cp "$ROOT/packaging/snipnest.desktop" "$APPDIR/snipnest.desktop"
-cp "$ROOT/logo/snipnest.png" "$APPDIR/snipnest.png"
-cp "$ROOT/logo/snipnest.png" "$APPDIR/.DirIcon"
+cp "$ROOT/logo/snipnest.svg" "$APPDIR/snipnest.svg"
+cp "$ROOT/logo/snipnest-symbolic.svg" "$APPDIR/snipnest-symbolic.svg"
+# .DirIcon — иконка образа: PNG собирается из того же векторного логотипа.
+(cd "$ROOT" && uv run python packaging/render-icons.py --icon-file "$APPDIR/.DirIcon" --size 256)
 
 cat > "$APPDIR/AppRun" <<'EOF'
 #!/bin/sh

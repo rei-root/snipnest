@@ -7,7 +7,7 @@ set -uo pipefail
 
 ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 DESKTOP="$ROOT/packaging/snipnest.desktop"
-LOGO="$ROOT/logo/snipnest.png"
+LOGO="$ROOT/logo/snipnest.svg"
 ICON_NAME="snipnest"
 
 # Прежнее имя собирается из частей: сам оракул не должен содержать его в

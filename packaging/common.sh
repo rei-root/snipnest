@@ -116,24 +116,16 @@ build_pyinstaller() {
 }
 
 #: Поставить иконки в каталог иконок (для .deb и AppImage).
+#:
+#: Иконка одна — векторная (logo/snipnest.svg). PNG размеров получаются из
+#: неё средствами Qt: внешняя программа не нужна.
 install_icons() {
     local target="$1"
-    local sizes=(16 24 32 48 64 128 256 512)
-    local resizer=""
-    if command -v magick >/dev/null 2>&1; then
-        resizer="magick"
-    elif command -v convert >/dev/null 2>&1; then
-        resizer="convert"
-    fi
-    if [[ -z "$resizer" ]]; then
-        log "ПРЕДУПРЕЖДЕНИЕ: нет ImageMagick — иконки копируются в одном размере"
-        mkdir -p "$target/256x256/apps"
-        cp "$ROOT/logo/snipnest.png" "$target/256x256/apps/snipnest.png"
+    local python_bin="$ROOT/.venv/bin/python"
+    if [[ ! -x "$python_bin" ]]; then
+        log "ПРЕДУПРЕЖДЕНИЕ: нет $python_bin — иконки не поставлены"
         return 0
     fi
-    for size in "${sizes[@]}"; do
-        mkdir -p "$target/${size}x${size}/apps"
-        "$resizer" "$ROOT/logo/snipnest.png" -resize "${size}x${size}" -strip \
-            "PNG32:$target/${size}x${size}/apps/snipnest.png"
-    done
+    "$python_bin" "$ROOT/packaging/render-icons.py" --out "$target" \
+        || log "ПРЕДУПРЕЖДЕНИЕ: иконки не поставлены"
 }

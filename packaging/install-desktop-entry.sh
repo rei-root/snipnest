@@ -12,7 +12,7 @@ set -euo pipefail
 
 ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 DESKTOP_SRC="$ROOT/packaging/snipnest.desktop"
-LOGO_SRC="$ROOT/logo/snipnest.png"
+LOGO_SRC="$ROOT/logo/snipnest.svg"
 
 APPLICATIONS_DIR="${XDG_DATA_HOME:-$HOME/.local/share}/applications"
 ICONS_DIR="${XDG_DATA_HOME:-$HOME/.local/share}/icons/hicolor"
@@ -29,26 +29,20 @@ echo "  ярлык: $APPLICATIONS_DIR/snipnest.desktop"
 
 # 2. Иконка: имя иконки в desktop-файле — snipnest.
 if [[ ! -f "$LOGO_SRC" ]]; then
-    echo "  ПРОПУЩЕНО: нет логотипа $LOGO_SRC" >&2
+    echo "  ПРОДУПЩЕНО: нет логотипа $LOGO_SRC" >&2
 else
-    # ImageMagick 7 — это magick, ImageMagick 6 — convert. Если нет ни того,
-    # ни другого, установка не падает: ранее поставленная иконка остаётся
-    # на месте, а лаунчер и ярлык всё равно ставятся.
-    RESIZER=""
-    if command -v magick >/dev/null 2>&1; then
-        RESIZER="magick"
-    elif command -v convert >/dev/null 2>&1; then
-        RESIZER="convert"
-    fi
-    if [[ -n "$RESIZER" ]]; then
-        for size in "${SIZES[@]}"; do
-            target="$ICONS_DIR/${size}x${size}/apps"
-            mkdir -p "$target"
-            "$RESIZER" "$LOGO_SRC" -resize "${size}x${size}" -strip "PNG32:$target/snipnest.png"
-        done
-        echo "  иконка: $ICONS_DIR/*/apps/snipnest.png"
+    # Размеры PNG получаются из векторного логотипа средствами Qt: внешняя
+    # программа не нужна. Если интерпретатора нет, установка не падает:
+    # прежняя иконка остаётся на месте, а лаунчер и ярлык всё равно ставятся.
+    VENV_PYTHON="$ROOT/.venv/bin/python"
+    if [[ -x "$VENV_PYTHON" ]]; then
+        if "$VENV_PYTHON" "$ROOT/packaging/render-icons.py" --out "$ICONS_DIR"; then
+            echo "  иконка: $ICONS_DIR/*/apps/snipnest.png"
+        else
+            echo "  ПРОДУПЩЕНО: не удалось поставить иконки" >&2
+        fi
     else
-        echo "  ПРОПУЩЕНО: нет ImageMagick (magick/convert) — иконка не обновлена" >&2
+        echo "  ПРОДУПЩЕНО: нет $VENV_PYTHON — иконка не обновлена" >&2
     fi
 
     # Тема hicolor в локальном каталоге перекрывает системную, поэтому у

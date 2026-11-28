@@ -14,7 +14,7 @@ import subprocess
 from dataclasses import asdict, dataclass, field
 from pathlib import Path
 
-from .resources import desktop_file_text, icon_bytes, icon_sizes
+from .resources import desktop_file_text, icon_bytes, icon_png, icon_sizes
 
 __all__ = [
     "InstallReport",
@@ -28,7 +28,8 @@ __all__ = [
 SAFE_PATH = "/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin"
 
 #: Куда класть иконки приложения.
-_ICON_SUBDIRS = tuple(f"{size}x{size}/apps" for size in icon_sizes())
+_ICON_NAME = "snipnest.png"
+_ICON_VECTOR_NAME = "snipnest.svg"
 
 
 @dataclass(frozen=True)
@@ -156,14 +157,18 @@ def install_desktop_entry(request: InstallRequest) -> StepResult:
 
 
 def install_icons(request: InstallRequest) -> StepResult:
-    """Положить иконки в каталог иконок."""
+    """Положить иконки в каталог иконок.
+
+    Ставятся и PNG размеров, которые ищет тема иконок, и векторная иконка.
+    """
     data = icon_bytes()
     if not data:
         return StepResult("иконки", True, "в установщике нет иконки — пропущено")
     root = Path(request.icons_dir)
     try:
-        for subdir in _ICON_SUBDIRS:
-            _write_file(root / subdir / "snipnest.png", data, 0o644)
+        for size in icon_sizes():
+            _write_file(root / f"{size}x{size}" / "apps" / _ICON_NAME, icon_png(size), 0o644)
+        _write_file(root / "scalable" / "apps" / _ICON_VECTOR_NAME, data, 0o644)
     except OSError as error:
         return StepResult("иконки", False, str(error))
     return StepResult("иконки", True, str(root))

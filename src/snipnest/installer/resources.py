@@ -3,6 +3,9 @@
 Они лежат внутри собранного установщика, поэтому окну не нужно ничего
 распаковывать из образа приложения. В исходниках те же файлы берутся из
 каталогов packaging/ и logo/.
+
+Иконка приложения одна — векторная (logo/snipnest.svg). PNG размеров, которые
+ждёт тема иконок, получаются из неё средствами Qt.
 """
 
 from __future__ import annotations
@@ -13,13 +16,20 @@ import sys
 from functools import lru_cache
 from pathlib import Path
 
-__all__ = ["build_info", "desktop_file_text", "icon_bytes", "icon_sizes"]
+from ..branding import app_logo_path, render_png
+
+__all__ = [
+    "build_info",
+    "desktop_file_text",
+    "icon_bytes",
+    "icon_png",
+    "icon_sizes",
+]
 
 #: Размеры иконок, которые ставит установщик.
 ICON_SIZES: tuple[int, ...] = (16, 24, 32, 48, 64, 128, 256, 512)
 
 _DESKTOP_NAME = "snipnest.desktop"
-_ICON_NAME = "snipnest.png"
 
 #: Файл со сведениями о сборке: его кладёт сборщик установщика.
 _BUILD_INFO_NAME = "installer-build-info.json"
@@ -54,11 +64,16 @@ def desktop_file_text() -> str:
 
 @lru_cache(maxsize=1)
 def icon_bytes() -> bytes:
-    """Содержимое иконки приложения."""
-    path = _find(_ICON_NAME, Path("logo"))
-    if path is None:
+    """Содержимое векторной иконки приложения."""
+    path = app_logo_path()
+    if not path.is_file():
         return b""
     return path.read_bytes()
+
+
+def icon_png(size: int) -> bytes:
+    """PNG заданного размера, собранный из логотипа."""
+    return render_png(size)
 
 
 def icon_sizes() -> tuple[int, ...]:

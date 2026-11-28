@@ -11,8 +11,6 @@
 
 from __future__ import annotations
 
-from pathlib import Path
-
 from snipnest.branding import (
     APP_LOGO_NAME,
     ICON_SIZES,
@@ -37,7 +35,7 @@ def test_логотип_и_символ_приложения_на_месте() -
     assert symbol_logo_path().read_text(encoding="utf-8").lstrip().startswith("<svg")
 
 
-def test_иконка_приложения_рендерится_из_svg() -> None:
+def test_иконка_приложения_рендерится_из_svg(qapp) -> None:
     """Иконка приложения рисуется из SVG сама, без растрового файла."""
     icon = app_icon()
     assert not icon.isNull()

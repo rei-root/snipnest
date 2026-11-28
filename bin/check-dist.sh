@@ -89,7 +89,7 @@ check_appimage() {
         fail "appimage распаковывается" "не появился каталог squashfs-root"
         return
     fi
-    for needed in AppRun snipnest.desktop snipnest.png; do
+    for needed in AppRun snipnest.desktop snipnest.svg .DirIcon; do
         if [[ ! -e "$squashfs/$needed" ]]; then
             fail "в appimage есть $needed" "нет файла squashfs-root/$needed"
         fi

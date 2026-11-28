@@ -17,6 +17,7 @@ from .formats import DEFAULT_AUDIO_FORMAT, DEFAULT_IMAGE_FORMAT, DEFAULT_VIDEO_F
 __all__ = [
     "Settings",
     "DEFAULT_DESTINATION",
+    "DEFAULT_THEME",
     "KeyringStore",
     "FileSecretStore",
     "CONFIG_DIR",
@@ -26,6 +27,9 @@ __all__ = [
 ]
 
 DEFAULT_DESTINATION = Path.home() / "Изображения" / "Pinterest"
+
+#: Тема по умолчанию: пока владелец не выбрал, приложение следует системе.
+DEFAULT_THEME = "system"
 
 CONFIG_DIR = Path.home() / ".config" / "snipnest"
 CONFIG_FILE = CONFIG_DIR / "settings.json"
@@ -100,6 +104,7 @@ class Settings:
         self.image_format: str = DEFAULT_IMAGE_FORMAT
         self.video_format: str = DEFAULT_VIDEO_FORMAT
         self.audio_format: str = DEFAULT_AUDIO_FORMAT
+        self.theme: str = DEFAULT_THEME
         self.load()
 
     def load(self) -> None:
@@ -134,6 +139,9 @@ class Settings:
         audio_format = data.get("audio_format")
         if isinstance(audio_format, str) and audio_format:
             self.audio_format = audio_format
+        theme = data.get("theme")
+        if isinstance(theme, str) and theme:
+            self.theme = theme
 
     def save(self) -> None:
         """Записать настройки в конфиг."""
@@ -147,6 +155,7 @@ class Settings:
             "image_format": self.image_format,
             "video_format": self.video_format,
             "audio_format": self.audio_format,
+            "theme": self.theme,
         }
         self._config_path.write_text(
             json.dumps(data, ensure_ascii=False, indent=2) + "\n",
