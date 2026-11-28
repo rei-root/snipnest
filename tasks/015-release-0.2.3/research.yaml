@@ -1,0 +1,86 @@
+entries:
+- id: SRC-1
+  phase: интервью
+  kind: api
+  title: GitHub Docs — Managing releases in a repository
+  findings: 'релиз привязывается к тегу: файлы-вложения кладутся в релиз по этому
+    тегу. Значит новая сборка публикуется пушем тега: тег выбирает и версию, и набор
+    файлов'
+  url: https://docs.github.com/en/repositories/releasing-projects-on-github/managing-releases-in-a-repository
+  version: актуальная документация GitHub
+  currency_evidence: 'страница актуальной документации GitHub (раздел Creating a release:
+    релиз создаётся по тегу и получает файлы-вложения)'
+  topics:
+  - создание релиза по тегу
+  - файлы релиза
+  - черновик и публикация
+  deprecated_apis: []
+  applies_to:
+  - package: snipnest
+    version: 0.2.3
+  recorded_at: '2026-11-28T13:24:00+00:00'
+- id: SRC-2
+  phase: интервью
+  kind: api
+  title: GitHub Docs — Events that trigger workflows
+  findings: workflow запускается событием push, если в нём объявлен фильтр по тегам
+    (в проекте — 'v*'). Пуш тега v0.2.3 — это и есть команда «собрать и выложить релиз»
+  url: https://docs.github.com/en/actions/reference/workflows-and-actions/events-that-trigger-workflows
+  version: актуальная документация GitHub Actions
+  currency_evidence: страница актуальной документации GitHub Actions; раздел про событие
+    push и фильтр по тегам
+  topics:
+  - событие push
+  - фильтр по тегам
+  - запуск workflow
+  deprecated_apis: []
+  applies_to:
+  - package: snipnest
+    version: 0.2.3
+  recorded_at: '2026-11-28T13:24:00+00:00'
+- id: SRC-3
+  phase: код
+  kind: api
+  title: Конвейер сборки артефактов проекта (.github/workflows/release.yml)
+  findings: 'по тегу конвейер гоняет линтеры, типы, тесты и оракул, затем собирает
+    установщик, образ и пакет, проверяет их (make check-dist), считает суммы и выкладывает
+    файлы в релиз тега. Значит: чтобы «обновить установщики», достаточно поднять версию,
+    слить задачу в main и отправить тег — артефакты соберутся из текущего кода, с
+    новым значком и новым интерфейсом'
+  url: https://github.com/rei-root/snipnest/blob/main/.github/workflows/release.yml
+  version: файл в основной ветке на 2026-11-28
+  currency_evidence: файл прочитан в рабочей копии проекта (commit 46649ec), там же
+    в main
+  topics:
+  - сборка установщика
+  - сборка AppImage
+  - сборка .deb
+  - проверка артефактов
+  - SHA256SUMS
+  - выкладка в Releases
+  deprecated_apis: []
+  applies_to:
+  - package: snipnest
+    version: 0.2.3
+  recorded_at: '2026-11-28T13:24:00+00:00'
+- id: SRC-4
+  phase: код
+  kind: api
+  title: PyInstaller — Using Spec Files
+  findings: 'в spec-файле datas переносит файлы в образ: логотип и символ кладутся
+    в logo/, поэтому собранная программа берёт иконку окна из своего образа. Параметр
+    icon в EXE на Linux игнорируется — иконку приложения задаёт desktop-файл и тема
+    иконок'
+  url: https://pyinstaller.org/en/stable/spec-files.html
+  version: stable (6.x)
+  currency_evidence: официальная документация PyInstaller stable; в проекте dev-зависимость
+    pyinstaller>=6.10
+  topics:
+  - datas
+  - иконка в EXE
+  - сборка в один файл
+  deprecated_apis: []
+  applies_to:
+  - package: pyinstaller
+    version: '6.10'
+  recorded_at: '2026-11-28T13:24:00+00:00'
